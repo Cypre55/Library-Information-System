@@ -1,0 +1,2 @@
+# delete copy ctor if not needed
+# readyToClaimUsers or readyToClaimMembers
