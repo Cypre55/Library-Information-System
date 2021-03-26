@@ -56,26 +56,20 @@ class BookHandler:
         }
         cursor.execute(selectISBN, isbn)
         for row in cursor:
-            # print(row)
-            BookHandler.__available = BookHandler.SplitTableEntry(row['AvailableUIDs'])
-            BookHandler.__taken = BookHandler.SplitTableEntry(row['TakenUIDs'])
-            BookHandler.__waitList = BookHandler.SplitTableEntry(row['PendingReservations'])
+            print(row)
+            BookHandler.__available = SplitTableEntry(row['AvailableUIDs'])
+            BookHandler.__taken = SplitTableEntry(row['TakenUIDs'])
+            BookHandler.__waitList = SplitTableEntry(row['PendingReservations'])
             
-            activeReservationPair = [x.split('*') for x in BookHandler.SplitTableEntry(row['ActiveReservations'])]
+            activeReservationPair = [x.split('*') for x in SplitTableEntry(row['ActiveReservations'])]
             claimByDateYMD = [x[0].split('-') for x in activeReservationPair]
             claimByDateYMD = [date(int(x[0]), int(x[1]), int(x[2])) for x in claimByDateYMD]
             memberID = [x[1] for x in activeReservationPair]
             for i in range(len(memberID)):
                 BookHandler.__readyToClaimUsers.append(ActiveReservation(memberID[i], claimByDateYMD[i]))
             
-            BookHandler.__readyToClaimUIDs = BookHandler.SplitTableEntry(row['ActiveReservedUIDs'])
+            BookHandler.__readyToClaimUIDs = SplitTableEntry(row['ActiveReservedUIDs'])
             BookHandler.__numberOfCopies = row['NumberOfCopiesAvailable']
-        # print(BookHandler.__available)
-        # print(BookHandler.__taken)
-        # print(BookHandler.__waitList)
-        # print(BookHandler.__readyToClaimUsers)
-        # print(BookHandler.__readyToClaimUIDs)
-        # print(BookHandler.__numberOfCopies)
 
     @staticmethod
     def UpdateBook():
@@ -106,11 +100,11 @@ class BookHandler:
         updateReservationTable = ("UPDATE RESERVATIONS SET AvailableUIDs = %(AvailableUIDs)s, TakenUIDs = %(TakenUIDs)s, PendingReservations = %(PendingReservations)s, ActiveReservations = %(ActiveReservations)s, ActiveReservedUIDs = %(ActiveReservedUIDs)s, NumberOfCopiesAvailable = %(NumberOfCopiesAvailable)s WHERE ISBN = %(ISBN)s")
         dataReservation = {
             'ISBN' : BookHandler.__currISBN,
-            'AvailableUIDs' : BookHandler.JoinTableEntry(BookHandler.__available),
-            'TakenUIDs' : BookHandler.JoinTableEntry(BookHandler.__taken),
-            'PendingReservations' : BookHandler.JoinTableEntry(BookHandler.__waitList),
-            'ActiveReservations' : BookHandler.JoinTableEntry(readyToClaimUsers),
-            'ActiveReservedUIDs' : BookHandler.JoinTableEntry(BookHandler.__readyToClaimUIDs),
+            'AvailableUIDs' : JoinTableEntry(BookHandler.__available),
+            'TakenUIDs' : JoinTableEntry(BookHandler.__taken),
+            'PendingReservations' : JoinTableEntry(BookHandler.__waitList),
+            'ActiveReservations' : JoinTableEntry(readyToClaimUsers),
+            'ActiveReservedUIDs' : JoinTableEntry(BookHandler.__readyToClaimUIDs),
             'NumberOfCopiesAvailable' : BookHandler.__numberOfCopies
         }
         print(dataReservation)
@@ -125,7 +119,7 @@ class BookHandler:
         elif(BookHandler.__currUID in BookHandler.__readyToClaimUIDs):
             BookHandler.__readyToClaimUIDs.remove(BookHandler.__currUID)
             BookHandler.__readyToClaimUsers = [x for x in BookHandler.__readyToClaimUsers if x.memberID != memberID]
-            cursor.execute(str("UPDATE MEMBERS SET ReservedBook = NULL WHERE MemberId = "+memberID))
+            cursor.execute(str("UPDATE MEMBERS SET ReservedBook = NULL WHERE MemberId = \""+memberID+"\""))
         lastdate = {
             'date' : date.today(),
             'uid' : BookHandler.__currUID
@@ -139,7 +133,15 @@ class BookHandler:
         # handle the cahnges to the particular UID here (last issued)
     @staticmethod
     def ReturnSelected(memberID: str):
-        pass
+        if len(BookHandler.__waitList) ==0:
+            BookHandler.__available.append(BookHandler.__currUID)
+        else:
+            BookHandler.__readyToClaimUIDs.append(BookHandler.__currUID)
+            memberActivated = BookHandler.__waitList.pop(0)
+            newActive = ActiveReservation(memberActivated, (datetime.now()+timedelta(days = 7)).date())
+            BookHandler.__readyToClaimUsers.append(newActive)
+        BookHandler.UpdateDatabase()
+
     @staticmethod
     def ReserveSelected(memberID : str):
         BookHandler.__waitList.append(memberID)
@@ -174,17 +176,15 @@ class BookHandler:
     def AddToPending(memberID: str):
         BookHandler.__waitList.append(memberID)
     
-    @staticmethod
-    def SplitTableEntry(s: str):
-        if(s is None):
-            return []
-        return s.split(',')[0:-1]
-    
-    @staticmethod
-    def JoinTableEntry(l: list):
-        if(len(l) == 0):
-            return None
-        return ','.join(l) + ','
+def SplitTableEntry(s: str):
+    if(s is None):
+        return []
+    return s.split(',')[0:-1]
+
+def JoinTableEntry(l: list):
+    if(len(l) == 0):
+        return None
+    return ','.join(l) + ','
 
 # bk = BookHandler.Create()
 # bk.OpenBook('918-0789532743')

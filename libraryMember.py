@@ -1,7 +1,7 @@
 import copy
 from abc import ABC, abstractmethod
 from book import Book
-from bookHandler import BookHandler
+from bookHandler import BookHandler, SplitTableEntry, JoinTableEntry
 from datetime import date, datetime, timedelta
 import mysql.connector as mysql
 db = mysql.connect(
@@ -38,9 +38,9 @@ class LibraryMember(ABC):
     def UpdateReservationStatus(self):
         bH = BookHandler.Create()
         bH.OpenBook(self._reservedBook)
-        
         bH.UpdateBook()
         bH.CloseBook()
+        self.UpdateFromDatabase()
     def CheckForReminder(self):
         stro = {
             'MemberID': self._memberID
@@ -79,23 +79,43 @@ class LibraryMember(ABC):
                     return 'Sorry this book is not available currently, and you already have a reservation'
          
     def IssueBook(self, book: Book):
-        bH = BookHandler.OpenBook(Book)
+        bH = BookHandler.Create()
+        bH.OpenBook(Book)
         bH.IssueSelected(self._memberID)
         bH.CloseBook()
         self._listOfBooksIssued.append(book.__UID)
         joined_string = ",".join(self._listOfBooksIssued)
         joined_string = joined_string+','
-        cursor.execute(str("UPDATE MEMBERS SET ListOfBooksIssued = "+joined_string+" WHERE MemberID = "+self._memberID))
+        cursor.execute(str("UPDATE MEMBERS SET ListOfBooksIssued = \""+joined_string+"\" WHERE MemberID = \""+self._memberID+"\""))
         
         db.commit()
         #self.UpdateFromDatabase()
 
     def ReserveBook(self, ISBN: str):
-        bH = BookHandler.OpenBook(ISBN)
+        bH = BookHandler.Create()
+        bH.OpenBook(ISBN)
         bH.CloseBook()
         self.reservedBook = ISBN
-        pass
+        command = "UPDATE MEMBERS SET ReservedBook = %(book)s WHERE MemberID = %(MemberID)s"
+        dici = {
+            'isbn' : ISBN,
+            'memid' : self._memberID
+        }
+        cursor.execute(command,dici)
+        db.commit()
 
+    def UpdateFromDatabase(self):
+        selectMember = ("SELECT * FROM MEMBERS WHERE MemberID = %(MemberID)s")
+        member = {
+            'MemberID' : self._memberID
+        }
+        cursor.execute(selectMember, member)
+        for row in cursor:
+            self._memberID = row['MemberID']
+            self._name = row['MemberName']
+            self._listOfBooksIssued = SplitTableEntry(row['ListOfBooksIssued'])
+            self._reservedBook = row['ReservedBook']
+    
     @abstractmethod
     def CanIssue(self):
         pass

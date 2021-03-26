@@ -32,8 +32,16 @@ class LibraryClerk:
         deleteBook = ("DELETE FROM BOOKS WHERE IsDisposed = 1")
         cursor.execute(deleteBook)
         db.commit()
-    def ReturnBook(self, libraryMember : LibraryMember):
-        pass
+    def ReturnBook(self, libraryMember : LibraryMember, Book : book):
+        #throw error if returning book not issued
+        libraryMember._listOfBooksIssued.remove(book.__UID)
+        joined_string = ",".join(self._listOfBooksIssued)
+        joined_string = joined_string+','
+        cursor.execute(str("UPDATE MEMBERS SET ListOfBooksIssued = \""+joined_string+"\" WHERE MemberID = "+libraryMember._memberID))
+        db.commit()
+        bH = BookHandler.OpenBook(Book)
+        bH.ReturnSelected(self._memberID)
+        bH.CloseBook()
     def CollectPenalty(self, libraryMember: LibraryMember,  book: Book):
         pass
 # lib=LibraryClerk(1,"fds")
