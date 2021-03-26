@@ -1,3 +1,5 @@
+from datetime import date, datetime, timedelta
+from book import Book
 from libraryMember import LibraryMember
 
 class UnderGraduateStudent(LibraryMember):
@@ -9,8 +11,8 @@ class UnderGraduateStudent(LibraryMember):
 
     def CanIssue(self):
         return (self._numberOfBooksIssued < self.__maxBooksAllowed)
-# mem = UnderGraduateStudent(1, 'ret', None, None, 0)
-# mem.SearchBook()
-mem = UnderGraduateStudent('19CS30056', 'Neha', None, '988-0789032742', 0)
+
+mem = UnderGraduateStudent('19CS30056', 'Neha', None, None, 0)
 mem.UpdateReservationStatus()
-print(mem.CheckAvailabilityOfBook('988-0789032742'))
+print(mem.CheckAvailabilityOfBook('998-0767892743'))
+mem.IssueBook(Book(6, '998-0767892743',None,None))

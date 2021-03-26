@@ -80,10 +80,10 @@ class LibraryMember(ABC):
          
     def IssueBook(self, book: Book):
         bH = BookHandler.Create()
-        bH.OpenBook(Book)
+        bH.OpenBook(book)
         bH.IssueSelected(self._memberID)
         bH.CloseBook()
-        self._listOfBooksIssued.append(book.__UID)
+        self._listOfBooksIssued.append(str(book.GetUID()))
         joined_string = ",".join(self._listOfBooksIssued)
         joined_string = joined_string+','
         cursor.execute(str("UPDATE MEMBERS SET ListOfBooksIssued = \""+joined_string+"\" WHERE MemberID = \""+self._memberID+"\""))
@@ -94,12 +94,13 @@ class LibraryMember(ABC):
     def ReserveBook(self, ISBN: str):
         bH = BookHandler.Create()
         bH.OpenBook(ISBN)
+        bH.ReserveSelected(self._memberID)
         bH.CloseBook()
         self.reservedBook = ISBN
         command = "UPDATE MEMBERS SET ReservedBook = %(book)s WHERE MemberID = %(MemberID)s"
         dici = {
-            'isbn' : ISBN,
-            'memid' : self._memberID
+            'book' : ISBN,
+            'MemberID' : self._memberID
         }
         cursor.execute(command,dici)
         db.commit()

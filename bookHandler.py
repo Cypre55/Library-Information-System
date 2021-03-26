@@ -42,12 +42,12 @@ class BookHandler:
             BookHandler.__instance = self
    
     @staticmethod 
-    def OpenBook(book):
-        if(isinstance(book, Book)):
-            BookHandler.__currISBN = book.GetISBN()
-            BookHandler.__currUID = book.GetUID()
-        elif(isinstance(book, str)):
+    def OpenBook(book : Book):
+        if (isinstance(book,str)):
             BookHandler.__currISBN = book
+        elif(isinstance(book,Book)):
+            BookHandler.__currISBN = book.GetISBN()
+            BookHandler.__currUID = str(book.GetUID())
         # else handle exception
 
         selectISBN = ("SELECT * FROM RESERVATIONS WHERE ISBN = %(ISBN)s")
@@ -88,13 +88,12 @@ class BookHandler:
                 else:
                     reservationFree = BookHandler.__readyToClaimUIDs.pop()
                     BookHandler.__available.append(reservationFree)
-        # print(BookHandler.__readyToClaimUsers)
         BookHandler.__readyToClaimUsers = [item for item in BookHandler.__readyToClaimUsers if item.claimByDate >= date.today()]
         BookHandler.__numberOfCopies = len(BookHandler.__available)
     
     @staticmethod
     def UpdateDatabase():
-        print(BookHandler.__readyToClaimUsers)
+        BookHandler.__numberOfCopies = len(BookHandler.__available)
         readyToClaimUsers = list(map(lambda x: str(x.claimByDate)+'*'+x.memberID, BookHandler.__readyToClaimUsers))        
         
         updateReservationTable = ("UPDATE RESERVATIONS SET AvailableUIDs = %(AvailableUIDs)s, TakenUIDs = %(TakenUIDs)s, PendingReservations = %(PendingReservations)s, ActiveReservations = %(ActiveReservations)s, ActiveReservedUIDs = %(ActiveReservedUIDs)s, NumberOfCopiesAvailable = %(NumberOfCopiesAvailable)s WHERE ISBN = %(ISBN)s")
@@ -107,7 +106,9 @@ class BookHandler:
             'ActiveReservedUIDs' : JoinTableEntry(BookHandler.__readyToClaimUIDs),
             'NumberOfCopiesAvailable' : BookHandler.__numberOfCopies
         }
-        print(dataReservation)
+        print('test12')
+        print(BookHandler.__taken)
+        # print(dataReservation)
         cursor.execute(updateReservationTable, dataReservation)
         db.commit()
     
@@ -115,8 +116,10 @@ class BookHandler:
     def IssueSelected(memberID: str):
         BookHandler.__taken.append(BookHandler.__currUID)
         if(BookHandler.__currUID in BookHandler.__available):
+            print('reached1')
             BookHandler.__available.remove(BookHandler.__currUID)
         elif(BookHandler.__currUID in BookHandler.__readyToClaimUIDs):
+            
             BookHandler.__readyToClaimUIDs.remove(BookHandler.__currUID)
             BookHandler.__readyToClaimUsers = [x for x in BookHandler.__readyToClaimUsers if x.memberID != memberID]
             cursor.execute(str("UPDATE MEMBERS SET ReservedBook = NULL WHERE MemberId = \""+memberID+"\""))
@@ -126,6 +129,7 @@ class BookHandler:
         }
         cursor.execute("UPDATE BOOKS SET LastIssued = %(date)s WHERE UniqueID  = %(uid)s", lastdate)
         db.commit()
+        print(BookHandler.__taken)
         BookHandler.UpdateDatabase()
 
             # handle the changes to the library member's reservedbook here
@@ -133,6 +137,7 @@ class BookHandler:
         # handle the cahnges to the particular UID here (last issued)
     @staticmethod
     def ReturnSelected(memberID: str):
+        BookHandler.__taken.remove(str(BookHandler.__currUID))
         if len(BookHandler.__waitList) ==0:
             BookHandler.__available.append(BookHandler.__currUID)
         else:
@@ -181,7 +186,7 @@ def SplitTableEntry(s: str):
         return []
     return s.split(',')[0:-1]
 
-def JoinTableEntry(l: list):
+def JoinTableEntry(l):
     if(len(l) == 0):
         return None
     return ','.join(l) + ','

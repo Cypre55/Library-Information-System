@@ -1,5 +1,7 @@
 from book import Book
 from libraryMember import LibraryMember
+from underGraduateStudent import UnderGraduateStudent
+from bookHandler import BookHandler, JoinTableEntry, SplitTableEntry
 from datetime import date, datetime, timedelta
 import mysql.connector as mysql
 db = mysql.connect(
@@ -28,22 +30,55 @@ class LibraryClerk:
         }
         cursor.execute(addBook, dataBook)
         db.commit()
+        cursor.execute("SELECT ISBN FROM RESERVATIONS")
+        flag=0
+        for row in cursor:
+            if(bookDetails[0] == row['ISBN']):
+                flag=1
+                break
+        
+        if (flag == 0):
+            cursor.execute("SELECT UniqueID FROM BOOKS WHERE ISBN = " + bookDetails[0])
+            row = cursor.fetchone()
+            addISBN = ("INSERT INTO RESERVATIONS "
+            "VALUES (%(ISBN)s, %(AvailableUIDs)s, %(TakenUIDs)s, %(PendingReservations)s, %(ActiveReservations)s, %(ActiveReservedUIDs)s, %(NumberOfCopiesAvailable)s)")
+            dataISBN = {
+                'ISBN' : bookDetails[0],
+                'AvailableUIDs' : row['UniqueID'] + ',',
+                'TakenUIDs' : None,
+                'PendingReservations' : None,
+                'ActiveReservations' : None,
+                'ActiveReservedUIDs' : None,
+                'NumberOfCopiesAvailable' : 1
+            }
+            cursor.execute(addISBN,dataISBN)
+            db.commit()
+
     def DeleteBook(self, book: Book):
         deleteBook = ("DELETE FROM BOOKS WHERE IsDisposed = 1")
         cursor.execute(deleteBook)
         db.commit()
-    def ReturnBook(self, libraryMember : LibraryMember, Book : book):
+        
+        # implement updation of reservations table also accordingly
+    def ReturnBook(self, libraryMember : LibraryMember, book : Book):
         #throw error if returning book not issued
-        libraryMember._listOfBooksIssued.remove(book.__UID)
-        joined_string = ",".join(self._listOfBooksIssued)
-        joined_string = joined_string+','
-        cursor.execute(str("UPDATE MEMBERS SET ListOfBooksIssued = \""+joined_string+"\" WHERE MemberID = "+libraryMember._memberID))
+        libraryMember._listOfBooksIssued.remove(str(book.GetUID()))
+        joined_string = JoinTableEntry(libraryMember._listOfBooksIssued)
+        memberUpdate = ("UPDATE MEMBERS SET ListOfBooksIssued = %(ListOfBooks)s WHERE MemberID = %(MemberID)s")
+        listOfBooks = {
+            'ListOfBooks' : joined_string,
+            'MemberID' : libraryMember._memberID
+        }
+        cursor.execute(memberUpdate, listOfBooks)
         db.commit()
-        bH = BookHandler.OpenBook(Book)
-        bH.ReturnSelected(self._memberID)
+        bH = BookHandler.Create()
+        bH.OpenBook(book)
+        bH.ReturnSelected(libraryMember._memberID)
         bH.CloseBook()
     def CollectPenalty(self, libraryMember: LibraryMember,  book: Book):
         pass
 # lib=LibraryClerk(1,"fds")
 # print(lib._penaltyRate)
-# lib.AddBook(['420-0000000000','Students and Sourangshu', 'Dan Frown', 6, date(2001,1,1), 0])
+# mem = UnderGraduateStudent('19CS10073', 'Rajat', ['4'], '918-0789532743', 0)
+# b= Book(4, '988-0789032742', date.today(), None)
+# lib.ReturnBook(mem, b)
