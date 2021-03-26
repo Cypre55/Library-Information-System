@@ -1,12 +1,111 @@
-# Unit Testing
+
+# IEEE TEST PLAN TEMPLATE
+
+## Test Plan Identifier
+
+##### LMS-TESTPLAN-1
+
+## REFERENCES 
+
+##### Software Requirement Specification
+##### Use Case Diagram
+##### Class Diagram
+
+## INTRODUCTION 
+
+##### This is the Unit-Test plan for Library Management System Version 1.0
+##### This plan will aim at providing details for the testing of the different methods used in the functioning of LMS both for a user as well as a software developer
+##### The explanation for developers will be more details and for users will include a brief outline
+
+## TEST ITEMS (FUNCTIONS) 
+
+##### 1. The Constructors for all the Classes
+###### 1.1 Book
+###### 1.2 UnderGraduateStudent
+###### 1.3 PostGraduateStudent
+###### 1.4 ResearchScholar
+###### 1.5 FacultyMember
+###### 1.6 BookHandler
+###### 1.7 LibraryClerk
+###### 1.8 Librarian
+###### 1.9 ActiveReservation
+
+##### 2. The Singleton Nature of the Singleton Classes
+##### 3. Member Functions of all Classes
+##### 4. Functions outside the classes
+
+## FEATURES TO BE TESTED
+
+##### 1. Issue Of a Book
+##### 2. Return Of a Book
+##### 3. Reservation Of a Book
+##### 4. Removing Expired Reservations
+##### 5. Update Pending Reservations
+##### 6. Penalty Calculation
+##### 7. Add a new member
+##### 8. Remove a Member
+##### 9. Login
+##### 10. Check Issue statistics of books
+##### 11. Add new book
+##### 12. Remove old/damaged books
+
+## FEATURES NOT TO BE TESTED 
+##### 1. Graphic User Interface will not be tested manually. 
+
+## ITEM PASS/FAIL CRITERIA 
+##### We will be providing golden outputs for the appropriate tests.
+##### We wil provide appropriate exception classes for the exceptions
+##### Match with Golden Output/Exception class will be a pass, otherwise would be a Fail
+##### Efficacy would be judged by % of tests passes
+
+## SUSPENSION CRITERIA AND RESUMPTION REQUIREMENTS 
+
+##### Stop tests when some required package compatibilty fails
+
+## TEST DELIVERABLES
+##### Test Plan Document
+##### Test Suite Document
+## Unit Testing
 
 ### MemberLogin()
 
+###### General Input
+
+  * Member ID
+
+  * Password
+
+  ###### General Output
+
+  * Constructed Object of the User
+
+  ###### Scenarios
+
+  * Member Logins in successfully
+  * Member ID not in database
+  * Password does not match with Member ID
+
 ### EmployeeLogin()
 
-### Library Member
+###### General Input
 
-* ##### Test Constructor
+  * Employee ID
+
+  * Password
+
+  ###### General Output
+
+  * Constructed Object of the User
+
+  ###### Scenarios
+
+  * Employee Logins in successfully
+  * Employee ID not in database
+  * Password does not match with Employee ID
+
+### Library Member 
+
+* ##### Test Constructor of Different Library Members (UG,PG,RS,FM)
 
   ###### General Input
 
@@ -20,18 +119,16 @@
 
   * Name of the member
 
-  * Type of Member
-
-  * Password 
+  * Type of Member (to call the appropriate constrcutor)
 
   ###### General Output
 
-  * Fully Constructed _________________________ 
+  * Fully Constructed Object of the correct class (UG,PG,RS,FM)
 
   ###### Scenarios
 
-  * Librarian wants to add a new  _________________________ 
-  *  ___________________ wants to login
+  * Librarian wants to add a new Member 
+  * Existing Member wants to login
 
 * ##### Test Get Function
 
@@ -41,7 +138,7 @@
 
   ###### General Output
 
-  Specific to the Function
+  Specific to the Function (Returns value of field we want to get)
 
   ###### Scenarios
 
@@ -58,7 +155,7 @@
 
   ###### General Output  
 
-  * Book UIDs when available.
+  * Book UIDs when available(depending on reservation status of the Library Member).
 
     OR
 
@@ -66,19 +163,12 @@
 
   ###### Scenarios
 
-  * The selected ISBN doesn't exist in the RESERVATIONS table.
-
-  * Some copies are available and the user doesn't have any active reservation.
-  * Some copies are available and the user has an active reservation.
-  * Some copies are available and the user has an expired active reservation.
-  * All copies are lent and the user neither has a pending reservation nor an active reservation.
-  * All copies are lent and the user is in pending reservation and without other active reservations.
-  * All copies are lent and the user is in pending reservation and with other active reservations.
-  * All copies are lent and the user is in pending reservation and some active reservation has expired.
-  * All copies are lent and the user is in pending reservation and some active reservation has expired and user is now in active reservation.
-  * All copies are lent and the user is in active reservation.
-  * All copies are lent and the user's active reservation has expired.
-
+  * The user has an Active Reservation on this ISBN.
+  * The user has a Pending Reservation on this ISBN.
+  * The user has no reservation on this ISBN and some UIDs are available. (May have reservations on other ISBN)
+  * The user has no reservation on any ISBN and no UIDs are available.
+  * The user has a reservation on a different ISBN and no UIDs are avalaible.
+  
 * ##### Test IssueBook()
 
   ###### General Input
@@ -94,10 +184,11 @@
   * BOOKS and RESERVATIONS Table is updated.
 
   ###### Scenarios
-
+  * User tries to claim a book they have already issued e*
+  * User has exhausted their permitted number of issues e*
   * User claims a reserved book.
   * User issues an available book.
-
+  
 * ##### Test ReserveBook()
 
   ###### General Input
@@ -114,11 +205,14 @@
 
   ###### Scenarios
 
+  * The book is available e*
+
   * The book is unavailable and user has made no reservation for any book. 
 
   * The book is unavailable and user has pending/active reservations for some other case.
 
   * The book is unavailable and user has an active reservation for this book.
+
   * The book is unavailable and user has a pending reservation for this book.
 
 * ##### Test CanIssue()
@@ -144,7 +238,7 @@
 
   ###### General Output  
 
-  * Reminder is sent the user's GUI
+  * Whether the member has been reminded or not
 
   ###### Scenarios
 
@@ -228,6 +322,8 @@
 
   ###### Scenarios
 
+  * Member tries to return a book they havent issued e*
+  * Member tries to return a book which is not present in the library e*
   * The book has pending reservation which moves to active.
   * The book doesn't have pending reservation.
 
@@ -264,7 +360,7 @@
   * The EmployeeID is the Librarian.
 
   * The EmployeeID is not the Librarian but is a Library Clerk.
-  * The EmployeeID is not the Librarian but is a Library Member.
+  * The EmployeeID is not the Librarian but is a Library Member e*
 
 * ##### Test Super Class Functionalities
 
@@ -292,6 +388,7 @@
 
   ###### Scenarios
 
+  * The librarian tries to add a person who is already a member e*
   * The librarian wants to add a new member.
 
 * ##### Test DeleteMember()
@@ -306,7 +403,8 @@
   * Database entry of the Library Member is removed from MEMBERS table. 
 
   ###### Scenarios
-
+  
+  * Try to delete a person who is not a member e*
   * There are some members in the library.
   * There are no members in the library.
 
@@ -351,9 +449,10 @@
   * Database entry in BOOKS table has been marked as disposed.
 
   ###### Scenarios
+  * UID does not exist e*
+  * The UID has not been issued in last 5 years e* 
+  * The UID has been issued in the last 5 years e*
 
-  * The Book object has currUID field.
-  * The Book object does not have currUID field.                                                                                        <--------------------------------- No UID Exception
 
 ### Book Handler
 
@@ -435,13 +534,13 @@
   * MemberID
   
 ###### General Output  
-  
+
 * MEMBERS, BOOKS and RESERVATIONS table are updated.
   
 ###### Scenarios
-  
+
 * Member is claiming a book reserved to them.
-  * Member is issuing an available book
+* Member is issuing an available book
   
 * ##### Test ReturnSelected()
 
@@ -469,12 +568,12 @@
 * MemberID
   
 ###### General Output  
-  
+
 * MEMBERS, BOOKS and RESERVATIONS table are updated.
   
 ###### Scenarios
-  
-  * The member doesn't have pending reservation.
+
+  * The member doesn't have pending/active reservation for this/another book
 
 ### Book
 
@@ -482,17 +581,34 @@
 
   ###### General Input
 
-  * Book basic info
+  * Book basic information
   
   OR
   
 * Database entry of the book in BOOKS table.
   
 ###### General Output  
-  
+
 * MEMBERS, BOOKS and RESERVATIONS table are updated.
   
   ###### Scenarios
   
   * Book is created for adding
-  * ###### Book is created for using with BookHandler.
+  * Book is created for using with BookHandler.
+### Active Reservation
+
+* ##### Test Constructor
+
+  ###### General Input
+
+  * Member ID
+  
+  * Date reservation became active.
+  
+###### General Output  
+
+  * Object Created.
+
+  ###### Scenarios
+
+  * Active reservation is made at any time in the run
