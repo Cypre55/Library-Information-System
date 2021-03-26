@@ -5,3 +5,8 @@ class Book():
         self.__ISBN = ISBN
         self.__dateOfIssue = dateOfIssue
         self.__dueDate = dueDate
+
+    def GetUID(self):
+        return self.__UID
+    def GetISBN(self):
+        return self.__ISBN

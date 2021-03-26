@@ -1,6 +1,7 @@
 import copy
 from abc import ABC, abstractmethod
 from book import Book
+from bookHandler import BookHandler
 from datetime import date, datetime, timedelta
 import mysql.connector as mysql
 db = mysql.connect(
@@ -19,7 +20,7 @@ class LibraryMember(ABC):
             self._memberID = copy.deepcopy(orig._memberID)
             self._name = copy.deepcopy(orig._name)
             self._listOfBooksIssued = copy.deepcopy(orig._listOfBooksIssued)
-            self._reservedBook = copy.deepcopy(orig._reservedBook)
+            self._reservedBook = copy.deepcopy(orig._reservedBook) # consider changing the name to reserved ISBN?
             self._numberOfBooksIssued = 0
         else:
             self._memberID = args[0]
@@ -34,13 +35,19 @@ class LibraryMember(ABC):
         return self._name
     def GetNumberOfBookIssued(self):
         return self._numberOfBooksIssued
+    def UpdateReservationStatus(self):
+        bH = BookHandler.Create()
+        bH.OpenBook(self._reservedBook)
+        
+        bH.UpdateBook()
+        bH.CloseBook()
     def CheckForReminder(self):
         stro = {
             'MemberID': self._memberID
         }
         cursor.execute(("SELECT GotReminder from members WHERE MemberID = %(MemberID)s"), stro)
         flag = False
-        for row  in cursor:
+        for row in cursor:
             flag = row["GotReminder"]
         return flag
     def SearchBook(self):
@@ -53,102 +60,42 @@ class LibraryMember(ABC):
             searchResults.append(("{ISBN}".format(ISBN=row['ISBN']),"{BookName}".format(BookName=row['BookName'])))
         print(searchResults)
     def CheckAvailabilityOfBook(self, ISBN: str):
-        #if(self._reservedBook is not None and self._reservedBook.__ISBN == ISBN):
-        isbn = {
-        'ISBN': ISBN
-        }
-        cursor.execute(("SELECT ActiveReservations,ActiveReservedUIDs,AvailableUIDs from RESERVATIONS where ISBN = %(ISBN)s"),isbn)
-        stri = ""
-        stri2 = ""
-        stri3 = ""
-        for row in cursor:
-            stri = row["ActiveReservations"]
-            stri2 = row["ActiveReservedUIDs"]
-            stri3 = row["AvailableUIDs"]
-        if(stri is not None):
-            reserves = stri.split(',')
-            reserves = reserves[0:-1]
-            reservedbooks = stri2.split(',')
-            reservedbooks = reservedbooks[0:-1]
-            reservesfinal = reserves.copy()
-            print(reserves)
-            avails = []
-            if(stri3 is not None):
-                avails = stri3.split(',')
-                avails = avails[0:-1]
-            print(avails)
-            for active in reserves:
-                curr = active.split('*')
-                #print(curr[0])
-                datex = curr[0].split('-')
-                #print(datex)
-                intdates = list((int(x) for x in datex))
-                tilldate = date(intdates[0], intdates[1], intdates[2])
-                memid = curr[1]
-                #print(tilldate)
-                #print(memid)
-                if(tilldate<date.today()):
-                    memedid = {
-                        'id': memid
-                    }
-                    cursor.execute(("UPDATE MEMBERS SET ReservedBook = NULL WHERE MemberID = %(id)s"),memedid)
-                    db.commit()
-                    reservesfinal.remove(active)
-                    # pending consider KAROOOOOO
-                    avails.append(reservedbooks.pop())
-            strfin = ""
-            for entry in reservesfinal:
-                strfin = strfin+entry+','
-            stravailfinal = ""
-            for entry in avails:
-                stravailfinal  = stravailfinal + entry + ','
-            strfin2 = ""
-            for entry in reservedbooks:
-                strfin2 = strfin2 + entry + ','
-            print(stravailfinal)
-            print(strfin2)
-            if(len(stravailfinal)==0):
-                stravailfinal = None
-            if(len(strfin)==0):
-                newactive = {
-                    'newact' : None,
-                    'newavail' : stravailfinal,
-                    'newstr' : None,
-                    'isbn' : ISBN,
-                    'noOfCopies' : len(avails)
-                }
-                cursor.execute(("UPDATE RESERVATIONS SET ActiveReservations = %(newstr)s , AvailableUIDs = %(newavail)s , ActiveReservedUIDs = %(newact)s, NumberOfCopiesAvailable = %(noOfCopies)s WHERE ISBN = %(isbn)s"),newactive)
-                db.commit()
+        bH = BookHandler.Create()
+        bH.OpenBook(ISBN)
+        bH.UpdateBook()
+        bH.UpdateDatabase()
+        if (self._reservedBook == ISBN):
+            if(bH.IsActive(self._memberID)):
+                return bH.GetActiveReservedUIDs()
             else:
-                newactive = {
-                    'newstr' : strfin,
-                    'isbn' : ISBN,
-                    'newavail' : stravailfinal,
-                    'newact' : strfin2,
-                    'noOfCopies' : len(avails)
-                }
-                cursor.execute(("UPDATE RESERVATIONS SET ActiveReservations = %(newstr)s , AvailableUIDs = %(newavail)s , ActiveReservedUIDs = %(newact)s, NumberOfCopiesAvailable = %(noOfCopies)s WHERE ISBN = %(isbn)s"),newactive)
-                db.commit()
-        if False:
-            isbn = {
-            'ISBN': ISBN
-            }
-            cursor.execute(("SELECT AvailableUIDs,NumberOfCopiesAvailable from RESERVATIONS where ISBN = %(ISBN)s"),isbn)
-            stri = ""
-            for row in cursor:
-                stri = row["AvailableUIDs"]
-            avails = stri.split(',')
-            avails = avails[0:-1]
-            avails = list(int(x) for x in avails)
-            if(len(avails)==0):
-                print("Book currently not available, you can make a reservation!")
+                return 'Your Reservation is still pending. Pls wait for a few more days'
+        else:
+            if (bH.IsAvailable(ISBN)):
+                return bH.GetAvailableUIDs()
             else:
-                print(avails)
+                if (self._reservedBook == None):
+                    return 'Would you like to reserve this book?'
+                else:
+                    return 'Sorry this book is not available currently, and you already have a reservation'
          
     def IssueBook(self, book: Book):
-        pass
+        bH = BookHandler.OpenBook(Book)
+        bH.IssueSelected(self._memberID)
+        bH.CloseBook()
+        self._listOfBooksIssued.append(book.__UID)
+        joined_string = ",".join(self._listOfBooksIssued)
+        joined_string = joined_string+','
+        cursor.execute(str("UPDATE MEMBERS SET ListOfBooksIssued = "+joined_string+" WHERE MemberID = "+self._memberID))
+        
+        db.commit()
+        #self.UpdateFromDatabase()
+
     def ReserveBook(self, ISBN: str):
+        bH = BookHandler.OpenBook(ISBN)
+        bH.CloseBook()
+        self.reservedBook = ISBN
         pass
+
     @abstractmethod
     def CanIssue(self):
         pass

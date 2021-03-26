@@ -1,41 +1,192 @@
 import mysql.connector as mysql
 from book import Book
+from activeReservation import ActiveReservation
+from datetime import date, datetime, timedelta
+import mysql.connector as mysql
+db = mysql.connect(
+    host = "localhost",
+    user = "root",
+    passwd = "1234",
+    database = "lis"
+)
+cursor = db.cursor(dictionary = True)
+
+# changes
+## make all fucntions non static maybe
+## no member called currUID
+## changes in the arguments of a lot of functions
+## might want to pass LIbrary member to IssueBook etc and make changes to its data members then update database using its own method
 class BookHandler:
     __instance = None
-    __currISBN = None
     __currUID = None
-    __available = None
-    __waitList = None
-    __readyToClaimUsers = None
-    __readyToClaimUsers = None
-    __numberOfCopies = None
+    __currISBN = None
+    __available = []
+    __taken = []
+    __waitList = []
+    __readyToClaimUsers = []
+    __readyToClaimUIDs = []
+    __numberOfCopies = 0
+    
     @staticmethod 
     # Static Access Method
     def Create():
         if BookHandler.__instance == None:
             BookHandler()
         return BookHandler.__instance
+    
     # Virtually private constructor
     def __init__(self):
         if BookHandler.__instance != None:
             raise Exception("This class is a singleton!")
         else:
             BookHandler.__instance = self
+   
     @staticmethod 
-    def OpenBook(book: Book):
-        BookHandler.__currISBN = book.__ISBN # Accessing private member, be careful
-        BookHandler.__currUID = book.__UID # Accessing private member, be careful
-        '''
-        Fill the other data members using the database
-        '''
-    def UpdateBook(self):
+    def OpenBook(book):
+        if(isinstance(book, Book)):
+            BookHandler.__currISBN = book.GetISBN()
+            BookHandler.__currUID = book.GetUID()
+        elif(isinstance(book, str)):
+            BookHandler.__currISBN = book
+        # else handle exception
+
+        selectISBN = ("SELECT * FROM RESERVATIONS WHERE ISBN = %(ISBN)s")
+        isbn = {
+            'ISBN' : BookHandler.__currISBN
+        }
+        cursor.execute(selectISBN, isbn)
+        for row in cursor:
+            # print(row)
+            BookHandler.__available = BookHandler.SplitTableEntry(row['AvailableUIDs'])
+            BookHandler.__taken = BookHandler.SplitTableEntry(row['TakenUIDs'])
+            BookHandler.__waitList = BookHandler.SplitTableEntry(row['PendingReservations'])
+            
+            activeReservationPair = [x.split('*') for x in BookHandler.SplitTableEntry(row['ActiveReservations'])]
+            claimByDateYMD = [x[0].split('-') for x in activeReservationPair]
+            claimByDateYMD = [date(int(x[0]), int(x[1]), int(x[2])) for x in claimByDateYMD]
+            memberID = [x[1] for x in activeReservationPair]
+            for i in range(len(memberID)):
+                BookHandler.__readyToClaimUsers.append(ActiveReservation(memberID[i], claimByDateYMD[i]))
+            
+            BookHandler.__readyToClaimUIDs = BookHandler.SplitTableEntry(row['ActiveReservedUIDs'])
+            BookHandler.__numberOfCopies = row['NumberOfCopiesAvailable']
+        # print(BookHandler.__available)
+        # print(BookHandler.__taken)
+        # print(BookHandler.__waitList)
+        # print(BookHandler.__readyToClaimUsers)
+        # print(BookHandler.__readyToClaimUIDs)
+        # print(BookHandler.__numberOfCopies)
+
+    @staticmethod
+    def UpdateBook():
+        deleteMemberReservation = ("UPDATE MEMBERS SET ReservedBook = NULL WHERE MemberID = %(MemberID)s")
+        member = {
+            'MemberID' : None
+        }
+        for entry in BookHandler.__readyToClaimUsers:
+            member['MemberID'] = entry.memberID
+            if entry.claimByDate < date.today():
+                cursor.execute(deleteMemberReservation, member)
+                db.commit()
+                if len(BookHandler.__waitList): # if pending reservations, then make them active
+                    newActive = BookHandler.__waitList.pop(0)
+                    BookHandler.__readyToClaimUsers.append(ActiveReservation(newActive, (datetime.now()+timedelta(days = 7)).date()))
+                else:
+                    reservationFree = BookHandler.__readyToClaimUIDs.pop()
+                    BookHandler.__available.append(reservationFree)
+        # print(BookHandler.__readyToClaimUsers)
+        BookHandler.__readyToClaimUsers = [item for item in BookHandler.__readyToClaimUsers if item.claimByDate >= date.today()]
+        BookHandler.__numberOfCopies = len(BookHandler.__available)
+    
+    @staticmethod
+    def UpdateDatabase():
+        print(BookHandler.__readyToClaimUsers)
+        readyToClaimUsers = list(map(lambda x: str(x.claimByDate)+'*'+x.memberID, BookHandler.__readyToClaimUsers))        
+        
+        updateReservationTable = ("UPDATE RESERVATIONS SET AvailableUIDs = %(AvailableUIDs)s, TakenUIDs = %(TakenUIDs)s, PendingReservations = %(PendingReservations)s, ActiveReservations = %(ActiveReservations)s, ActiveReservedUIDs = %(ActiveReservedUIDs)s, NumberOfCopiesAvailable = %(NumberOfCopiesAvailable)s WHERE ISBN = %(ISBN)s")
+        dataReservation = {
+            'ISBN' : BookHandler.__currISBN,
+            'AvailableUIDs' : BookHandler.JoinTableEntry(BookHandler.__available),
+            'TakenUIDs' : BookHandler.JoinTableEntry(BookHandler.__taken),
+            'PendingReservations' : BookHandler.JoinTableEntry(BookHandler.__waitList),
+            'ActiveReservations' : BookHandler.JoinTableEntry(readyToClaimUsers),
+            'ActiveReservedUIDs' : BookHandler.JoinTableEntry(BookHandler.__readyToClaimUIDs),
+            'NumberOfCopiesAvailable' : BookHandler.__numberOfCopies
+        }
+        print(dataReservation)
+        cursor.execute(updateReservationTable, dataReservation)
+        db.commit()
+    
+    @staticmethod
+    def IssueSelected(memberID: str):
+        BookHandler.__taken.append(BookHandler.__currUID)
+        if(BookHandler.__currUID in BookHandler.__available):
+            BookHandler.__available.remove(BookHandler.__currUID)
+        elif(BookHandler.__currUID in BookHandler.__readyToClaimUIDs):
+            BookHandler.__readyToClaimUIDs.remove(BookHandler.__currUID)
+            BookHandler.__readyToClaimUsers = [x for x in BookHandler.__readyToClaimUsers if x.memberID != memberID]
+            cursor.execute(str("UPDATE MEMBERS SET ReservedBook = NULL WHERE MemberId = "+memberID))
+        lastdate = {
+            'date' : date.today(),
+            'uid' : BookHandler.__currUID
+        }
+        cursor.execute("UPDATE BOOKS SET LastIssued = %(date)s WHERE UniqueID  = %(uid)s", lastdate)
+        db.commit()
+        BookHandler.UpdateDatabase()
+
+            # handle the changes to the library member's reservedbook here
+        # handle the changes to the library member here
+        # handle the cahnges to the particular UID here (last issued)
+    @staticmethod
+    def ReturnSelected(memberID: str):
         pass
+    @staticmethod
+    def ReserveSelected(memberID : str):
+        BookHandler.__waitList.append(memberID)
+        BookHandler.UpdateDatabase()
     def CloseBook(self):
-        BookHandler.__instance = None
+        self.UpdateDatabase()
         BookHandler.__currISBN = None
-        BookHandler.__currUID = None
-        BookHandler.__available = None
-        BookHandler.__waitList = None
-        BookHandler.__readyToClaimUsers = None
-        BookHandler.__readyToClaimUsers = None
+        BookHandler.__available = []
+        BookHandler.__taken = []
+        BookHandler.__waitList = []
+        BookHandler.__readyToClaimUsers = []
+        BookHandler.__readyToClaimUIDs = []
         BookHandler.__numberOfCopies = None
+
+    @staticmethod
+    def GetActiveReservedUIDs():
+        return BookHandler.__readyToClaimUIDs
+
+    @staticmethod
+    def GetAvailableUIDs():
+        return BookHandler.__available
+
+    @staticmethod
+    def IsActive(memberID: str):
+        return memberID in [x.memberID for x in BookHandler.__readyToClaimUsers] 
+    
+    @staticmethod
+    def IsAvailable(ISBN: str):
+        return ISBN in BookHandler.__available
+
+    @staticmethod
+    def AddToPending(memberID: str):
+        BookHandler.__waitList.append(memberID)
+    
+    @staticmethod
+    def SplitTableEntry(s: str):
+        if(s is None):
+            return []
+        return s.split(',')[0:-1]
+    
+    @staticmethod
+    def JoinTableEntry(l: list):
+        if(len(l) == 0):
+            return None
+        return ','.join(l) + ','
+
+# bk = BookHandler.Create()
+# bk.OpenBook('918-0789532743')
+# bk.UpdateBook()
+# bk.CloseBook()

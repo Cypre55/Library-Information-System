@@ -80,7 +80,7 @@ class Librarian(LibraryClerk):
         print(obsoleteBooks)
     def DisposeBook(self, UID):
         disposeBook = ("UPDATE BOOKS "
-                       "SET IsDisposed=1 "
+                       "SET IsDisposed = 1 "
                        "WHERE UniqueID=%(UniqueID)s")
         dataBook = {
             'UniqueID': UID
