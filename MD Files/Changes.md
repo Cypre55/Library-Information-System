@@ -17,3 +17,5 @@ AddMemberFunction has two params LM and Password
 Encode Decode
 
 IsActive, GetActiveReservedUIDs, GetAvailableUIDs, ActiveReservedUIDs() is a new function.
+
+Are empty tables allowed?

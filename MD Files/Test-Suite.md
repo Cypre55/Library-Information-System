@@ -8,19 +8,19 @@
 
         **Input:** A LibraryMember object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
 
-        ​	**Output**: 19CS30014
+        **Output**: 19CS30014
 
       * ###### Getting the Name of the Member
 
         **Input:** A LibraryMember object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
 
-        ​	**Output**: Harry
+        **Output**: Harry
 
       * ###### Getting the Number of Books Issued by the Member
 
         **Input:** A LibraryMember object (name: Harry; memberID: 19CS30014; listOfBooksIssued: [7];  numberOfBooksIssued: 1; <Rest of the members>: None)
 
-        ​	**Output**: 1
+        **Output**: 1
 
    2. ##### Test CheckAvailabilityOfBook()
 
@@ -37,10 +37,10 @@
           | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
         | ---------------- | ------------- | --------- | ------------------- | ----------------------- | ------------------ | -------------- |
           | "988-0789032742" | (NULL)        | "1,"      | (NULL)              | "2021-04-08*19CS30014," | "3,"               | 2              |
-
-        **Output**:
         
-      * List of ActiveReservedUIDS: [3]
+          **Output**:
+          
+        * List of ActiveReservedUIDS: [3]
         
       * ###### The user has a Pending Reservation on this ISBN.
 
@@ -55,10 +55,10 @@
           | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
         | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
           | "988-0789032742" | (NULL)        | "1,"      | "19CS30014"         | (NULL)             | (NULL)             | 2              |
-
-        **Output**:
         
-      * Message to the User: "Your Reservation is still pending. Please wait for a few more days."
+          **Output**:
+          
+        * Message to the User: "Your Reservation is still pending. Please wait for a few more days."
         
       * ###### The user has no reservation on this ISBN and some UIDs are available. (May have reservations on other ISBN)
 
@@ -76,7 +76,7 @@
 
         **Output**:
         
-        * List of AvailableUIDs: [7, 2]
+        * List of AvailableUIDs: [7, 2] (Rack Numbers )
         
       * ###### The user has no reservation on any ISBN and no UIDs are available.
 
@@ -135,15 +135,39 @@
       * ###### The librarian has called the send reminder function.
       * ###### The librarian has not called the send reminder function.
 
-   8. ##### Test Search Book
+   6. ##### Test Search Book
 
       * ###### No book in the system matches with the search string
-      
-        | UID  | ISBN | BookName | RackNo | LastIssued | IsDiposed |
-        | ---- | ---- | -------- | ------ | ---------- | --------- |
-        |      |      |          |        |            |           |
-      
+
+        **Input**: 
+
+        * Search String: How to
+        * BOOKS table
+
+        | UID    | ISBN   | BookName | RackNo | LastIssued | IsDiposed |
+        | ------ | ------ | -------- | ------ | ---------- | --------- |
+        | (NULL) | (NULL) | (NULL)   | (NULL) | (NULL)     | (NULL)    |
+
+        **Output**:
+
+        * Message to the User: "There are no books present in the Library."
+
       * ###### Some subset of books in the system matches with search string 
+
+        **Input**: 
+
+        * Search String: "Curry Patter"
+        * BOOKS table
+
+        | UID  | ISBN          | BookName                                      | RackNo | LastIssued | IsDiposed |
+        | ---- | ------------- | --------------------------------------------- | ------ | ---------- | --------- |
+        | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi | 1      | (NULL)     | (NULL)    |
+        | 2    | 999-777789999 | Curry Patter and the curse of Bhindi          | 2      | (NULL)     | (NULL)    |
+        | 3    | 999-888889999 | Harry Potter and the Director's Curse         | 3      | (NULL)     | (NULL)    |
+
+        **Output**:
+
+        * List of IBSN and Names of Matching Books: [{"999-666689999", "Curry Patter and the adventures of Aloo Sabzi"}, {"999-777789999", "Curry Patter and the curse of Bhindi"}] (Matching Books mean the names have Search String as a Sub-String)
 
 2. ### UnderGraduateStudent
 
