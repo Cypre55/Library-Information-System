@@ -77,6 +77,8 @@
 
 ##### We will provide appropriate Exception classes for the exceptions
 
+###### Whenever an expected parameter is not passed, a TypeError is raised.
+
 ##### Match with Golden Output/Exception class will be a PASS, otherwise would be a FAIL
 
 ##### Efficacy would be judged by % of tests passes
@@ -644,7 +646,7 @@
 
   ###### Scenarios
 
-  * *<u>No specific scenarios, only called to create a reference to  Singleton BookHandler Object whenever required.</u>*   
+  * No specific scenarios, only called to create a reference to  Singleton BookHandler Object whenever required.   
 
 * ##### Test OpenBook()
 

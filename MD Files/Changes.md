@@ -22,8 +22,24 @@ UpdateFromDatabase
 
 Are empty tables allowed?
 
+Remove Book Param in LibraryCleark::DeleteBook 
+
+Why are the functions of BookHandler Static?
+
 # Exceptions
 
 ReservationLimitExceeded
 
 MaxBooksAllowedExceeded
+
+ InvalidMember
+
+ReservationExists
+
+ReserveNotAllowed
+
+ReservationLimitExceeded
+
+MaxBooksAllowedExceeded
+
+ISBNIssueLimitPerMemberExceeded
