@@ -18,4 +18,12 @@ Encode Decode
 
 IsActive, GetActiveReservedUIDs, GetAvailableUIDs, ActiveReservedUIDs() is a new function.
 
+UpdateFromDatabase
+
 Are empty tables allowed?
+
+# Exceptions
+
+ReservationLimitExceeded
+
+MaxBooksAllowedExceeded

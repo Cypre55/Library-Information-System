@@ -6,19 +6,19 @@
 
       * ###### Getting the Member ID of the Member
 
-        **Input/TestCase:** A LibraryMember object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
+        **Input:** A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
 
         **Output**: 19CS30014
 
       * ###### Getting the Name of the Member
 
-        **Input/TestCase:** A LibraryMember object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
+        **Input:** A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
 
         **Output**: Harry
 
       * ###### Getting the Number of Books Issued by the Member
 
-        **Input/TestCase:** A LibraryMember object (name: Harry; memberID: 19CS30014; listOfBooksIssued: [7];  numberOfBooksIssued: 1; <Rest of the members>: None)
+        **Input:** A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; listOfBooksIssued: [7];  numberOfBooksIssued: 1; <Rest of the members>: None)
 
         **Output**: 1
 
@@ -26,11 +26,11 @@
 
       * ###### The user has an Active Reservation on this ISBN.
 
-        **Input/TestCase**: 
+        **Input**: 
 
         * IBSN: 988-0789032742
         
-        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
 
         * RESERVATIONS table:
         
@@ -38,17 +38,17 @@
         | ---------------- | ------------- | --------- | ------------------- | ----------------------- | ------------------ | -------------- |
           | "988-0789032742" | (NULL)        | "1,"      | (NULL)              | "2021-04-08*19CS30014," | "3,"               | 2              |
         
-          **Output**:
-          
-        * List of ActiveReservedUIDS: [3]
+        **Output**:
+        
+        * List of ActiveReservedUIDS: [3] (Displayed along with their Rack No.)
         
       * ###### The user has a Pending Reservation on this ISBN.
 
-        **Input/TestCase**: 
+        **Input**: 
 
         * IBSN: 988-0789032742
         
-        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
 
         * RESERVATIONS table:
         
@@ -62,11 +62,11 @@
         
       * ###### The user has no reservation on this ISBN and some UIDs are available. (May have reservations on other ISBN)
 
-        **Input/TestCase**: 
+        **Input**: 
 
         * IBSN: 988-0789032742
         
-        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "999-6666689999"; <Rest of the members>: None)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "999-6666689999"; <Rest of the members>: None)
 
         * RESERVATIONS table:
         
@@ -76,15 +76,15 @@
 
         **Output**:
         
-        * List of AvailableUIDs: [7, 2] (Rack Numbers )
+        * List of AvailableUIDs: [7, 2] (Displayed along with their Rack No.)
         
       * ###### The user has no reservation on any ISBN and no UIDs are available.
 
-        **Input/TestCase**: 
+        **Input**: 
 
         * IBSN: 988-0789032742
 
-        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: None; <Rest of the members>: None)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: None; <Rest of the members>: None)
 
         * RESERVATIONS table:
 
@@ -98,11 +98,11 @@
 
       * ###### The user has a reservation on a different ISBN and no UIDs are avalaible. 
 
-        **Input/TestCase**: 
+        **Input**: 
 
         * IBSN: 988-0789032742
 
-        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "999-6666689999"; <Rest of the members>: None)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "999-6666689999"; <Rest of the members>: None)
 
         * RESERVATIONS table:
 
@@ -114,14 +114,67 @@
 
         * Message to the User: "Sorry this book is not available currently, and you already have a reservation on another ISBN"
 
-   3. ##### Test Issue Book
+   3. ##### Test IssueBook()
 
-      * User tries to claim a book they have already issued e*
-      * User has exhausted their permitted number of issues e*
-      * User claims a reserved book.
-      * User issues an available book.
+      * ###### Member tries to claim a book they have already issued
 
-   4. ##### Test Reserve Book
+        **Input**: 
+
+        * IBSN: 988-0789032742
+
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: None; listOfIssuedBook: [1]; numberOfIssuedBooks: 1)
+
+        * RESERVATIONS table:
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+          | "988-0789032742" | "7,"          | "1,3,"    | (NULL)              | (NULL)             | (NULL)             | 0              |
+
+        **Output**:
+
+        * Exception Thrown: : "Member cannot issue the same ISBN more than once."  ----------------------------------------------------
+
+      * ###### Member has exhausted their permitted number of issues
+
+        **Input**: 
+
+        * IBSN: 988-0789032742
+
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: None; listOfIssuedBook: [1, 8]; numberOfIssuedBooks: 1)
+
+        * RESERVATIONS table:
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+          | "988-0789032742" | "7,"          | "1,3,"    | (NULL)              | (NULL)             | (NULL)             | 0              |
+
+        **Output**:
+
+        * Exception Thrown: MaxBooksAllowedExceeded : "Member cannot issue more than maxBooksAllowed"
+
+      * ###### Member claims a reserved book.
+
+      * ###### Member issues an available book.
+
+   4. ##### Test ReserveBook()
+
+      * ###### The book is available.
+
+        **Input**: 
+
+        * IBSN: 988-0789032742
+
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: None; <Rest of the members>: None)
+
+        * RESERVATIONS table:
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+          | "988-0789032742" | "7,"          | "1,3,"    | (NULL)              | (NULL)             | (NULL)             | 0              |
+
+        **Output**:
+
+        * Exception Thrown: : "Member cannot reserve an ISBN with available UID."  ----------------------------------------------------
 
       * ###### The book is unavailable and user has made no reservation for any book. 
 
@@ -129,7 +182,7 @@
 
         * IBSN: 988-0789032742
 
-        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: None; <Rest of the members>: None)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: None; <Rest of the members>: None)
 
         * RESERVATIONS table:
 
@@ -139,7 +192,19 @@
 
         **Output**:
 
-        * Message to the User: "Sorry this book is not available currently, would you like reserve this book?"
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
+
+        * MEMBERS table: ISBN is added in the members ReservedBook field.
+
+          | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD          |
+          | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | --------------- |
+          | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | (NULL)      | aakjfkjsadfkasd |
+
+        * RESERVATIONS table: ISBN is added to the ISBN's pending reservations field.
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+          | "988-0789032742" | (NULL)        | "1,3,"    | "19CS30014,"        | (NULL)             | (NULL)             | 0              |
 
       * ###### The book is unavailable and user has pending/active reservations for some other ISBN.
 
@@ -147,7 +212,7 @@
 
         * IBSN: 988-0789032742
 
-        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "999-6666689999"; <Rest of the members>: None)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "999-6666689999"; <Rest of the members>: None)
 
         * RESERVATIONS table:
 
@@ -157,7 +222,7 @@
 
         **Output**:
 
-        * Message to the User: "Sorry this book is not available currently, and you already have a reservation on another ISBN"
+        * Exception Thrown: ReservationLimitExceeded: "Member can not reserve more than one book."
 
       * ###### The book is unavailable and user has an active reservation for this book.
 
@@ -165,7 +230,7 @@
 
         * IBSN: 988-0789032742
 
-        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
 
         * Date.today() = 01/04/2021
 
@@ -177,7 +242,7 @@
 
         **Output**:
 
-        * Message to the User: "Sorry this book is not available currently, and you already have a reservation on another ISBN"
+        * Exception Thrown: : "" ------------------------------------------------------
 
       * ###### The book is unavailable and user has a pending reservation for this book.
 
@@ -185,7 +250,7 @@
 
         * IBSN: 988-0789032742
 
-        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
 
         * RESERVATIONS table:
 
@@ -195,7 +260,7 @@
 
         **Output**:
 
-        * Message to the User: "Sorry this book is not available currently, and you already have a reservation on another ISBN"
+        * Exception Thrown: : "" ---------------------------------------------
 
    7. ##### Test Check Reminder
 
@@ -240,7 +305,7 @@
 
    1. ##### Test Constructor
 
-      - **Input/TestCase:**  Construct using -
+      - **Input:**  Construct using -
 
         memberID: '19CS30056', name: 'Neha', listOfBooksIssued: None, reservedBook: None, numberOfBooksIssued: 0
 
@@ -250,14 +315,14 @@
 
    2. ##### Test CanIssue()
 
-      - **Input/TestCase:**
+      - **Input:**
       - **Output:**
 
 3. ### PostGraduateStudent
 
    1. ##### Test Constructor
 
-      - **Input/TestCase:**  Construct using -
+      - **Input:**  Construct using -
 
         memberID: '19CS30056', name: 'Neha', listOfBooksIssued: None, reservedBook: None, numberOfBooksIssued: 0
 
@@ -267,14 +332,14 @@
 
    2. ##### Test CanIssue()
 
-      - **Input/TestCase:** 
+      - **Input:** 
       - **Output:** 
 
 4. ### ResearchScholar
 
    1. ##### Test Constructor
 
-      - **Input/TestCase:**  Construct using -
+      - **Input:**  Construct using -
 
         memberID: '19CS30056', name: 'Neha', listOfBooksIssued: None, reservedBook: None, numberOfBooksIssued: 0
 
@@ -284,14 +349,14 @@
 
    2. ##### Test CanIssue()
 
-      - **Input/TestCase:**
+      - **Input:**
       - **Output:**
 
 5. ### FacultyMember
 
    1. ##### Test Constructor
 
-      - **Input/TestCase:**  Construct using -
+      - **Input:**  Construct using -
 
         memberID: '19FM10001', name: 'Virender', listOfBooksIssued: None, reservedBook: None, numberOfBooksIssued: 0
 
@@ -301,7 +366,7 @@
 
    2. ##### Test CanIssue()
 
-      - **Input/TestCase:**
+      - **Input:**
       - **Output:**
 
 6. ### Library Clerk

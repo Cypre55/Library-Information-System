@@ -54,13 +54,13 @@
 
 ## ITEM PASS/FAIL CRITERIA 
 ##### We will be providing golden outputs for the appropriate tests.
-##### We wil provide appropriate exception classes for the exceptions
+##### We will provide appropriate exception classes for the exceptions
 ##### Match with Golden Output/Exception class will be a pass, otherwise would be a Fail
 ##### Efficacy would be judged by % of tests passes
 
 ## SUSPENSION CRITERIA AND RESUMPTION REQUIREMENTS 
 
-##### Stop tests when some required package compatibilty fails
+##### Stop tests when some required package compatibility fails
 
 ## TEST DELIVERABLES
 ##### Test Plan Document
