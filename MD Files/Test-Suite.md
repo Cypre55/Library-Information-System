@@ -1,10 +1,51 @@
-1. 1. * ###### Employee Logs in successfully
+1. ### MemberLogin()
+
+   1. ##### Test EmployeeLogin()
+
+      * ###### Employee Logs in successfully
 
         **Input**:
 
-        * EmployeeID: LIB001
+        * EmployeeID: LIB0011
 
         * Password: "Password" (Encrypted Version: "gAAAAABgWZnULUhCsW.....")
+
+        * EMPLOYEES table:
+
+          | EmployeeID | EmployeeName | PassWD                  |
+          | ---------- | ------------ | ----------------------- |
+          | "LIB0011"  | "Larry"      | gAAAAABgWZnULUhCsW..... |
+
+        **Output**:
+
+        * An LibraryClerk Object (EmployeeID: "LIB0011"; Name: "Larry")
+
+      * ###### EmployeeID not in EMPLOYEES table.
+
+        **Input**:
+
+        * EmployeeID: LIB0011
+
+        * Password: "Pass" (Encrypted Version: "gAAAAAasdfasdfaw.....")
+
+        * EMPLOYEES table:
+
+          | EmployeeID | EmployeeName | PassWD                  |
+          | ---------- | ------------ | ----------------------- |
+          | "LIB0011"  | "Larry"      | gAAAAABgWZnULUhCsW..... |
+
+        **Output**:
+
+        * Exception Thrown: EmployeeIDInvalid: "The EmployeeID is not present in the system."
+        * Message to the User: "Invalid EmployeeID inputted."
+
+      * ###### Password does not match with Employee ID
+
+        **Input**:
+
+        * MemberID: 19CS30056
+
+        * Password: "Pass" (Encrypted Version: "gAAAAfafasgawCsW.....")
 
         * MEMBERS table:
 
@@ -14,13 +55,72 @@
 
         **Output**:
 
-        * An LibraryClerk Object (MemberID: "19CS30014"; Name: "Harry";)
+        * Exception Thrown: PasswordIncorrect: "The Password is incorrect."
+        * Message to the User: "Password is incorrected."
+
+2. ### EmployeeLogin()
+
+   1. ##### Test EmployeeLogin()
+
+      * ###### Employee Logs in successfully
+
+        **Input**:
+
+        * EmployeeID: LIB0011
+
+        * Password: "Password" (Encrypted Version: "gAAAAABgWZnULUhCsW.....")
+
+        * EMPLOYEES table:
+
+          | EmployeeID | EmployeeName | PassWD                  |
+          | ---------- | ------------ | ----------------------- |
+          | "LIB0011"  | "Larry"      | gAAAAABgWZnULUhCsW..... |
+
+        **Output**:
+
+        * An LibraryClerk Object (EmployeeID: "LIB0011"; Name: "Larry")
 
       * ###### EmployeeID not in EMPLOYEES table.
 
-      * ###### Password does not match with Employee ID 
+        **Input**:
 
-2. ### Library Member
+        * EmployeeID: LIB0011
+
+        * Password: "Pass" (Encrypted Version: "gAAAAAasdfasdfaw.....")
+
+        * EMPLOYEES table:
+
+          | EmployeeID | EmployeeName | PassWD                  |
+          | ---------- | ------------ | ----------------------- |
+          | "LIB0011"  | "Larry"      | gAAAAABgWZnULUhCsW..... |
+
+        **Output**:
+
+        * Exception Thrown: EmployeeIDInvalid: "The EmployeeID is not present in the system."
+        * Message to the User: "Invalid EmployeeID inputted."
+
+      * ###### Password does not match with Employee ID
+
+        **Input**:
+
+        * MemberID: 19CS30056
+
+        * Password: "Pass" (Encrypted Version: "gAAAAfafasgawCsW.....")
+
+        * MEMBERS table:
+
+          | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD                  |
+          | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | ----------------------- |
+          | "19CS30014" | "Harry"    | "UG"       | "7,"              | (NULL)       | 0           | gAAAAABgWZnULUhCsW..... |
+
+        **Output**:
+
+        * Exception Thrown: PasswordIncorrect: "The Password is incorrect."
+        * Message to the User: "Password is incorrected."
+
+        ######  
+
+3. ### Library Member
 
    1. ##### Test Getter Function
 
@@ -509,7 +609,7 @@
 
       * ###### When member has no reservation.
 
-3. ### UnderGraduateStudent
+4. ### UnderGraduateStudent
 
    1. ##### Test Constructor
 
@@ -572,7 +672,7 @@
 
         * Expected Output of the Test Functions as explained above.
 
-4. ### PostGraduateStudent
+5. ### PostGraduateStudent
 
    1. ##### Test Constructor
 
@@ -635,7 +735,7 @@
 
         * Expected Output of the Test Functions as explained above.
 
-5. ### ResearchScholar
+6. ### ResearchScholar
 
    1. ##### Test Constructor
 
@@ -698,7 +798,7 @@
 
         * Expected Output of the Test Functions as explained above.
 
-6. ### FacultyMember
+7. ### FacultyMember
 
    1. ##### Test Constructor
 
@@ -761,7 +861,7 @@
 
         * Expected Output of the Test Functions as explained above.
 
-7. ### Library Clerk
+8. ### Library Clerk
 
    1. ##### Test Constructor
 
@@ -897,29 +997,29 @@
 
 
         **Output**:
-
+    
         * BOOKS table: Books marked as deleted have been deleted.
-
+    
           | UID  | ISBN          | BookName                                                     | RackNo | LastIssued | IsDisposed |
           | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
           | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | 0          |
-
+    
       * ###### There are no books marked as Disposed.
-
+    
         **Input**: 
-
+    
         * BOOKS table: 
-
+    
           | UID  | ISBN          | BookName                                                     | RackNo | LastIssued | IsDisposed |
           | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
           | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | 0          |
           | 2    | 999-777789999 | Curry Patter and the curse of Bhindi-by-J.K.Rowling          | 2      | (NULL)     | 0          |
           | 3    | 999-888889999 | Harry Potter and the Director's Curse-by-Vikram Seth         | 3      | (NULL)     | 0          |
-
+    
         **Output**:
-
+    
         * BOOKS table: No books deleted as none were marked as Disposed
-
+    
           | UID  | ISBN          | BookName                                                     | RackNo | LastIssued | IsDisposed |
           | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
           | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | 0          |
@@ -1024,7 +1124,7 @@
 
         * Penalty Collected: 7 * (PenaltyRate) (As the member is UG, the book is due on 24/03/2021. The Book is overdue by 7 days)
 
-8. ### Librarian
+9. ### Librarian
 
    1. ##### Test Constructor
 
@@ -1186,7 +1286,7 @@
 
         **Output**:
 
-        * Exception Thrown: MemberWithUnretur: "This member can not be deleted as they have overdue books or un-returned books." 
+        * Exception Thrown: MemberWithUnreturnedBook: "This member can not be deleted as they have overdue books or un-returned books." 
 
    4. ##### Test Sending Reminders
 
@@ -1304,7 +1404,7 @@
           | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
           | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | 2010-04-01 | 1          |
 
-9. ### Book Handler
+10. ### Book Handler
 
    1. ##### Test Create() Function
 
@@ -1524,27 +1624,27 @@
 
       * ###### The book doesn't have pending reservation.
 
-10. ### Book
+11. ### Book
 
-   1. ##### Test Constructor
+    1. ##### Test Constructor
 
-      * ###### Book is created for adding
-      
-        **Input**: 
-      
-        * UID: 1
-      
-        * BOOKS table:
-      
-          | UID  | ISBN            | BookName                   | RackNo | LastIssued | IsDisposed |
-          | ---- | --------------- | -------------------------- | ------ | ---------- | ---------- |
-          | 1    | "999-666689999" | "James Bond-by-Bond James" | 1      | 01/04/2021 | 0          |
-      
-        **Output**:
-      
-        * A constructed Book Object (UID: 1; ISBN: "999-666689999"; DateOfIssue: "2021-04-01")
+       * ###### Book is created for adding
+       
+         **Input**: 
+       
+         * UID: 1
+       
+         * BOOKS table:
+       
+           | UID  | ISBN            | BookName                   | RackNo | LastIssued | IsDisposed |
+           | ---- | --------------- | -------------------------- | ------ | ---------- | ---------- |
+           | 1    | "999-666689999" | "James Bond-by-Bond James" | 1      | 01/04/2021 | 0          |
+       
+         **Output**:
+       
+         * A constructed Book Object (UID: 1; ISBN: "999-666689999"; DateOfIssue: "2021-04-01")
 
-11. ### ActiveReservation
+12. ### ActiveReservation
 
       1. ##### Test Constructor
 
