@@ -1,49 +1,50 @@
+# Test Suite
 1. ### MemberLogin()
 
-   1. ##### Test EmployeeLogin()
+   1. ##### Test MemberLogin()
 
-      * ###### Employee Logs in successfully
+      * ###### Member Logs in successfully
 
         **Input**:
 
-        * EmployeeID: LIB0011
+        * MemberID: "19CS30014"
 
         * Password: "Password" (Encrypted Version: "gAAAAABgWZnULUhCsW.....")
 
-        * EMPLOYEES table:
+        * MEMBERS table:
 
-          | EmployeeID | EmployeeName | PassWD                  |
-          | ---------- | ------------ | ----------------------- |
-          | "LIB0011"  | "Larry"      | gAAAAABgWZnULUhCsW..... |
+          | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD                  |
+          | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | ----------------------- |
+          | "19CS30014" | "Harry"    | "UG"       | "7,"              | (NULL)       | 0           | gAAAAABgWZnULUhCsW..... |
 
         **Output**:
 
         * An LibraryClerk Object (EmployeeID: "LIB0011"; Name: "Larry")
 
-      * ###### EmployeeID not in EMPLOYEES table.
+      * ###### MemberID not in MEMBERS table.
 
         **Input**:
 
-        * EmployeeID: LIB0011
+        * MemberID: "19CS30056"
 
         * Password: "Pass" (Encrypted Version: "gAAAAAasdfasdfaw.....")
 
-        * EMPLOYEES table:
+        * MEMBERS table:
 
-          | EmployeeID | EmployeeName | PassWD                  |
-          | ---------- | ------------ | ----------------------- |
-          | "LIB0011"  | "Larry"      | gAAAAABgWZnULUhCsW..... |
+		| MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD                  |
+      | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | ----------------------- |
+      | "19CS30014" | "Harry"    | "UG"       | "7,"              | (NULL)       | 0           | gAAAAABgWZnULUhCsW..... |
 
         **Output**:
 
-        * Exception Thrown: EmployeeIDInvalid: "The EmployeeID is not present in the system."
-        * Message to the User: "Invalid EmployeeID inputted."
+        * Exception Thrown: MemberIDInvalid: "The MemberID is not present in the system."
+        * Message to the User: "Invalid MemberID inputted."
 
-      * ###### Password does not match with Employee ID
+      * ###### Password does not match with MemberID
 
         **Input**:
 
-        * MemberID: 19CS30056
+        * MemberID: "19CS30014"
 
         * Password: "Pass" (Encrypted Version: "gAAAAfafasgawCsW.....")
 
@@ -56,7 +57,7 @@
         **Output**:
 
         * Exception Thrown: PasswordIncorrect: "The Password is incorrect."
-        * Message to the User: "Password is incorrected."
+        * Message to the User: "Password is incorrect."
 
 2. ### EmployeeLogin()
 
@@ -86,7 +87,7 @@
 
         * EmployeeID: LIB0011
 
-        * Password: "Pass" (Encrypted Version: "gAAAAAasdfasdfaw.....")
+        * Password: "Password" (Encrypted Version: "gAAAAABgWZnULUhCsW.....")
 
         * EMPLOYEES table:
 
@@ -103,11 +104,11 @@
 
         **Input**:
 
-        * MemberID: 19CS30056
+        * EmployeeID: 19CS30056
 
         * Password: "Pass" (Encrypted Version: "gAAAAfafasgawCsW.....")
 
-        * MEMBERS table:
+        * EMPLOYEES table:
 
           | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD                  |
           | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | ----------------------- |
@@ -116,9 +117,7 @@
         **Output**:
 
         * Exception Thrown: PasswordIncorrect: "The Password is incorrect."
-        * Message to the User: "Password is incorrected."
-
-        ######  
+        * Message to the User: "Password is incorrect."
 
 3. ### Library Member
 
@@ -994,37 +993,36 @@
           | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | 0          |
           | 2    | 999-777789999 | Curry Patter and the curse of Bhindi-by-J.K.Rowling          | 2      | (NULL)     | 1          |
           | 3    | 999-888889999 | Harry Potter and the Director's Curse-by-Vikram Seth         | 3      | (NULL)     | 1          |
-
-
+        
         **Output**:
-    
+        
         * BOOKS table: Books marked as deleted have been deleted.
-    
+        
           | UID  | ISBN          | BookName                                                     | RackNo | LastIssued | IsDisposed |
           | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
           | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | 0          |
-    
-      * ###### There are no books marked as Disposed.
-    
-        **Input**: 
-    
-        * BOOKS table: 
-    
-          | UID  | ISBN          | BookName                                                     | RackNo | LastIssued | IsDisposed |
-          | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
-          | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | 0          |
-          | 2    | 999-777789999 | Curry Patter and the curse of Bhindi-by-J.K.Rowling          | 2      | (NULL)     | 0          |
-          | 3    | 999-888889999 | Harry Potter and the Director's Curse-by-Vikram Seth         | 3      | (NULL)     | 0          |
-    
-        **Output**:
-    
-        * BOOKS table: No books deleted as none were marked as Disposed
-    
-          | UID  | ISBN          | BookName                                                     | RackNo | LastIssued | IsDisposed |
-          | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
-          | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | 0          |
-          | 2    | 999-777789999 | Curry Patter and the curse of Bhindi-by-J.K.Rowling          | 2      | (NULL)     | 0          |
-          | 3    | 999-888889999 | Harry Potter and the Director's Curse-by-Vikram Seth         | 3      | (NULL)     | 0          |
+        
+        * ###### There are no books marked as Disposed.
+      
+          **Input**: 
+      
+          * BOOKS table: 
+      
+            | UID  | ISBN          | BookName                                                     | RackNo | LastIssued | IsDisposed |
+            | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
+            | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | 0          |
+            | 2    | 999-777789999 | Curry Patter and the curse of Bhindi-by-J.K.Rowling          | 2      | (NULL)     | 0          |
+            | 3    | 999-888889999 | Harry Potter and the Director's Curse-by-Vikram Seth         | 3      | (NULL)     | 0          |
+      
+          **Output**:
+      
+          * BOOKS table: No books deleted as none were marked as Disposed
+      
+            | UID  | ISBN          | BookName                                                     | RackNo | LastIssued | IsDisposed |
+            | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
+            | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | 0          |
+            | 2    | 999-777789999 | Curry Patter and the curse of Bhindi-by-J.K.Rowling          | 2      | (NULL)     | 0          |
+            | 3    | 999-888889999 | Harry Potter and the Director's Curse-by-Vikram Seth         | 3      | (NULL)     | 0     \|   |
 
    3. ##### Test ReturnBook()
 
@@ -1164,7 +1162,7 @@
 
         * Expected Output of the Test Functions as explained above.
 
-   2. ##### Test AddMember()
+   3. ##### Test AddMember()
 
       * ###### The librarian wants to add a new member.
 
@@ -1200,9 +1198,11 @@
 
         * Exception thrown: MemberAlreadyExists: "A member with same MemberID already exists."
 
-      * Name is missing
+      * ###### Name is missing
 
         **Input**: 
+
+        * Password: "adjfaldjflajglajawwerwerq..." (Encrypted Form)
 
         * A LibraryMember object (MemberID: "19CS30014", Name: "", Type: "UG", <Rest of the data members>:None)
 
@@ -1210,9 +1210,11 @@
 
         * Exception Thrown: InsufficientArguments: "Required Arguments missing."
 
-      * MemberID is missing
+      * ###### MemberID is missing
 
         **Input**: 
+
+        * Password: "adjfaldjflajglajawwerwerq..." (Encrypted Form)
 
         * A LibraryMember object (MemberID: "", Name: "Harry", Type: "UG", <Rest of the data members>:None)
 
@@ -1220,17 +1222,26 @@
 
         * Exception Thrown: InsufficientArguments: "Required Arguments missing."
 
-      * Type is missing
+      * ###### Type is missing
 
         **Input**: 
+
+        * Password: "adjfaldjflajglajawwerwerq..." (Encrypted Form)
 
         * A LibraryMember object (MemberID: "", Name: "Harry", Type: None, <Rest of the data members>:None)
 
         **Output**:
-
+        
         * Exception Thrown: InsufficientArguments: "Required Arguments missing."
+        
+      * ###### Password is Missing
 
-   3. ##### Test Delete Members
+        **Input**: 
+
+        * Password: "" (Empty)
+        * A LibraryMember object (MemberID: "19CS30014", Name: "Harry", Type: None, <Rest of the data members>:None)
+
+   4. ##### Test Delete Members
 
       * ###### Delete a existing member 
 
@@ -1288,7 +1299,7 @@
 
         * Exception Thrown: MemberWithUnreturnedBook: "This member can not be deleted as they have overdue books or un-returned books." 
 
-   4. ##### Test Sending Reminders
+   5. ##### Test Sending Reminders
 
       * ###### Send Reminder to all Members
 
@@ -1312,7 +1323,7 @@
           | "19CS30056" | "Ron"      | "PG"       | (NULL)            | (NULL)       | 1           |
           | "19CS10055" | "Hermonie" | "RS"       | "1,"              | (NULL)       | 1           |
 
-   5. ##### Test Viewing Book Statistics
+   6. ##### Test Viewing Book Statistics
 
       * ###### All books have been issued in the last 5 years.
 
@@ -1346,7 +1357,7 @@
 
         * List: [{"2", Curry Patter and the curse of Bhindi-by-J.K.Rowling", "2010-04-01"}]
 
-   6. ##### Test Dispose Book
+   7. ##### Test Dispose Book
 
       * ###### UID does not exist
 
@@ -1406,34 +1417,36 @@
 
 10. ### Book Handler
 
-   1. ##### Test Create() Function
+       1. ##### Test Create() Function
 
-      * ###### No specific scenarios, only called to create a reference to  Singleton BookHandler Object whenever required.  
+          * ###### No specific scenarios, only called to create a reference to  Singleton BookHandler Object whenever required.  
+          
+            **Input**:
+        
+            * None
+        
+              **Output**:
 
-        **Input**:
+      * Singleton BookHandler Object with empty data members.
 
-        * None
-
-        **Output**:
-
-        * Singleton BookHandler Object with empty data members.
-
-   2. ##### Test OpenBook()
+      ##### 2. Test OpenBook()
 
       * ###### Called with the ISBN when UID is irrelevant for the  function calling OpenBook()
-
+      
         **Input**:
-
+      
         * Book object (ISBN: "999-666689999", UID: "1")
-
+        
         * RESERVATIONS table:
-
+        
           | ISBN            | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
           | --------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
           | "999-666689999" | "7,9,"        | "1,"      | (NULL)              | (NULL)             | (NULL)             | 2              |
+        
+        
 
-        **Output**:
-
+      **Output**:
+        
         * Singleton BookHandler Object 
           * currUID: 1
           * currISBN: "999-666689999"
@@ -1442,22 +1455,24 @@
           * pendingReservations: None
           * activeReservations: None
           * activeReservedUIDs: None
-          * numberOfCopies: 2
+        * numberOfCopies: 2
 
       * ###### Called with the Book Object when UID is relevent for the  function calling OpenBook()
-
+      
         **Input**:
-
+      
         * ISBN: "999-666689999"
-
+        
         * RESERVATIONS table:
-
+        
           | ISBN            | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
           | --------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
           | "999-666689999" | "7,9,"        | "1,"      | (NULL)              | (NULL)             | (NULL)             | 2              |
+        
+        
 
-        **Output**:
-
+      **Output**:
+        
         * Singleton BookHandler Object 
           * currUID: None
           * currISBN: "999-666689999"
@@ -1466,196 +1481,347 @@
           * pendingReservations: None
           * activeReservations: None
           * activeReservedUIDs: None
-          * numberOfCopies: 2
+        * numberOfCopies: 2
 
-   3. ##### Test Singleton Nature of the Object
-
-      * ###### Call Create() twice and compare address of the objects returned by them
-
-        **Input**:
-
-        * Call Create() twice.
-
-        **Output**:
-
-        * The addresses of the both the objects are equal.
-
-   4. ##### Test Update Book
-
-      * ###### Pending reservations are there, Some active reservations are expired.
-
-        **Input**: 
-
-        * BookHandler object currently is populated with information of IBSN: 988-0789032742.
-
-        * Date.today() = 01/04/2021
-
-        * MEMBERS table
-
-        | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
-        | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
-        | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
-
-        * RESERVATIONS table
-
-        | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations    | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
-        | ---------------- | ------------- | --------- | ---------------------- | ----------------------- | ------------------ | -------------- |
-        | "988-0789032742" | "7,9,"        | "1,"      | "19CS10074,19CS30056," | "2021-04-01*19CS30014," | "3,"               | 2              |
-
-        **Output**:
-
-        * MEMBERS table: The members active reservation has expired, hence the field value as been removed.
-
-        | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD                  |
-        | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | ----------------------- |
-        | "19CS30014" | "Harry"    | "UG"       | (NULL)            | (NULL)       | 0           | gAAAAABgWZnULUhCsW..... |
-
-        * RESERVATIONS table: An active reservation has expired. The first of pending reservations has upgraded into ActiveReservation.
-
-        | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
-        | ---------------- | ------------- | --------- | ------------------- | ----------------------- | ------------------ | -------------- |
-        | "988-0789032742" | "7,9,"        | "1,"      | "19CS30056,"        | "2021-04-08*19CS10074," | "3,"               | 2              |
-
-      * ###### Pending reservation are there, No active reservations are expired.
-
-        **Input**: 
-
-        * BookHandler object currently is populated with information of IBSN: 988-0789032742.
-        * Date.today() = 01/04/2021
-        * MEMBERS table
-
-        | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
-        | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
-        | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
-
-        * RESERVATIONS table
-
-        | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations    | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
-        | ---------------- | ------------- | --------- | ---------------------- | ----------------------- | ------------------ | -------------- |
-        | "988-0789032742" | "7,9,"        | "1,"      | "19CS10074,19CS30056," | "2021-04-03*19CS30014," | "3,"               | 2              |
-
-        **Output**:
-
-        * MEMBERS table: Unchanged as ActiveReservation hasn't expired
-
-        | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
-        | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
-        | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
-
-        * RESERVATIONS table: Unchanged as ActiveReservation hasn't expired
-
-        | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations    | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
-        | ---------------- | ------------- | --------- | ---------------------- | ----------------------- | ------------------ | -------------- |
-        | "988-0789032742" | "7,9,"        | "1,"      | "19CS10074,19CS30056," | "2021-04-03*19CS30014," | "3,"               | 2              |
-
-      * ###### No pending reservations are there, Some active reservations are expired.
-
-        **Input**: 
-
-        * BookHandler object currently is populated with information of IBSN: 988-0789032742.
-
-        * MEMBERS table:
-
-          | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
-          | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
-          | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
-
-        * RESERVATIONS table
-
-        | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations     | ActiveReservedUIDs | NumberOfCopies |
-        | ---------------- | ------------- | --------- | ------------------- | ---------------------- | ------------------ | -------------- |
-        | "988-0789032742" | "7,9,"        | "1,"      | (NULL)              | "2021-04-01*19CS30014" | "3,"               | 2              |
-
-        **Output**:
-
-        * MEMBERS table:  The members active reservation has expired, hence the field value as been removed.
-
-          | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD                  |
-          | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | ----------------------- |
-          | "19CS30014" | "Harry"    | "UG"       | (NULL)            | (NULL)       | 0           | gAAAAABgWZnULUhCsW..... |
-
-        
-
-        * RESERVATIONS table: As the active reservation expired, it has been removed from active reservation. As no pending reservation are present, the UID has been made available.
-
-        | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
-        | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
-        | "988-0789032742" | "7,9,3,"      | "1,"      | (NULL)              | (NULL)             | (NULL)             | 3              |
-
-      * ###### No pending reservation are there, No active reservations are expired.
-
-        * **Input**: 
-
-          * BookHandler object currently is populated with information of IBSN: 988-0789032742.
-          * Date.today() = 01/04/2021
-          * MEMBERS table
-
-          | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
-          | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
-          | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
-
-          * RESERVATIONS table
-
-          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
-          | ---------------- | ------------- | --------- | ------------------- | ----------------------- | ------------------ | -------------- |
-          | "988-0789032742" | "7,9,"        | "1,"      | (NULL)              | "2021-04-03*19CS30014," | "3,"               | 2              |
-
-          **Output**:
-
-          * MEMBERS table: Unchanged as ActiveReservation hasn't expired
-
-          | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
-          | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
-          | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
-
-          * RESERVATIONS table: Unchanged as ActiveReservation hasn't expired
-
-          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
-          | ---------------- | ------------- | --------- | ------------------- | ----------------------- | ------------------ | -------------- |
-          | "988-0789032742" | "7,9,"        | "1,"      | (NULL)              | "2021-04-03*19CS30014," | "3,"               | 2              |
-
-   5. ##### Test Issue Selected Book
-
-   6. ##### Test Return Selected Book
-
-   7. ##### Test Reserve Selected Book
-
-      * ###### The book has pending reservation which moves to active.
-
-      * ###### The book doesn't have pending reservation.
+       * ##### Test Singleton Nature of the Object
+         
+          * ###### Call Create() twice and compare address of the objects returned by them
+            
+            **Input**:
+            
+            * Call Create() twice.
+            
+            **Output**:
+            
+            * The addresses of the both the objects are equal.
+          
+       * ##### Test Update Book
+         
+          * ###### Pending reservations are there, Some active reservations are expired.
+            
+            **Input**: 
+            
+            * BookHandler object currently is populated with information of IBSN: 988-0789032742.
+            
+            * Date.today() = 01/04/2021
+            
+            * MEMBERS table
+            
+              | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
+              | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
+            | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
+            
+            * RESERVATIONS table
+            
+              | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations    | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
+              | ---------------- | ------------- | --------- | ---------------------- | ----------------------- | ------------------ | -------------- |
+            | "988-0789032742" | "7,9,"        | "1,"      | "19CS10074,19CS30056," | "2021-04-01*19CS30014," | "3,"               | 2              |
+            
+            **Output**:
+            
+            * MEMBERS table: The members active reservation has expired, hence the field value as been removed.
+            
+              | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD                  |
+              | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | ----------------------- |
+            | "19CS30014" | "Harry"    | "UG"       | (NULL)            | (NULL)       | 0           | gAAAAABgWZnULUhCsW..... |
+            
+            * RESERVATIONS table: An active reservation has expired. The first of pending reservations has upgraded into ActiveReservation.
+            
+              | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
+              | ---------------- | ------------- | --------- | ------------------- | ----------------------- | ------------------ | -------------- |
+            | "988-0789032742" | "7,9,"        | "1,"      | "19CS30056,"        | "2021-04-08*19CS10074," | "3,"               | 2              |
+            
+          * ###### Pending reservation are there, No active reservations are expired.
+            
+            **Input**: 
+            
+              * BookHandler object currently is populated with information of IBSN: 988-0789032742.
+              * Date.today() = 01/04/2021
+            * MEMBERS table
+            
+              | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
+              | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
+            | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
+            
+            * RESERVATIONS table
+            
+              | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations    | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
+              | ---------------- | ------------- | --------- | ---------------------- | ----------------------- | ------------------ | -------------- |
+            | "988-0789032742" | "7,9,"        | "1,"      | "19CS10074,19CS30056," | "2021-04-03*19CS30014," | "3,"               | 2              |
+            
+            **Output**:
+            
+            * MEMBERS table: Unchanged as ActiveReservation hasn't expired
+            
+              | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
+              | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
+            | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
+            
+            * RESERVATIONS table: Unchanged as ActiveReservation hasn't expired
+            
+              | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations    | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
+              | ---------------- | ------------- | --------- | ---------------------- | ----------------------- | ------------------ | -------------- |
+            | "988-0789032742" | "7,9,"        | "1,"      | "19CS10074,19CS30056," | "2021-04-03*19CS30014," | "3,"               | 2              |
+            
+          * ###### No pending reservations are there, Some active reservations are expired.
+            
+            **Input**: 
+            
+            * BookHandler object currently is populated with information of IBSN: 988-0789032742.
+            
+            * MEMBERS table:
+            
+                | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
+                | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
+              | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
+            
+            * RESERVATIONS table
+            
+              | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations     | ActiveReservedUIDs | NumberOfCopies |
+              | ---------------- | ------------- | --------- | ------------------- | ---------------------- | ------------------ | -------------- |
+            | "988-0789032742" | "7,9,"        | "1,"      | (NULL)              | "2021-04-01*19CS30014" | "3,"               | 2              |
+            
+            **Output**:
+            
+            * MEMBERS table:  The members active reservation has expired, hence the field value as been removed.
+            
+                | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD                  |
+                | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | ----------------------- |
+              | "19CS30014" | "Harry"    | "UG"       | (NULL)            | (NULL)       | 0           | gAAAAABgWZnULUhCsW..... |
+            
+            
+            
+            * RESERVATIONS table: As the active reservation expired, it has been removed from active reservation. As no pending reservation are present, the UID has been made available.
+            
+              | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+              | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+            | "988-0789032742" | "7,9,3,"      | "1,"      | (NULL)              | (NULL)             | (NULL)             | 3              |
+            
+          * ###### No pending reservation are there, No active reservations are expired.
+            
+            * **Input**: 
+            
+                * BookHandler object currently is populated with information of IBSN: 988-0789032742.
+                * Date.today() = 01/04/2021
+              * MEMBERS table
+            
+                | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
+                | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
+              | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
+            
+              * RESERVATIONS table
+            
+                | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
+                | ---------------- | ------------- | --------- | ------------------- | ----------------------- | ------------------ | -------------- |
+              | "988-0789032742" | "7,9,"        | "1,"      | (NULL)              | "2021-04-03*19CS30014," | "3,"               | 2              |
+            
+              **Output**:
+            
+              * MEMBERS table: Unchanged as ActiveReservation hasn't expired
+            
+                | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook     | GotReminder | PassWD                  |
+                | ----------- | ---------- | ---------- | ----------------- | ---------------- | ----------- | ----------------------- |
+              | "19CS30014" | "Harry"    | "UG"       | (NULL)            | "988-0789032742" | 0           | gAAAAABgWZnULUhCsW..... |
+            
+              * RESERVATIONS table: Unchanged as ActiveReservation hasn't expired
+            
+                | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations      | ActiveReservedUIDs | NumberOfCopies |
+                | ---------------- | ------------- | --------- | ------------------- | ----------------------- | ------------------ | -------------- |
+                | "988-0789032742" | "7,9,"        | "1,"      | (NULL)              | "2021-04-03*19CS30014," | "3,"               | 2              |
+            
+          
+       * ##### Test Issue Selected Book
+         
+          * ###### The book being issued is a ready-to-be-claimed UID.
+            
+            **Input**: 
+            
+            * MemberID: 19CS30014
+            
+            * BookHandler Object (currISBN: "988-0789032742"; currUID: 7; TakenUIDs: [1, 3]; ActiveReservations: [{19CS30014, 2021-04-01}]; ActiveReservationUID= [7]; <rest of the data members>: None )
+            
+            * Date.today() = 01/04/2021
+            
+            * RESERVATIONS table:
+            
+                | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations     | ActiveReservedUIDs | NumberOfCopies |
+                | ---------------- | ------------- | --------- | ------------------- | ---------------------- | ------------------ | -------------- |
+              | "988-0789032742" | (NULL)        | "1,3,"    | (NULL)              | "2021-04-01*19CS30014" | "7,"               | 1              |
+            
+            **Output**:
+            
+            * BookHandler Object (currISBN: "988-0789032742"; currUID: 7; AvailableUIDs: None; TakenUIDs: [1, 3, 7]; NumberOfBooksAvailable: 0; <rest of the data members>: None )
+            
+            * BOOKS table:
+            
+                | UID  | ISBN           | BookName                                                     | RackNo | LastIssued | IsDisposed |
+                | ---- | -------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
+              | 7    | 988-0789032742 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | 2021-04-01 | 0          |
+            
+            * RESERVATIONS table: The issued book is removed from AvailableUIDs and put into TakenUIDs
+            
+                | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+                | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+              | "988-0789032742" | (NULL)        | "1,3,7,"  | (NULL)              | (NULL)             | (NULL)             | 0              |
+            
+          * ###### The book being issued is an available UID.
+            
+            **Input**: 
+            
+            * MemberID: 19CS30014
+            
+            * BookHandler Object (currISBN: "988-0789032742"; currUID: 7; AvailableUIDs: [7]; TakenUIDs: [1, 3]; NumberOfBooksAvailable: 1<rest of the data members>: None )
+            
+            * Date.today() = 01/04/2021
+            
+            * RESERVATIONS table:
+            
+                | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+                | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+              | "988-0789032742" | "7,"          | "1,3,"    | (NULL)              | (NULL)             | (NULL)             | 1              |
+            
+            **Output**:
+            
+            * BookHandler Object (currISBN: "988-0789032742"; currUID: 7; AvailableUIDs: None; TakenUIDs: [1, 3, 7]; NumberOfBooksAvailable: 0<rest of the data members>: None )
+            
+            * BOOKS table:
+            
+                | UID  | ISBN           | BookName                                                     | RackNo | LastIssued | IsDisposed |
+                | ---- | -------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
+              | 7    | 988-0789032742 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | 2021-04-01 | 0          |
+            
+            * RESERVATIONS table: The issued book is removed from AvailableUIDs and put into TakenUIDs
+            
+                | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+                | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+                | "988-0789032742" | (NULL)        | "1,3,7,"  | (NULL)              | (NULL)             | (NULL)             | 0              |
+              
+             * ##### Test Return Selected Book
+            
+                * ###### There is a pending reservation upon return.
+            
+                  **Input**: 
+            
+                  * MemberID: 19CS30014
+            
+                  * BookHandler Object (currISBN: "988-0789032742"; currUID: 7; TakenUIDs: [1, 3, 7]; PendingReservation: [19CS30056]<rest of the data members>: None )
+            
+                  * Date.today() = 01/04/2021
+            
+                  * RESERVATIONS table:
+            
+                      | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+                      | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+                    | "988-0789032742" | (NULL)        | "1,3,7,"  | "19CS30056,"        | (NULL)             | (NULL)             | 1              |
+            
+                  **Output**:
+            
+                  * BookHandler Object (currISBN: "988-0789032742"; currUID: 7; AvailableUIDs: None; TakenUIDs: [1, 3]; ActiveReservations: [ActiveReservation(19CS30013, 08-04-2021)]; ActiveReservationUIDs: "7,"; <rest of the data members>: None )
+            
+                  * BOOKS table:
+            
+                      | UID  | ISBN           | BookName                                                     | RackNo | LastIssued | IsDisposed |
+                      | ---- | -------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
+                    | 7    | 988-0789032742 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | 2021-04-01 | 0          |
+            
+                  * RESERVATIONS table: The issued book is removed from AvailableUIDs and put into TakenUIDs
+            
+                      | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations     | ActiveReservedUIDs | NumberOfCopies |
+                      | ---------------- | ------------- | --------- | ------------------- | ---------------------- | ------------------ | -------------- |
+                    | "988-0789032742" | (NULL)        | "1,3,"    | (NULL)              | "2021-04-08*19CS30056" | "7,"               | 0              |
+            
+                * ###### There is no pending reservation upon return.
+            
+                  **Input**: 
+            
+                  * MemberID: 19CS30014
+            
+                  * BookHandler Object (currISBN: "988-0789032742"; currUID: 7; TakenUIDs: [1, 3, 7]; PendingReservation: None<rest of the data members>: None )
+            
+                  * Date.today() = 01/04/2021
+            
+                  * RESERVATIONS table:
+            
+                      | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+                      | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+                    | "988-0789032742" | (NULL)        | "1,3,7,"  | (NULL)              | (NULL)             | (NULL)             | 1              |
+            
+                  **Output**:
+            
+                  * BookHandler Object (currISBN: "988-0789032742"; currUID: 7; AvailableUIDs: [7]; TakenUIDs: [1, 3]; NumberOfAvailableBooks: 1; <rest of the data members>: None )
+            
+                  * BOOKS table:
+            
+                      | UID  | ISBN           | BookName                                                     | RackNo | LastIssued | IsDisposed |
+                      | ---- | -------------- | ------------------------------------------------------------ | ------ | ---------- | ---------- |
+                    | 7    | 988-0789032742 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | 2021-04-01 | 0          |
+            
+                  * RESERVATIONS table: The issued book is removed from AvailableUIDs and put into TakenUIDs
+            
+                      | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+                      | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+                      | "988-0789032742" | "7,"          | "1,3,"    | (NULL)              | (NULL)             | (NULL)             | 1              |
+                    
+                   * ##### Test Reserve Selected Book
+            
+                      * ###### No books are available and the reservation needs to be made.
+            
+                        **Input**:
+            
+                        * MemberID: 19CS30014
+            
+                        * BookHandler Object (currISBN: "988-0789032742"; currUID: -1; AvailableUIDs: None; TakenUIDs: [1, 3]; NumberOfAvailableBooks: 0; PendingReservations: None; <rest of the data members>: None )
+            
+                        * RESERVATIONS table:
+            
+                            | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+                            | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+                          | "988-0789032742" | (NULL)        | "1,3,"    | (NULL)              | (NULL)             | (NULL)             | 0              |
+            
+                        **Output**:
+            
+                        * BookHandler Object (currISBN: "988-0789032742"; currUID: -1; AvailableUIDs: None; TakenUIDs: [1, 3]; NumberOfAvailableBooks: 0; PendingReservations: "19CS30014"; <rest of the data members>: None )
+            
+                        * RESERVATIONS table:
+            
+                            | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+                            | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+                            | "988-0789032742" | (NULL)        | "1,3,"    | "19CS30014,"        | (NULL)             | (NULL)             | 0              |
 
 11. ### Book
 
     1. ##### Test Constructor
 
        * ###### Book is created for adding
-       
-         **Input**: 
-       
-         * UID: 1
-       
-         * BOOKS table:
-       
-           | UID  | ISBN            | BookName                   | RackNo | LastIssued | IsDisposed |
-           | ---- | --------------- | -------------------------- | ------ | ---------- | ---------- |
-           | 1    | "999-666689999" | "James Bond-by-Bond James" | 1      | 01/04/2021 | 0          |
-       
-         **Output**:
-       
-         * A constructed Book Object (UID: 1; ISBN: "999-666689999"; DateOfIssue: "2021-04-01")
+
+       **Input**: 
+
+       * UID: 1
+
+       * BOOKS table:
+
+         | UID  | ISBN            | BookName                   | RackNo | LastIssued | IsDisposed |
+         | ---- | --------------- | -------------------------- | ------ | ---------- | ---------- |
+         | 1    | "999-666689999" | "James Bond-by-Bond James" | 1      | 01/04/2021 | 0          |
+
+        **Output**:
+
+       * A constructed Book Object (UID: 1; ISBN: "999-666689999"; DateOfIssue: "2021-04-01")
+
+
 
 12. ### ActiveReservation
 
-      1. ##### Test Constructor
+    1. ##### Test Constructor
 
-         - ###### ActiveReservation object is made at any time in the run
+    - ###### ActiveReservation object is made at any time in the run
 
-           - **Input:** Construct using -
+      - **Input:** Construct using -
 
-             Member ID: 19CS30014
+        Member ID: 19CS30014
 
-             Claim by Date: 2021-04-01
+        Claim by Date: 2021-04-01
 
-           - **Output:**
+      - **Output:**
 
-             ActiveReservation object : (memberID: 19CS30014, claimByDate: 2021-04-01)
+        ActiveReservation object : (memberID: 19CS30014, claimByDate: 2021-04-01)
