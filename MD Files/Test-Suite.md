@@ -6,19 +6,19 @@
 
       * ###### Getting the Member ID of the Member
 
-        **Input:** A LibraryMember object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
+        **Input/TestCase:** A LibraryMember object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
 
         **Output**: 19CS30014
 
       * ###### Getting the Name of the Member
 
-        **Input:** A LibraryMember object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
+        **Input/TestCase:** A LibraryMember object (name: Harry; memberID: 19CS30014; <Rest of the members>: None)
 
         **Output**: Harry
 
       * ###### Getting the Number of Books Issued by the Member
 
-        **Input:** A LibraryMember object (name: Harry; memberID: 19CS30014; listOfBooksIssued: [7];  numberOfBooksIssued: 1; <Rest of the members>: None)
+        **Input/TestCase:** A LibraryMember object (name: Harry; memberID: 19CS30014; listOfBooksIssued: [7];  numberOfBooksIssued: 1; <Rest of the members>: None)
 
         **Output**: 1
 
@@ -26,7 +26,7 @@
 
       * ###### The user has an Active Reservation on this ISBN.
 
-        **Input**: 
+        **Input/TestCase**: 
 
         * IBSN: 988-0789032742
         
@@ -44,7 +44,7 @@
         
       * ###### The user has a Pending Reservation on this ISBN.
 
-        **Input**: 
+        **Input/TestCase**: 
 
         * IBSN: 988-0789032742
         
@@ -62,7 +62,7 @@
         
       * ###### The user has no reservation on this ISBN and some UIDs are available. (May have reservations on other ISBN)
 
-        **Input**: 
+        **Input/TestCase**: 
 
         * IBSN: 988-0789032742
         
@@ -80,7 +80,7 @@
         
       * ###### The user has no reservation on any ISBN and no UIDs are available.
 
-        **Input**: 
+        **Input/TestCase**: 
 
         * IBSN: 988-0789032742
 
@@ -98,7 +98,7 @@
 
       * ###### The user has a reservation on a different ISBN and no UIDs are avalaible. 
 
-        **Input**: 
+        **Input/TestCase**: 
 
         * IBSN: 988-0789032742
 
@@ -139,7 +139,7 @@
 
       * ###### No book in the system matches with the search string
 
-        **Input**: 
+        **Input/TestCase**: 
 
         * Search String: How to
         * BOOKS table
@@ -154,28 +154,88 @@
 
       * ###### Some subset of books in the system matches with search string 
 
-        **Input**: 
+        **Input/TestCase**: 
 
-        * Search String: "Curry Patter"
+        * Search String: "Curry"
         * BOOKS table
 
-        | UID  | ISBN          | BookName                                      | RackNo | LastIssued | IsDiposed |
-        | ---- | ------------- | --------------------------------------------- | ------ | ---------- | --------- |
-        | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi | 1      | (NULL)     | (NULL)    |
-        | 2    | 999-777789999 | Curry Patter and the curse of Bhindi          | 2      | (NULL)     | (NULL)    |
-        | 3    | 999-888889999 | Harry Potter and the Director's Curse         | 3      | (NULL)     | (NULL)    |
+        | UID  | ISBN          | BookName                                                     | RackNo | LastIssued | IsDiposed |
+        | ---- | ------------- | ------------------------------------------------------------ | ------ | ---------- | --------- |
+        | 1    | 999-666689999 | Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling | 1      | (NULL)     | (NULL)    |
+        | 2    | 999-777789999 | Curry Patter and the curse of Bhindi-by-J.K.Rowling          | 2      | (NULL)     | (NULL)    |
+        | 3    | 999-888889999 | Harry Potter and the Director's Curse-by-Vikram Seth         | 3      | (NULL)     | (NULL)    |
 
         **Output**:
 
-        * List of IBSN and Names of Matching Books: [{"999-666689999", "Curry Patter and the adventures of Aloo Sabzi"}, {"999-777789999", "Curry Patter and the curse of Bhindi"}] (Matching Books mean the names have Search String as a Sub-String)
+        * List of IBSN and Names of Matching Books: [{"999-666689999", "Curry Patter and the adventures of Aloo Sabzi-by-J.K.Rowling"}, {"999-777789999", "Curry Patter and the curse of Bhindi-by-J.K.Rowling"}] (Matching Books mean the names have Search String as a Sub-String)
 
 2. ### UnderGraduateStudent
 
+   1. ##### Test Constructor
+
+      - **Input/TestCase:**  Construct using -
+
+        memberID: '19CS30056', name: 'Neha', listOfBooksIssued: None, reservedBook: None, numberOfBooksIssued: 0
+
+      - **Output:** <u>UnderGraduateStudent</u> object is constructed with the data members as follows:
+
+        memberID = '19CS30056', name = 'Neha',  listOfBooksIssued = None, reservedBook = None, numberOfBooksIssued = 0
+
+   2. ##### Test CanIssue()
+
+      - **Input/TestCase:**
+      - **Output:**
+
 3. ### PostGraduateStudent
+
+   1. ##### Test Constructor
+
+      - **Input/TestCase:**  Construct using -
+
+        memberID: '19CS30056', name: 'Neha', listOfBooksIssued: None, reservedBook: None, numberOfBooksIssued: 0
+
+      - **Output:** <u>PostGraduateStudent</u> object is constructed with the data members as follows:
+
+        memberID = '19CS30056', name = 'Neha',  listOfBooksIssued = None, reservedBook = None, numberOfBooksIssued = 0
+
+   2. ##### Test CanIssue()
+
+      - **Input/TestCase:** 
+      - **Output:** 
 
 4. ### ResearchScholar
 
-5. ### FacultyMemeber
+   1. ##### Test Constructor
+
+      - **Input/TestCase:**  Construct using -
+
+        memberID: '19CS30056', name: 'Neha', listOfBooksIssued: None, reservedBook: None, numberOfBooksIssued: 0
+
+      - **Output:** <u>ResearchScholar</u> object is constructed with the data members as follows:
+
+        memberID = '19CS30056', name = 'Neha',  listOfBooksIssued = None, reservedBook = None, numberOfBooksIssued = 0
+
+   2. ##### Test CanIssue()
+
+      - **Input/TestCase:**
+      - **Output:**
+
+5. ### FacultyMember
+
+   1. ##### Test Constructor
+
+      - **Input/TestCase:**  Construct using -
+
+        memberID: '19FM10001', name: 'Virender', listOfBooksIssued: None, reservedBook: None, numberOfBooksIssued: 0
+
+      - **Output:** <u>FacultyMember</u> object is constructed with the data members as follows:
+
+        memberID = '19FM10001', name = 'Virender',  listOfBooksIssued = None, reservedBook = None, numberOfBooksIssued = 0
+
+   2. ##### Test CanIssue()
+
+      - **Input/TestCase:**
+      - **Output:**
 
 6. ### Library Clerk
 
@@ -260,7 +320,7 @@
 
       * ###### Pending reservations are there, Some active reservations are expired.
 
-        **Input**: 
+        **Input/TestCase**: 
 
         * BookHandler object currently is populated with information of IBSN: 988-0789032742.
 
@@ -294,7 +354,7 @@
 
       * ###### Pending reservation are there, No active reservations are expired.
 
-        **Input**: 
+        **Input/TestCase**: 
 
         * BookHandler object currently is populated with information of IBSN: 988-0789032742.
         * Date.today() = 01/04/2021
@@ -326,7 +386,7 @@
 
       * ###### No pending reservations are there, Some active reservations are expired.
 
-        **Input**: 
+        **Input/TestCase**: 
 
         * BookHandler object currently is populated with information of IBSN: 988-0789032742.
 
@@ -360,7 +420,7 @@
 
       * ###### No pending reservation are there, No active reservations are expired.
 
-        * **Input**: 
+        * **Input/TestCase**: 
 
           * BookHandler object currently is populated with information of IBSN: 988-0789032742.
           * Date.today() = 01/04/2021
