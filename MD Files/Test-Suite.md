@@ -140,7 +140,7 @@
 
         * IBSN: 988-0789032742
 
-        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: None; listOfIssuedBook: [1, 8]; numberOfIssuedBooks: 1)
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: None; listOfIssuedBook: [1, 8]; numberOfIssuedBooks: 2)
 
         * RESERVATIONS table:
 
@@ -154,7 +154,67 @@
 
       * ###### Member claims a reserved book.
 
+        **Input**: 
+
+        * IBSN: 988-0789032742
+
+        * Date.today() = 01/04/2021
+
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <rest of the data members>: None)
+
+        * RESERVATIONS table:
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations     | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ---------------------- | ------------------ | -------------- |
+          | "988-0789032742" | (NULL)        | "1,3,"    | (NULL)              | "2021-04-03*19CS30014" | "7,"               | 0              |
+
+        **Output**:
+
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; listOfIssuedBook: [7]; numberOfIssuedBooks: 1)
+
+        * MEMBERS table: As ReservedBook is claimed, it is made NULL. The claimed book has been added to ListOfIssuedBooks
+
+          | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD          |
+          | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | --------------- |
+          | "19CS30014" | "Harry"    | "UG"       | "7,"              | (NULL)       | (NULL)      | aakjfkjsadfkasd |
+
+        * RESERVATIONS table: The ActiveReservation and ActiveReservedUIDs related to the Member has been removed
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+          | "988-0789032742" | (NULL)        | "1,3,"    | (NULL)              | (NULL)             | (NULL)             | 0              |
+
       * ###### Member issues an available book.
+
+        **Input**: 
+
+        * IBSN: 988-0789032742
+
+        * Date.today() = 01/04/2021
+
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <rest of the data members>: None)
+
+        * RESERVATIONS table:
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations     | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ---------------------- | ------------------ | -------------- |
+          | "988-0789032742" | (NULL)        | "1,3,"    | (NULL)              | "2021-04-03*19CS30014" | "7,"               | 0              |
+
+        **Output**:
+
+        * A UnderGraduateStudent object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; listOfIssuedBook: [7]; numberOfIssuedBooks: 1)
+
+        * MEMBERS table: As ReservedBook is claimed, it is made NULL. The claimed book has been added to ListOfIssuedBooks
+
+          | MemberID    | MemberName | MemberType | ListOfBooksIssued | ReservedBook | GotReminder | PassWD          |
+          | ----------- | ---------- | ---------- | ----------------- | ------------ | ----------- | --------------- |
+          | "19CS30014" | "Harry"    | "UG"       | "7,"              | (NULL)       | (NULL)      | aakjfkjsadfkasd |
+
+        * RESERVATIONS table: The ActiveReservation and ActiveReservedUIDs related to the Member has been removed
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+          | "988-0789032742" | (NULL)        | "1,3,"    | (NULL)              | (NULL)             | (NULL)             | 0              |
 
    4. ##### Test ReserveBook()
 
