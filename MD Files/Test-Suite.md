@@ -114,21 +114,88 @@
 
         * Message to the User: "Sorry this book is not available currently, and you already have a reservation on another ISBN"
 
-   4. ##### Test Issue Book
+   3. ##### Test Issue Book
+
+      * User tries to claim a book they have already issued e*
+      * User has exhausted their permitted number of issues e*
+      * User claims a reserved book.
+      * User issues an available book.
+
+   4. ##### Test Reserve Book
 
       * ###### The book is unavailable and user has made no reservation for any book. 
-      * ###### The book is unavailable and user has pending/active reservations for some other case.
+
+        **Input**: 
+
+        * IBSN: 988-0789032742
+
+        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: None; <Rest of the members>: None)
+
+        * RESERVATIONS table:
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+          | "988-0789032742" | (NULL)        | "1,3,"    | (NULL)              | (NULL)             | (NULL)             | 0              |
+
+        **Output**:
+
+        * Message to the User: "Sorry this book is not available currently, would you like reserve this book?"
+
+      * ###### The book is unavailable and user has pending/active reservations for some other ISBN.
+
+        **Input**: 
+
+        * IBSN: 988-0789032742
+
+        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "999-6666689999"; <Rest of the members>: None)
+
+        * RESERVATIONS table:
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+          | "988-0789032742" | (NULL)        | "1,"      | (NULL)              | (NULL)             | (NULL)             | 0              |
+
+        **Output**:
+
+        * Message to the User: "Sorry this book is not available currently, and you already have a reservation on another ISBN"
 
       * ###### The book is unavailable and user has an active reservation for this book.
+
+        **Input**: 
+
+        * IBSN: 988-0789032742
+
+        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
+
+        * Date.today() = 01/04/2021
+
+        * RESERVATIONS table:
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations     | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ---------------------- | ------------------ | -------------- |
+          | "988-0789032742" | (NULL)        | "1,"      | (NULL)              | "2021-04-03*19CS30014" | "3,"               | 0              |
+
+        **Output**:
+
+        * Message to the User: "Sorry this book is not available currently, and you already have a reservation on another ISBN"
+
       * ###### The book is unavailable and user has a pending reservation for this book.
 
-   5. ##### Test Reserve Book
+        **Input**: 
 
-      * ###### The book is unavailable and user has made no reservation for any book. 
-      * ###### The book is unavailable and user has pending/active reservations for some other case.
+        * IBSN: 988-0789032742
 
-      * ###### The book is unavailable and user has an active reservation for this book.
-      * ###### The book is unavailable and user has a pending reservation for this book.
+        * A LibraryMember object (name: Harry; memberID: 19CS30014; reservedBook: "988-0789032742"; <Rest of the members>: None)
+
+        * RESERVATIONS table:
+
+          | ISBN             | AvailableUIDs | TakenUIDs | PendingReservations | ActiveReservations | ActiveReservedUIDs | NumberOfCopies |
+          | ---------------- | ------------- | --------- | ------------------- | ------------------ | ------------------ | -------------- |
+          | "988-0789032742" | (NULL)        | "1,3,"    | "19CS30014"         | (NULL)             | (NULL)             | 0              |
+
+        **Output**:
+
+        * Message to the User: "Sorry this book is not available currently, and you already have a reservation on another ISBN"
 
    7. ##### Test Check Reminder
 
