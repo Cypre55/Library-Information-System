@@ -77,6 +77,8 @@
 
 ##### We will provide appropriate Exception classes for the exceptions
 
+###### Whenever an expected parameter is not passed, a TypeError is raised.
+
 ##### Match with Golden Output/Exception class will be a PASS, otherwise would be a FAIL
 
 ##### Efficacy would be judged by % of tests passes
@@ -100,9 +102,11 @@
 
   * Password
 
+  * MEMBERS Table
+
   ###### General Output
 
-  * Constructed Object of the User
+  * Constructed Object of the Member
 
 ###### Scenarios
 
@@ -117,6 +121,7 @@
   * Employee ID
 
   * Password
+  * EMPLOYEES table
 
   ###### General Output
 
@@ -164,36 +169,30 @@
 
   ###### Scenarios
 
-  * The selected ISBN doesn't exist in the RESERVATIONS table.
-  * Some copies are available and the user doesn't have any active reservation.
-  * Some copies are available and the user has an active reservation.
-  * Some copies are available and the user has an expired active reservation.
-  * All copies are lent and the user neither has a pending reservation nor an active reservation.
-  * All copies are lent and the user is in pending reservation and without other active reservations.
-  * All copies are lent and the user is in pending reservation and with other active reservations.
-  * All copies are lent and the user is in pending reservation and some active reservation has expired.
-  * All copies are lent and the user is in pending reservation and some active reservation has expired and user is now in active reservation.
-  * All copies are lent and the user is in active reservation.
-  * All copies are lent and the user's active reservation has expired.
+  *  The user has an Active Reservation on this ISBN.
+  * The user has a Pending Reservation on this ISBN.
+  * The user has no reservation on this ISBN and some UIDs are available. (May have reservations on other ISBN)
+  *  The user has no reservation on any ISBN and no UIDs are available.
+  * The user has a reservation on a different ISBN and no UIDs are avalaible.
 
 * ##### Test IssueBook()
 
   ###### General Input
 
   * LibraryMember
-  * SBN of book to be issued.
+  * ISBN of book to be issued.
   * Database entry in RESERVATIONS table for the book.
-* Database entry in MEMBERS table for the member.
+  * Database entry in MEMBERS table for the member.
   
 ###### General Output  
 
   * Database record in MEMBERS Table updated with the new Book added to the Issued list.
   * Number of Issued books is increased.
-* BOOKS and RESERVATIONS Table is updated.
+  * BOOKS and RESERVATIONS Table is updated.
   
   ###### Scenarios
-  * User tries to claim a book they have already issued e*
-  * User has exhausted their permitted number of issues e*
+  * User tries to claim a book they have already issued 
+  * User has exhausted their permitted number of issues 
   * User claims a reserved book.
   * User issues an available book.
 
@@ -229,31 +228,40 @@
   ###### General Input
 
   * LibraryMember object
+  * ISBN
+  * MEMBERS table
+  * Todays Date
 
   ###### General Output  
 
-  * Whether the member has been reminded or not
+  * MEMBERs table is updtades
+  * Check whether memeber is reminded
 
   ###### Scenarios
 
-  * The librarian has called the send reminder function.
-  * The librarian has not called the send reminder function.
+  * The user has a reservation on a different ISBN and no UIDs are avalaible.
+  * The librarian has called the SendReminder function and the Member has no overdue book/s.
+  * The librarian has not called the SendReminder function.
 
 * ##### Test SearchBook()
 
   ###### General Input
 
   * LibraryMember object
-* Search String
+  * Search String
+  * BOOKS Table
   
 ###### General Output  
 
-* Search Results
+* List of ISBN and Names of matching books
+* Message if no books present
   
 ###### Scenarios
 
   * No book in the system matches with the search string
   * Some subset of books in the system matches with search string
+  * Searching by Name
+  * Searching by Author
   
 * ##### Test UpdateFromDatabase()
 
@@ -262,11 +270,18 @@
   ###### General Input
 
   * LibraryMember
+  * RESERVATIONS Table
 
   ###### General Output  
 
   * Database records in MEMBERS updated
   * RESERVATIONS Table is updated with the expired reservation entry deleted
+  * LibraryMember gets update
+
+  ###### General Output  
+  * Member has an expired active reservation
+  * Member has pending reservation which becomes active
+  * Member has no reservation
 
 ### UnderGraduateStudent
 
@@ -292,8 +307,9 @@
 
   ###### Scenarios
 
-  * Librarian wants to add a new Member, Library Clerk wants to process Return
-  * Existing Member wants to Login
+  * Librarian wants to add a new Member
+  * Existing Member wants to Login,Library Clerk wants to process Return
+  * Invalid Member wants to Login, Library Clerk wants to process Return for Invalid Member
 
 * ##### Test CanIssue()
 
@@ -334,8 +350,9 @@
 
   ###### Scenarios
 
-  * Librarian wants to add a new Member, Library Clerk wants to process Return
-  * Existing Member wants to Login
+  * Librarian wants to add a new Member 
+  * Existing Member wants to Login,Library Clerk wants to process Return
+  * Invalid Member wants to Login, Library Clerk wants to process Return for Invalid Member
 
 * ##### Test CanIssue()
 
@@ -376,8 +393,9 @@
 
   ###### Scenarios
 
-  * Librarian wants to add a new Member, Library Clerk wants to process Return
-  * Existing Member wants to Login
+  * Librarian wants to add a new Member
+  * Existing Member wants to Login, Library Clerk wants to process return
+  * Invalid Member wants to Login, Library Clerk wants to process Return for Invalid Member
 
 * ##### Test CanIssue()
 
@@ -418,8 +436,9 @@
 
   ###### Scenarios
 
-  * Librarian wants to add a new Member, Library Clerk wants to process Return
-  * Existing Member wants to Login
+  * Librarian wants to add a new Member
+  * Existing Member wants to Login, Library Clerk wants to process Return
+  * Invalid Member wants to Login, Library Clerk wants to process Return for Invalid Member
 
 * ##### Test CanIssue()
 
@@ -452,12 +471,17 @@
   ###### Scenarios
 
   * When the library clerk logs in.
+  * Employee wants to login but EmployeeID is not of a library clerk
 
 * ##### Test AddBook()
 
   ###### General Input
 
-  * A Book object
+  * ISBN
+  * Name
+  * Author
+  * Rack number
+  * Today's Date
 
   ###### General Output  
 
@@ -465,14 +489,15 @@
 
   ###### Scenarios
 
-  * The book with same ISBN already exists.
+  * The book with same ISBN already exists and  pending reservations exist
+  * The book with same ISBN already exists and  pending reservations do not exist
   * The book with same ISBN doesn't already exist. 
 
 * ##### Test DeleteBook()
 
   ###### General Input
 
-  * A Book object
+  * BOOKS TABLE
 
   ###### General Output  
 
@@ -480,17 +505,16 @@
 
   ###### Scenarios
 
-  * The book exists in the library and has been make as disposed.
-  * The book exists in the library and has not been make as disposed.
-  * The book doesn't exist in the library.
+  * Books are marked as disposed
+  * No books marked as disposed
 
 * ##### Test ReturnBook()
 
   ###### General Input
 
   * A Book object
-  * The MemberID who is returning the book
-  * Database entry in MEMBERS table with corresponding MemberID. 
+  * LibraryMember object
+  * RESERVATIONS and MEMBERS tables
 
   ###### General Output  
 
@@ -498,8 +522,8 @@
 
   ###### Scenarios
 
-  * Member tries to return a book they havent issued e*
-  * Member tries to return a book which is not present in the library e*
+  * Member tries to return a book they havent issued 
+  * Member tries to return a book which is not present in the library 
   * The book has pending reservation which moves to active.
   * The book doesn't have pending reservation.
 
@@ -508,10 +532,12 @@
   ###### General Input
 
   * A Book object
+  * LibraryMember Object
+  * Today's Date
 
   ###### General Output  
 
-  * RESERVATIONS tables are updated.
+  * Penalty collected by formula
 
   ###### Scenarios
 
@@ -533,10 +559,9 @@
 
   ###### Scenarios
 
-  * The EmployeeID is the Librarian.
-
+  * The EmployeeID is of the Librarian, i.e., LIB0001 (fixed ID of Librarian)
   * The EmployeeID is not the Librarian but is a Library Clerk.
-  * The EmployeeID is not the Librarian but is a Library Member e*
+  * The EmployeeID is not the Librarian but is a Library Member 
 
 * ##### Test Super Class Functionalities
 
@@ -557,78 +582,83 @@
   ###### General Input
 
   * Library Member
+  * MEMBERS table
+  * Password
 
   ###### General Output  
 
-  * Database entry in the MEMBERS table for the new Library Member
+  * MEMBERS table updated
 
   ###### Scenarios
 
-  * The librarian tries to add a person who is already a member e*
+  * The librarian tries to add a person who is already a member 
   * The librarian wants to add a new member.
+  * Name is missing in entry field
+  * MemberID is missing in entry field
+  * Type is missing in entry field
+  * Password is missing in entry field
 
 * ##### Test DeleteMember()
 
   ###### General Input
 
   * Library Member
-  * Database entry for the same Library Member in the MEMBERS table.
+  * MEMBERS table.
 
   ###### General Output  
 
-  * Database entry of the Library Member is removed from MEMBERS table. 
+  *  MEMBERS table updated
 
   ###### Scenarios
   
-  * Try to delete a person who is not a member e*
-  * There are some members in the library.
-  * There are no members in the library.
+  * Try to delete a person who is not a member 
+  * Delete an existing member
+  * Delete a member with overdue/unreturned books
 
 * ##### Test SendReminder()
 
   ###### General Input
 
-  * None
+  * MEMBER TABLE
 
   ###### General Output  
 
-  * Librarian's reminder field is set accordingly.
+  * MEMBER TABLE updated
 
   ###### Scenarios
 
-  * No books are overdue.
-  * A few books are overdue.
+  * Send Reminder to members
 
 * ##### Test CheckBookIssueStatistics()
 
   ###### General Input
 
-  * None
+  * BOOKS table
 
   ###### General Output  
 
-  * List of all copies of books with date when they were last issued.
+  * List og Books which have not been issued in the last 5 years
 
   ###### Scenarios
 
   * All books have been issued in the last 5 years.
-  * Few books have not been issued in the last 5 years.
+  * Books have not been issued in the last 5 years.
 
 * ##### Test DisposeBook()
 
   ###### General Input
 
-  * A Book Object
+  * UID
+  * BOOKS table
 
   ###### General Output  
 
   * Database entry in BOOKS table has been marked as disposed.
 
   ###### Scenarios
-  * UID does not exist e*
-  * The UID has not been issued in last 5 years e* 
-  * The UID has been issued in the last 5 years e*
-
+  * UID does not exist 
+  * The UID has not been issued in last 5 years 
+  * The UID has been issued in the last 5 years 
 
 ### Book Handler
 
@@ -644,7 +674,7 @@
 
   ###### Scenarios
 
-  * *<u>No specific scenarios, only called to create a reference to  Singleton BookHandler Object whenever required.</u>*   
+  * No specific scenarios, only called to create a reference to  Singleton BookHandler Object whenever required.   
 
 * ##### Test OpenBook()
 
@@ -781,15 +811,13 @@
   
   * Date reservation became active.
   
-  ###### General Output  
-  
-    * Object Created.
-  
-    ###### Scenarios
-  
-    * Active reservation is made at any time in the run
+###### General Output  
 
+  * Object Created.
 
+  ###### Scenarios
+
+  * Active reservation is made at any time in the run
 
 ## GUI Testing
 
