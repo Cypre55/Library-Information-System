@@ -12,7 +12,13 @@ class UnderGraduateStudent(LibraryMember):
     def CanIssue(self):
         return (self._numberOfBooksIssued < self.__maxBooksAllowed)
 
-mem = UnderGraduateStudent('19CS30056', 'Neha', None, None, 0)
-mem.UpdateReservationStatus()
-print(mem.CheckAvailabilityOfBook('998-0767892743'))
-mem.IssueBook(Book(6, '998-0767892743',None,None))
+    def GetMaxBooksAllowed(self):
+        return UnderGraduateStudent.__maxBooksAllowed
+    def GetMaxMonthsAllowed(self):
+        return UnderGraduateStudent.__maxMonthsAllowed
+
+# mem = UnderGraduateStudent('19CS30056', 'Neha', ["3"], None, 1)
+# print(mem.CheckForReminder())
+# mem.UpdateFromDatabase()
+# print(mem.CheckAvailabilityOfBook('998-0767892743'))
+# mem.IssueBook(Book(6, '998-0767892743',None,None))

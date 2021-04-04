@@ -1,2 +1,3 @@
 # delete copy ctor if not needed
 # readyToClaimUsers or readyToClaimMembers
+# testing of calc penalty

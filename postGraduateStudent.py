@@ -10,3 +10,7 @@ class PostGraduateStudent(LibraryMember):
 
     def CanIssue(self):
         return (self._numberOfBooksIssued < self.__maxBooksAllowed)
+    def GetMaxBooksAllowed(self):
+        return PostGraduateStudent.__maxBooksAllowed
+    def GetMaxMonthsAllowed(self):
+        return PostGraduateStudent.__maxMonthsAllowed

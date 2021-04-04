@@ -64,8 +64,11 @@ class LoginWindow(Frame):
     def ChangeLogin(self, selection):
         if selection == "Member":
             self.MemberInfo()
+            self.RemoveError()
         else:
             self.EmployeeInfo()
+            self.RemoveError()
+
 
     def MemberInfo(self):
         if hasattr(self, 'employeeLabel'):
@@ -93,11 +96,11 @@ class LoginWindow(Frame):
 
     def Login(self):
         if self.variable.get() == "Member":
-            try:
-                MemberLogin(self.id, self.password)
-            except ValueError as e:
-                self.DisplayError(e)
-                # print(ValueError.message)
+            # try:
+            #     member = MemberLogin(self.id, self.password)
+            # except ValueError as e:
+            #     self.DisplayError(e)
+            #     # print(ValueError.message)
             self.mainWindow.ShowMemberHome()
             self.RemoveError()
         else:

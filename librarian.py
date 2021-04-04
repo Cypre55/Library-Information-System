@@ -2,6 +2,7 @@ from libraryClerk import LibraryClerk
 from libraryMember import LibraryMember
 from underGraduateStudent import UnderGraduateStudent
 from cryptography.fernet import Fernet
+from bookHandler import UpdateReminders
 from datetime import date, datetime, timedelta
 import mysql.connector as mysql
 import base64
@@ -31,6 +32,8 @@ class Librarian(LibraryClerk):
     __reminder = False
     
     def __init__(self, employeeID, name):
+        if(employeeID!="LIB0001"):
+            raise ValueError
         LibraryClerk.__init__(self, employeeID, name)
     
     def AddMember(self, libraryMember: LibraryMember, passwd):
@@ -64,8 +67,13 @@ class Librarian(LibraryClerk):
         cursor.execute(deleteMembers, memberID)
         db.commit()
     
-    def SendRemindertoMember(self):
-        pass
+    def SendReminderToMember(self):
+        cursor.execute("UPDATE MEMBERS SET GotReminder = 1")
+        db.commit()
+        cursor.execute(("SELECT * FROM MEMBERS"))
+        row = cursor.fetchone()
+        print(row)
+        UpdateReminders()
     
     def CheckBookIssueStats(self):
         checkStats = ("SELECT UniqueID FROM BOOKS "
@@ -88,4 +96,4 @@ class Librarian(LibraryClerk):
         }
         cursor.execute(disposeBook, dataBook)
         db.commit()
-lib=Librarian(1,"fds")
+# lib=Librarian(1,"fds")
