@@ -12,9 +12,10 @@ from libraryClerk import LibraryClerk
 from datetime import date, datetime, timedelta
 from librarian import Librarian
 import mysql.connector as mysql
+import settings
 db = mysql.connect(
     host = "localhost",
-    user = "root",
+    user = settings.user,
     passwd = "1234",
     database = "lis"
 )
@@ -503,35 +504,51 @@ def delete():
 # print("Error thrown when invalid login: PASS")
 # print("Error thrown when invalid login: FAIL")
 
+#delete()
 # #Add Book
-# clerk = LibraryClerk("LIB0011","John")
-# clerk.AddBook(['999-666689999','Curry Patter and the adventures of Aloo Sabzi','J.K.Rowling',1,date(2021,4,1)])
-# clerk.AddBook(['999-666689999','Curry Patter and the curse of Bhindi','J.K.Rowling',2,date(2010,4,1)])
-# clerk.AddBook(['999-666689999','Harry Potter and the Directors Curse','Vikram Seth',3,date(2010,4,1)])
-# clerk.AddBook(['999-666689999','Curry Patter and the adventures of Aloo Sabzi','J.K.Rowling',1,date(2021,4,1)])
-# clerk.AddBook(['999-666689999','Curry Patter and the curse of Bhindi','J.K.Rowling',2,date(2010,4,1)])
-# clerk.AddBook(['999-666689999','Harry Potter and the Directors Curse','Vikram Seth',3,date(2010,4,1)])
-# cursor.execute(("INSERT INTO RESERVATIONS VALUES ('988-0789032742', NULL,'1,3,','19CS30014,',NULL,NULL,0)"))
-# db.commit()
-# bookDetails = ["988-0789032742","Motu and Patnu","Narendra Modi",7]
-# clerk.AddBook(bookDetails)
-# bH=BookHandler.Create()
-# bH.OpenBook("988-0789032742")
-# print(BookHandler.GetActiveReservedUIDs())
-# print([x.memberID for x in BookHandler.GetActiveReservations()])
-# if('7' in BookHandler.GetActiveReservedUIDs() and ActiveReservation('19CS30014',(datetime.now()+timedelta(days = 7)).date()) in BookHandler.GetActiveReservations()):
-#     print("Reservations Correctly updated when same ISBN already present with pending reservations, Book added to database: PASS")
-# else:
-#     print("Reservations Correctly updated when same ISBN already present with pending reservations, Book added to database: FAIL")
+clerk = LibraryClerk("LIB0011","John")
+clerk.AddBook(['988-0789032742','Motu and Patnu','Narendra Modi',1,date(2021,4,1)])
+clerk.AddBook(['999-666689999','Curry Patter and the curse of Bhindi','J.K.Rowling',2,date(2010,4,1)])
+clerk.AddBook(['988-0789032742','Motu and Patnu','Narendra Modi',3,date(2010,4,1)])
+clerk.AddBook(['999-666689999','Curry Patter and the curse of Bhindi','J.K.Rowling',1,date(2021,4,1)])
+clerk.AddBook(['999-666689999','Curry Patter and the curse of Bhindi','J.K.Rowling',2,date(2010,4,1)])
+clerk.AddBook(['999-666689999','Curry Patter and the curse of Bhindi','J.K.Rowling',3,date(2010,4,1)])
+db.commit()
+student = PostGraduateStudent("Harry","19CS10073",[],None)
+student.IssueBook(Book('1','988-0789032742',date.today()))
+student.IssueBook(Book('3','988-0789032742',date.today()))
+student2 = UnderGraduateStudent("Harry","19CS30014",[],None)
+student2.ReserveBook("988-0789032742")
+db.commit()
+bookDetails = ["988-0789032742","Motu and Patnu","Narendra Modi",7]
+clerk.AddBook(bookDetails)
+bH=BookHandler.Create()
+bH.OpenBook("988-0789032742")
+if(('7' in BookHandler.GetActiveReservedUIDs())):
+    print("Reservations Correctly updated when same ISBN already present with pending reservations, Book added to database: PASS")
+else:
+    print("Reservations Correctly updated when same ISBN already present with pending reservations, Book added to database: FAIL")
+bookDetails = ['999-666689999','Curry Patter and the curse of Bhindi','J.K.Rowling',2,date.today()]
+clerk.AddBook(bookDetails)
+bH.CloseBook()
+bH.OpenBook('999-666689999')
+if('8' in BookHandler.GetAvailableUIDs()):
+    print("Reservations Correctly updated when same ISBN already present with no pending reservations, Book added to database: PASS")
+else:
+    print("Reservations Correctly updated when same ISBN already present with no pending reservations, Book added to database: FAIL")
 
-# bookDetails = ["988-0789032742","Motu and Patnu","Narendra Modi",7]
-# print("Reservations Correctly updated when same ISBN already present with no pending reservations, Book added to database: PASS")
-# print("Reservations Correctly updated when same ISBN already present with no pending reservations, Book added to database: FAIL")
-
-# bookDetails = ["988-0789032742","Motu and Patnu","Narendra Modi",7]
-# print("Reservations Correctly updated when same ISBN not already present : PASS")
-# print("Reservations Correctly updated when same ISBN not already present : FAIL")
-# delete()
+bookDetails = ['999-666689000','Reopen IIT KGP','Dead Students',2,date.today()]
+clerk.AddBook(bookDetails)
+db.commit()
+cursor.execute("SELECT * FROM BOOKS")
+bH.CloseBook()
+bH.OpenBook('999-666689000')
+if('9' in bH.GetAvailableUIDs()):
+    print("Reservations Correctly updated when same ISBN not already present : PASS")
+else:
+    print("Reservations Correctly updated when  same ISBN not already present : FAIL")
+bH.CloseBook()
+#delete()
 
 # #Delete Book
 # clerk = LibraryClerk("LIB0011","Neha")
@@ -733,32 +750,80 @@ def delete():
 
 # delete()
 #Delete members
+# lib=Librarian("LIB0001","John")
+# student = UnderGraduateStudent("Harry","19CS30014",[],None)
+# lib.AddMember(student,'potatoes')
+# db.commit()
 # student = UnderGraduateStudent("Harry","19CS30014",[],"")
-# print("Deleting Existing member : PASS")
-# print("Deleting existing member : FAIL")
+# lib.RemoveMember(student)
+# flag = False
+# cursor.execute("SELECT * FROM MEMBERS")
 
-# student = UnderGraduateStudent("Harry","19CS30014",[],"")
-# print("Error when Deleting non-Existing member : PASS")
-# print("Error when Deleting non-existing member : FAIL")
+# for row in cursor:
+#     if row["MemberID"]=="19CS30014":
+#         flag = True
+# if(flag==False):
+#     print("Deleting Existing member : PASS")
+# else:
+#     print("Deleting existing member : FAIL")
 
 # delete()
-f=False
-lib=Librarian("LIB0001","John")
-student = UnderGraduateStudent("Harry","19CS30014",['1'],None)
-lib.AddMember(student,'potatoes')
-db.commit()
-try:
-    lib.RemoveMember(student)
-except ValueError:
-    f=True
-]]]]]]]]]]]if(f==False):
-    print("Error when Deleting member with dues : FAIL")
+# lib=Librarian("LIB0001","John")
+# f = False
+# student = UnderGraduateStudent("Harry","19CS30014",[],"")
+# try:  
+#     lib.RemoveMember(student)
+# except ValueError:
+#     f=True
+#     print("Error when Deleting non-Existing member : PASS")
+# if(f==False):
+#     print("Error when Deleting non-existing member : FAIL")
 
-# #Sending reminders
-
-# print("Send reminders to all members: PASS")
-# print("Send reminders to all members: FAIL")
 # delete()
+# f=False
+# lib=Librarian("LIB0001","John")
+# student = UnderGraduateStudent("Harry","19CS30014",[],None)
+# lib.AddMember(student,'potatoes')
+# cursor.execute(("UPDATE MEMBERS SET ListOfBooksIssued = '1,' WHERE MemberID = '19CS30014'"))
+# db.commit()
+# try:
+#     lib.RemoveMember(student)
+# except ValueError:
+#     f=True
+#     print("Error when Deleting member with dues : PASS")
+# if(f==False):
+#     print("Error when Deleting member with dues : FAIL")
+# delete()
+
+# Sending reminders
+# lib=Librarian("LIB0001","John")
+# student = UnderGraduateStudent("Harry","19CS30014",[],None)
+# lib.AddMember(student,'potatoes')
+# cursor.execute(("UPDATE MEMBERS SET ListOfBooksIssued = '1,' WHERE MemberID = '19CS30014'"))
+# db.commit()
+# lib.AddBook(['999-666689999','Curry Patter and the adventures of Aloo Sabzi','J.K.Rowling',1,date(2020,4,1)])
+# lastdate = {
+#         'date' : date(2020,4,1),
+#         'uid' :  1
+#     }
+# cursor.execute("UPDATE BOOKS SET LastIssued = %(date)s WHERE UniqueID  = %(uid)s", lastdate)
+# db.commit()
+# lib.SendReminderToMember()
+# cursor.execute(("SELECT * FROM MEMBERS"))
+# flag  = False
+# for row in cursor:
+#     if(row["MemberID"]=='19CS30014'):
+#         if(row["GotReminder"]==1):
+#             flag=True
+# if flag == True:
+#     print("Send reminders to all members: PASS")
+# else:
+#     print("Send reminders to all members: FAIL")
+# delete()
+
+
+
+
 #Check issue statistics
 # librarian = Librarian("LIB0001","Neha")
 # librarian.AddBook(['999-666689999','Curry Patter and the adventures of Aloo Sabzi','J.K.Rowling',1,date(2021,4,1)])
@@ -860,27 +925,33 @@ except ValueError:
 # librarian = Librarian("LIB0001","Neha")
 # librarian.AddBook(['999-666689999','Curry Patter and the adventures of Aloo Sabzi','J.K.Rowling',1,date(2021,4,1)])
 # goldenoutput = ["1","999-666689999",['7','9'],['1'],[],[],[],2]
+# 
 # bH = BookHandler.Create()
-# BookHandler.OpenBook("999-666689999")
+# bH.CloseBook()
+# bH.OpenBook("999-666689999")
 # print(BookHandler.available)
 # if(BookHandler.currISBN == "999-666689999" and BookHandler.available == ['7','9'] and BookHandler.taken == ['1'] and BookHandler.numberOfCopies == 2):
 #     print("Correct Data Members when only ISBN provided: PASS")
 # else:
 #     print("Correct Data Members when only ISBN provided: FAIL")
+# 
 # bH = BookHandler.Create()
-# BookHandler.OpenBook(Book("1","999-666689999",date.today()))
+# bH.CloseBook()
+# bH.OpenBook(Book("1","999-666689999",date.today()))
 # if(BookHandler.currISBN == "999-666689999" and BookHandler.available == ['7','9'] and BookHandler.taken == ['1'] and BookHandler.numberOfCopies == 2 and BookHandler.currUID=='1'):
 #     print("Correct Data Members ISBN and UID provided: PASS")
 # else:
 #     print("Correct Data Members ISBN and UID provided: FAIL")
 #delete()
+# 
 # bh = BookHandler.Create()
+# 
 # bh2 = BookHandler.Create()
 # if(bh == bh2):
 #     print("Singleton Class Check: PASS")
 # else:
 #     print("Singleton Class Check: FAIL")
-
+# bh.CloseBook()
 #Update Book
 #delete()
 
@@ -894,6 +965,7 @@ except ValueError:
 # flag1 = False
 # flag2 = False
 # bh = BookHandler.Create()
+# bh.CloseBook()
 # bh.OpenBook('988-0789032742')
 # db.commit()
 # bh.UpdateBook()
@@ -923,6 +995,7 @@ except ValueError:
 # db.commit()
 # flag2 = False
 # bh = BookHandler.Create()
+# bh.CloseBook()
 # bh.OpenBook('988-0789032742')
 # db.commit()
 # bh.UpdateBook()
@@ -953,6 +1026,7 @@ except ValueError:
 # flag1 = False
 # flag2 = False
 # bh = BookHandler.Create()
+# bh.CloseBook()
 # bh.OpenBook('988-0789032742')
 # db.commit()
 # bh.UpdateBook()
@@ -981,6 +1055,7 @@ except ValueError:
 # db.commit()
 # flag2 = False
 # bh = BookHandler.Create()
+# bh.CloseBook()
 # bh.OpenBook('988-0789032742')
 # db.commit()
 # bh.UpdateBook()
@@ -1005,6 +1080,7 @@ except ValueError:
 
 #delete()
 # bh = BookHandler.Create()
+# bh.CloseBook()
 # bh.OpenBook(Book('1',"988-0789032742",date.today()))
 # db.commit()
 # cursor.execute(("INSERT INTO RESERVATIONS VALUES ('988-0789032742',NULL,'7,3,',NULL,'2021-04-01*19CS30014,','1,',0)"))
@@ -1040,6 +1116,7 @@ except ValueError:
 # cursor.execute(("INSERT INTO RESERVATIONS VALUES ('988-0789032742','1,3,',NULL,NULL,'2021-04-01*19CS30032,','7,',2)"))
 # db.commit()
 # bh = BookHandler.Create()
+# bh.CloseBook()
 # bh.OpenBook(Book('1',"988-0789032742",date.today()))
 # db.commit()
 # cursor.execute(("INSERT INTO BOOKS VALUES (NULL,'988-0789032742','XYZ',1,DATE '2020-04-01',0)"))
@@ -1075,6 +1152,7 @@ except ValueError:
 # cursor.execute(("INSERT INTO RESERVATIONS VALUES ('988-0789032742',NULL,'1,3,','19CS30017,',NULL,NULL,0)"))
 # db.commit()
 # bh = BookHandler.Create()
+# bh.CloseBook()
 # bh.OpenBook(Book('1',"988-0789032742",date.today()))
 # db.commit()
 # # cursor.execute(("INSERT INTO BOOKS VALUES (NULL,'988-0789032742','XYZ',1,DATE '2020-04-01',0)"))
@@ -1108,6 +1186,7 @@ except ValueError:
 # cursor.execute(("INSERT INTO RESERVATIONS VALUES ('988-0789032742',NULL,'1,3,',NULL,NULL,NULL,0)"))
 # db.commit()
 # bh = BookHandler.Create()
+# bh.CloseBook()
 # bh.OpenBook(Book('1',"988-0789032742",date.today()))
 # db.commit()
 # librarian = Librarian("LIB0001","Neha")
@@ -1144,6 +1223,7 @@ except ValueError:
 # cursor.execute(("INSERT INTO RESERVATIONS VALUES ('988-0789032742',NULL,'1,3,',NULL,NULL,NULL,0)"))
 # db.commit()
 # bh = BookHandler.Create()
+# bh.CloseBook()
 # bh.OpenBook(Book('1',"988-0789032742",date.today()))
 # db.commit()
 # librarian = Librarian("LIB0001","Neha")
@@ -1169,6 +1249,7 @@ except ValueError:
 #     print("Book succesfully reserved : PASS")
 # else:
 #     print("Book succesfully reserved : FAIL")
+# bH.CloseBook()
 
 
 

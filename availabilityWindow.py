@@ -26,4 +26,6 @@ class AvailabiltyWindow():
 
         self.availRoot.mainloop()
 
-a = AvailabiltyWindow(0, UnderGraduateStudent("Chappidi Yoga Satwik", "19CS30013", [], None), "")
+
+# for i in range(5):
+# a = AvailabiltyWindow(4, UnderGraduateStudent("Chappidi Yoga Satwik", "19CS30013", [], None), "")

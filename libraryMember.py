@@ -72,6 +72,7 @@ class LibraryMember(ABC):
         print(searchResults)
     def CheckAvailabilityOfBook(self, ISBN: str):
         bH = BookHandler.Create()
+        bH.CloseBook()
         bH.OpenBook(ISBN)
         bH.UpdateBook()
         bH.UpdateDatabase()
@@ -87,7 +88,7 @@ class LibraryMember(ABC):
                     print(UID)
                     print(row)
                     rackNos.append(str(row['RackNumber']))
-
+                
                 return (bH.GetActiveReservedUIDs(),rackNos)
 
             else:
@@ -115,6 +116,7 @@ class LibraryMember(ABC):
         if (book.GetUID in self._listOfBooksIssued):
             return None
         bH = BookHandler.Create()
+        bH.CloseBook()
         bH.OpenBook(book)
         bH.IssueSelected(self._memberID)
         bH.CloseBook()
@@ -131,6 +133,7 @@ class LibraryMember(ABC):
         if(self.GetReservedBook()!=None):
             raise ValueError("Member can not reserve more than one book.")
         bH = BookHandler.Create()
+        bH.CloseBook()
         bH.OpenBook(ISBN)
         if(len(bH.available)!=0):
             raise ValueError("Member cannot reserve an ISBN with available UID.")
@@ -147,6 +150,7 @@ class LibraryMember(ABC):
     #call this from the constructor everyime
     def UpdateFromDatabase(self):
         bH = BookHandler.Create()
+        bH.CloseBook()
         bH.OpenBook(self._reservedBook)
         bH.UpdateBook()
         bH.CloseBook()

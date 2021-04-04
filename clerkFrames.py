@@ -116,7 +116,9 @@ class DeleteBookFrame(Frame):
         self.deleteBookButton.grid(column=0, row=3)
 
         self.errorLabel = Label(self, text="")
-        self.errorLabel.config(font=(12), bg=orange, fg=white) 
+        self.errorLabel.config(font=(12), bg=orange, fg=white)
+
+
 
     def DeleteBook(self):
         self.RemoveError()

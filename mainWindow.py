@@ -19,9 +19,9 @@ class MainWindow():
         self.title.config(width=10, font=(12), bg=orange, fg=white)
         self.title.grid(column=0, row=0)
         self.currWindow = ""
-        # self.ShowLogin()
+        self.ShowLogin()
         # self.currWindow.grid_forget()
-        self.ShowMemberHome(UnderGraduateStudent("Chappidi Yoga Satwik", "19CS30013", [], None))
+        # self.ShowMemberHome(UnderGraduateStudent("Chappidi Yoga Satwik", "19CS30013", [], None))
         # self.ShowClerkHome(LibraryClerk("LIB0021", "Sam"))
         # self.ShowLibrarianHome(Librarian("LIB0001", "Harry"))
 
@@ -30,13 +30,8 @@ class MainWindow():
             self.currWindow.grid_forget()
         if not hasattr(self, 'login'):
             self.login = LoginWindow(self.master, self)
-        # print(self.login.id.set(""))
         self.currWindow = self.login
         self.login.grid(column=0, row=1)
-
-    # def RemoveLogin(self):
-    #     if hasattr(self, 'login'):
-    #         self.login.grid_forget()
 
     def ShowMemberHome(self, member):
         if self.currWindow:

@@ -29,7 +29,24 @@ class ProfileFrame(Frame):
         # self.memberNameLabel.grid(column=1, row=0, padx = 5, pady = 5)
         self.nameFrame.grid(column=0, row=1)
 
+        type_shortHand = {
+            '<class \'underGraduateStudent.UnderGraduateStudent\'>':'UG',
+            '<class \'postGraduateStudent.PostGraduateStudent\'>':'PG',
+            '<class \'researchScholar.ResearchScholar\'>':'RS',
+            '<class \'facultyMember.FacultyMember\'>':'FM'
+        }
+
         self.memberTypeFrame = Frame(self)
+        self.memberTypeFrame.config(bg=lightorange)
+        self.memberTypeLabel = Label(self.memberTypeFrame, text="Member Type: " + type_shortHand[str(type(self.member))]) 
+        self.memberTypeLabel.config(font=(12), bg=orange, fg=white)
+        self.memberTypeLabel.grid(column=0, row=0, padx = 5, pady = 5)
+        self.blankmemberTypeLabel = Label(self.memberTypeFrame, bg=lightorange)
+        self.blankmemberTypeLabel.grid(column=1, row=0, padx=460)
+        # self.memberNameLabel = Label(self.nameFrame, text="Chappidi Yoga Satwik")
+        # self.memberNameLabel.config(font=(12), bg=orange, fg=white)
+        # self.memberNameLabel.grid(column=1, row=0, padx = 5, pady = 5)
+        self.memberTypeFrame.grid(column=0, row=2)
 
         self.IDFrame = Frame(self)
         self.IDFrame.config(bg=lightorange)
@@ -41,7 +58,7 @@ class ProfileFrame(Frame):
         # self.memberIDLabel = Label(self.IDFrame, text="19CS30013")
         # self.memberIDLabel.config(font=(12), bg=orange, fg=white)
         # self.memberIDLabel.grid(column=1, row=0, padx = 5, pady = 5)
-        self.IDFrame.grid(column=0, row=2)
+        self.IDFrame.grid(column=0, row=3)
         
         self.issuedFrame = Frame(self)
         self.issuedFrame.config(bg=lightorange)
@@ -50,7 +67,7 @@ class ProfileFrame(Frame):
         self.issuedLabel.grid(column=0, row=0, padx = 5, pady = 5)
         self.blankissuedLabel = Label(self.issuedFrame, bg=lightorange)
         self.blankissuedLabel.grid(column=1, row=0, padx=470)
-        self.issuedFrame.grid(column=0, row=3)
+        self.issuedFrame.grid(column=0, row=4)
         # Show List of Issued books
         books = [{"Title": "Curry Patter", "UID": "1", "DueDate": "01/07/2021"},
                  {"Title": "Harry Potter", "UID": "2", "DueDate": "01/08/2021"}
@@ -64,7 +81,7 @@ class ProfileFrame(Frame):
         for book in books:
             self.listBox.insert("", "end", values=(book["Title"], book["UID"], book["DueDate"]))
 
-        self.listBox.grid(column=0, row=4)
+        self.listBox.grid(column=0, row=5)
 
         self.reservedFrame = Frame(self)
         self.reservedFrame.config(bg=lightorange)
@@ -72,8 +89,8 @@ class ProfileFrame(Frame):
         self.reservedLabel.config(font=(12), bg=orange, fg=white)
         self.reservedLabel.grid(column=0, row=0, padx = 5, pady = 5)
         self.blankreservedLabel = Label(self.reservedFrame, bg=lightorange)
-        self.blankreservedLabel.grid(column=1, row=0, padx=400)
-        self.reservedFrame.grid(column=0, row=5)
+        self.blankreservedLabel.grid(column=1, row=0, padx=440)
+        self.reservedFrame.grid(column=0, row=6)
 
 
 
@@ -109,10 +126,26 @@ class SearchFrame(Frame):
         self.results = []
         self.resultFrames = []
 
+        self.errorLabel = Label(self, text="")
+        self.errorLabel.config(font=(12), bg=orange, fg=white) 
+
 
     def SearchBook(self, searchString):
         # print(searchString.get())
-        self.results.append(searchString.get())
+        self.RemoveError()
+        if self.results:
+            del self.results
+            self.results = []
+        
+        if not self.results:
+            self.DisplayError("No results found.")
+
+        if not searchString.get():
+            self.RemoveError()
+        
+        
+        
+        # self.results = self.member.SearchBook(searchString)
         self.UpdateResults()
         pass
 
@@ -138,13 +171,21 @@ class SearchFrame(Frame):
         response = self.member.CheckAvailabilityOfBook(book.__ISBN)
         if isinstance(response, str):
             if self.member._reservedBook == book.__ISBN:
-                pass
+                self.availWindow = AvailabiltyWindow(2, self.member, response)
             elif self.member._reservedBook != None:
-                pass
+                self.availWindow = AvailabiltyWindow(3, self.member, response)
             else:
-                pass
+                self.availWindow = AvailabiltyWindow(4, self.member, response)
         elif isinstance(response, tuple):
             if self.member._reservedBook == book.__ISBN:
-                pass
+                self.availWindow = AvailabiltyWindow(0, self.member, response)
             else:
-                pass
+                self.availWindow = AvailabiltyWindow(1, self.member, response)
+
+    def DisplayError(self, message): 
+        self.errorLabel.grid_forget()
+        self.errorLabel.config(text=message)
+        self.errorLabel.grid(column=0, row=3, pady=10)
+
+    def RemoveError(self):
+        self.errorLabel.grid_forget() 

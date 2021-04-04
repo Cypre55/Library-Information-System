@@ -13,7 +13,6 @@ db = mysql.connect(
     passwd = "1234",
     database = "lis"
 )
-
 def encode_message(message):
     key2 = open("secret.key", "rb").read()
     fernet = Fernet(key2)
@@ -39,19 +38,21 @@ class Librarian(LibraryClerk):
     
     def AddMember(self, libraryMember: LibraryMember, passwd):
         if(libraryMember.GetMemberID()==""):
-            raise ValueError
+            raise ValueError("Required field memberID is missing")
         
         if(libraryMember.GetName()==""):
-            raise ValueError
+            raise ValueError("Required field name is mssing")
             
         mem = {
             'MemberID' : libraryMember.GetMemberID()
         }
         cursor.execute("SELECT MemberID FROM MEMBERS WHERE MemberID = %(MemberID)s", mem)
+        flag=False
         for row in cursor:
             if(row['MemberID']==libraryMember.GetMemberID()):
-                raise ValueError
-
+                flag=True        
+        if(flag==True):
+            raise ValueError("A member with the saame member ID already exists")
         addMember = ("INSERT INTO MEMBERS "
                    "VALUES (%(MemberID)s, %(MemberName)s, %(MemberType)s, %(ListOfBooksIssued)s, %(ReservedBook)s, %(GotReminder)s, %(PassWd)s)")
         print(str(type(libraryMember)))
@@ -79,12 +80,15 @@ class Librarian(LibraryClerk):
         }
         cursor.execute(("SELECT * FROM MEMBERS WHERE MemberID = %(mem)s"),member)
         cnt=0
+        isNone = False
         for row in cursor:
             cnt = cnt + 1
             if(row['ListOfBooksIssued']!=None):
-                raise ValueError("This member can not be deleted as they have overdue books or un-returned books.")
+                    isNone = True
         if(cnt==0):
             raise ValueError("No member present with this member ID.")
+        if(isNone==True):
+            raise ValueError("This member can not be deleted as they have overdue books or un-returned books.")
         
         deleteMembers = ("DELETE FROM MEMBERS "
                          "WHERE MemberID = %(MemberID)s")

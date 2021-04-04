@@ -2,6 +2,7 @@ from tkinter import *
 from colors import *
 from librarianFrames import *
 from clerkHomeWindow import ClerkHomeWindow
+# from libraryMember import 
 
 class LibrarianHomeWindow(ClerkHomeWindow):
     def __init__(self, master, mainWindow, librarian):

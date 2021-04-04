@@ -1,22 +1,20 @@
 from datetime import date, datetime, timedelta
 from cryptography.fernet import Fernet
-from librarian import encode_message, decode_message
 import mysql.connector as mysql
-import settings
 print()
-db = mysql.connect(
-    host = "localhost",
-    user = settings.user,
-    passwd = "1234",
-    database = "lis"
-)
-cursor = db.cursor(dictionary = True)
+# db = mysql.connect(
+#     host = "localhost",
+#     user = "root",
+#     passwd = "1234",
+#     database = "lis"
+# )
+# cursor = db.cursor(dictionary = True)
 
 # add_book = ("INSERT INTO BOOKS "
 #             "VALUES (%(UniqueID)s, %(ISBN)s, %(BookName)s, %(RackNumber)s, %(IssueDate)s, %(IsDisposed)s)")
 
 # data_book = {
-#   'UniqueID': 8,
+#   'UniqueID': None,
 #   'ISBN': '988-0789032742',
 #   'BookName': 'Harry Potter and the Director\'s Curse by J.K.Rowling',
 #   'RackNumber': 3,
@@ -38,26 +36,6 @@ cursor = db.cursor(dictionary = True)
 # # cursor.execute('SELECT * FROM BOOKS') 
 # # for row in cursor:
 # #     print ("%s", %(row["BookName"]))
-# cursor.execute(add_book, data_book)
-
-add_book = ("INSERT INTO MEMBERS "
-            "VALUES (%(MemberID)s, %(MemberName)s, %(MemberType)s, %(ListOfBooksIssued)s, %(ReservedBook)s, %(GotReminder)s, %(PassWd)s)")
-
-data_book = {
-  'MemberID': '19CS30013',
-  'MemberName': 'Chappidi Yoga Satwik',
-  'MemberType': 'UG',
-  'ListOfBooksIssued': None,
-  'ReservedBook': None,
-  'GotReminder' : 0,
-  'PassWd' : encode_message("1234")
-}
-
-print(encode_message("1234"))
-print(decode_message(encode_message("1234")))
-print(decode_message(encode_message("1234")))
-print(decode_message(encode_message("1234")))
-print(encode_message("1234"))
 # cursor.execute(add_book, data_book)
 # db.commit()
 # #print(cursor.rowcount, "record inserted")

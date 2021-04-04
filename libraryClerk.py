@@ -38,11 +38,11 @@ class LibraryClerk:
         for row in cursor:
             if(bookDetails[0] == row['ISBN']):
                 flag=1
-                break
         if(flag == 1):
             print("FLAG = 1")
             bH = BookHandler.Create()
-            BookHandler.OpenBook(bookDetails[0])
+            bH.CloseBook()
+            bH.OpenBook(bookDetails[0])
             cursor.execute("SELECT * FROM BOOKS")
             for rows in cursor:
                 if(rows["ISBN"]==bookDetails[0]):
@@ -50,6 +50,7 @@ class LibraryClerk:
                         bH.available.append(str(rows["UniqueID"]))
             print(bH.available)
             bH.UpdateDatabase()
+            bH.CloseBook()
         else:
             book = {
                 'ISBN' :  bookDetails[0]
@@ -81,6 +82,7 @@ class LibraryClerk:
             listOfDisposed.append([row['ISBN'],row['UniqueID']])
         for book in listOfDisposed:
             bH = BookHandler.Create()
+            bH.CloseBook()
             bH.OpenBook(book[0])
             bH.UpdateBook()
             print(BookHandler.GetAvailableUIDs())
@@ -120,6 +122,7 @@ class LibraryClerk:
         cursor.execute(memberUpdate, listOfBooks)
         db.commit()
         bH = BookHandler.Create()
+        bH.CloseBook()
         bH.OpenBook(book)
         bH.ReturnSelected(libraryMember._memberID)
         bH.CloseBook()
