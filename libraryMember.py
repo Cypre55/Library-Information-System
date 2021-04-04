@@ -4,9 +4,10 @@ from book import Book
 from bookHandler import BookHandler, SplitTableEntry, JoinTableEntry
 from datetime import date, datetime, timedelta
 import mysql.connector as mysql
+import settings
 db = mysql.connect(
     host = "localhost",
-    user = "root",
+    user = settings.user,
     passwd = "1234",
     database = "lis"
 )

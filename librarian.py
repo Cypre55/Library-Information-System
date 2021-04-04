@@ -5,9 +5,10 @@ from cryptography.fernet import Fernet
 from datetime import date, datetime, timedelta
 import mysql.connector as mysql
 import base64
+import settings
 db = mysql.connect(
     host = "localhost",
-    user = "root",
+    user = settings.user,
     passwd = "1234",
     database = "lis"
 )
