@@ -24,10 +24,11 @@ def decode_message(encMessage):
     fernet = Fernet(key2)
     decMessage = fernet.decrypt(encMessage)
     return decMessage.decode()
+
 cursor = db.cursor(dictionary = True)
-cursor.execute('SELECT * FROM MEMBERS')
-for row in cursor:
-    print(decode_message(bytes((row["PassWd"]),'utf-8')))
+# cursor.execute('SELECT * FROM MEMBERS')
+# for row in cursor:
+#     print(decode_message(bytes((row["PassWd"]),'utf-8')))
 class Librarian(LibraryClerk):
     __reminder = False
     
@@ -37,6 +38,20 @@ class Librarian(LibraryClerk):
         LibraryClerk.__init__(self, employeeID, name)
     
     def AddMember(self, libraryMember: LibraryMember, passwd):
+        if(libraryMember.GetMemberID()==""):
+            raise ValueError
+        
+        if(libraryMember.GetName()==""):
+            raise ValueError
+            
+        mem = {
+            'MemberID' : libraryMember.GetMemberID()
+        }
+        cursor.execute("SELECT MemberID FROM MEMBERS WHERE MemberID = %(MemberID)s", mem)
+        for row in cursor:
+            if(row['MemberID']==libraryMember.GetMemberID()):
+                raise ValueError
+
         addMember = ("INSERT INTO MEMBERS "
                    "VALUES (%(MemberID)s, %(MemberName)s, %(MemberType)s, %(ListOfBooksIssued)s, %(ReservedBook)s, %(GotReminder)s, %(PassWd)s)")
         print(str(type(libraryMember)))
@@ -59,6 +74,18 @@ class Librarian(LibraryClerk):
         db.commit()
     
     def RemoveMember(self, libraryMember: LibraryMember):
+        member = {
+        'mem' : libraryMember.GetMemberID()
+        }
+        cursor.execute(("SELECT * FROM MEMBERS WHERE MemberID = %(mem)s"),member)
+        cnt=0
+        for row in cursor:
+            cnt = cnt + 1
+            if(row['ListOfBooksIssued']!=None):
+                raise ValueError("This member can not be deleted as they have overdue books or un-returned books.")
+        if(cnt==0):
+            raise ValueError("No member present with this member ID.")
+        
         deleteMembers = ("DELETE FROM MEMBERS "
                          "WHERE MemberID = %(MemberID)s")
         memberID = {
@@ -76,18 +103,29 @@ class Librarian(LibraryClerk):
         UpdateReminders()
     
     def CheckBookIssueStats(self):
-        checkStats = ("SELECT UniqueID FROM BOOKS "
-                      "WHERE DATEDIFF(%(CurrDate)s, LastIssued) > %(DifferenceInDays)s")
-        currDate = {
-            'CurrDate' : date.today(),
-            'DifferenceInDays' : 1826
-        }
-        cursor.execute(checkStats, currDate)
+        checkStats = ("SELECT * FROM BOOKS")
+        cursor.execute(checkStats)
         obsoleteBooks = []
+        print("REACHED")
         for row in cursor:
-            obsoleteBooks.append("{UniqueID}".format(UniqueID=row['UniqueID']))
-        print(obsoleteBooks)
+            print(row)
+            dateissued = row["LastIssued"]
+            if((date.today()-dateissued).days >= 1826):
+                obsoleteBooks.append("{UniqueID}".format(UniqueID=row['UniqueID']))
+        return obsoleteBooks
     def DisposeBook(self, UID):
+        f = False
+        f2 = True
+        cursor.execute("SELECT * FROM BOOKS")
+        for rows in cursor:
+            if(str(rows["UniqueID"])==str(UID)):
+                f = True
+                dateissued = rows["LastIssued"]
+                if((date.today()-dateissued).days < 1826):
+                    f2 = False
+        if f == False or f2 == False:
+            raise ValueError("UID not in system")
+        
         disposeBook = ("UPDATE BOOKS "
                        "SET IsDisposed = 1 "
                        "WHERE UniqueID=%(UniqueID)s")

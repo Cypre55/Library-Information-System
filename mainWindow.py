@@ -2,6 +2,11 @@ from tkinter import *
 from colors import *
 from loginWindow import LoginWindow
 from memberHomeWindow import MemberHomeWindow
+from clerkHomeWindow import ClerkHomeWindow
+from librarianHomeWindow import LibrarianHomeWindow
+from underGraduateStudent import UnderGraduateStudent
+from libraryClerk import LibraryClerk
+from librarian import Librarian
 
 class MainWindow():
     def __init__(self, master):
@@ -16,28 +21,49 @@ class MainWindow():
         self.currWindow = ""
         # self.ShowLogin()
         # self.currWindow.grid_forget()
-        self.ShowMemberHome()
+        self.ShowMemberHome(UnderGraduateStudent("Chappidi Yoga Satwik", "19CS30013", [], None))
+        # self.ShowClerkHome(LibraryClerk("LIB0021", "Sam"))
+        # self.ShowLibrarianHome(Librarian("LIB0001", "Harry"))
 
     def ShowLogin(self):
         if self.currWindow:
             self.currWindow.grid_forget()
         if not hasattr(self, 'login'):
             self.login = LoginWindow(self.master, self)
+        # print(self.login.id.set(""))
         self.currWindow = self.login
         self.login.grid(column=0, row=1)
 
-    def RemoveLogin(self):
-        if hasattr(self, 'login'):
-            self.login.grid_forget()
+    # def RemoveLogin(self):
+    #     if hasattr(self, 'login'):
+    #         self.login.grid_forget()
 
-    def ShowMemberHome(self):
+    def ShowMemberHome(self, member):
         if self.currWindow:
             self.currWindow.grid_forget()
         if hasattr(self, 'memberHome'):
             del self.memberHome
-        self.memberHome = MemberHomeWindow(self.master, self)
+        self.memberHome = MemberHomeWindow(self.master, self, member)
         self.currWindow = self.memberHome
         self.memberHome.grid(column=0, row=1)
+
+    def ShowClerkHome(self, clerk):
+        if self.currWindow:
+            self.currWindow.grid_forget()
+        if hasattr(self, 'clerkHome'):
+            del self.clerkHome
+        self.clerkHome = ClerkHomeWindow(self.master, self, clerk)
+        self.currWindow = self.clerkHome
+        self.clerkHome.grid(column=0, row=1)
+
+    def ShowLibrarianHome(self, librarian):
+        if self.currWindow:
+            self.currWindow.grid_forget()
+        if hasattr(self, 'librarianHome'):
+            del self.librarianHome
+        self.librarianHome = LibrarianHomeWindow(self.master, self, librarian)
+        self.currWindow = self.librarianHome
+        self.librarianHome.grid(column=0, row=1)
 
 root = Tk()
 app = MainWindow(root)

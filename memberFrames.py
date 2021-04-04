@@ -1,14 +1,15 @@
 from tkinter import *
 from tkinter import ttk
 from colors import *
-# from tkinter.ttk import Treeview
+from availabilityWindow import *
 from helperFrames import ScrollableFrame
+from bookHandler import SplitTableEntry, JoinTableEntry
 
 class ProfileFrame(Frame):
-    # Pass Member object
-    def __init__(self, master):
+    def __init__(self, master, member):
         super().__init__(master)
         self.master = master
+        self.member = member
 
         self.config(bg = lightorange, pady=210)
 
@@ -18,7 +19,7 @@ class ProfileFrame(Frame):
 
         self.nameFrame = Frame(self)
         self.nameFrame.config(bg=lightorange)
-        self.nameLabel = Label(self.nameFrame, text="Name: " + "Chappidi Yoga Satwik") # Change Name
+        self.nameLabel = Label(self.nameFrame, text="Name: " + self.member._name) 
         self.nameLabel.config(font=(12), bg=orange, fg=white)
         self.nameLabel.grid(column=0, row=0, padx = 5, pady = 5)
         self.blanknameLabel = Label(self.nameFrame, bg=lightorange)
@@ -32,7 +33,7 @@ class ProfileFrame(Frame):
 
         self.IDFrame = Frame(self)
         self.IDFrame.config(bg=lightorange)
-        self.IDLabel = Label(self.IDFrame, text="Member ID: " + "19CS30013") # Change roll
+        self.IDLabel = Label(self.IDFrame, text="Member ID: " + self.member._memberID)
         self.IDLabel.config(font=(12), bg=orange, fg=white)
         self.IDLabel.grid(column=0, row=0, padx = 5, pady = 5)
         self.blankIDLabel = Label(self.IDFrame, bg=lightorange)
@@ -67,7 +68,7 @@ class ProfileFrame(Frame):
 
         self.reservedFrame = Frame(self)
         self.reservedFrame.config(bg=lightorange)
-        self.reservedLabel = Label(self.reservedFrame, text="Reserved Book:")
+        self.reservedLabel = Label(self.reservedFrame, text="Reserved Book: " + str(self.member._reservedBook))
         self.reservedLabel.config(font=(12), bg=orange, fg=white)
         self.reservedLabel.grid(column=0, row=0, padx = 5, pady = 5)
         self.blankreservedLabel = Label(self.reservedFrame, bg=lightorange)
@@ -78,11 +79,12 @@ class ProfileFrame(Frame):
 
 
 class SearchFrame(Frame):
-    def __init__(self, master):
+    def __init__(self, master, member):
         super().__init__(master)
         self.master = master
+        self.member = member
         
-        self.config(bg = lightorange)
+        self.config(bg = lightorange, pady=230, padx=250)
 
         self.searchLabel = Label(self, text="Search by Name/Author")
         self.searchLabel.config(font=(12), bg=orange, fg=white)
@@ -132,5 +134,17 @@ class SearchFrame(Frame):
             self.resultFrames.append(frame)
             del frame
 
-    def CheckAvailability(self, i):
-        print("You checked: " + str(i))
+    def CheckAvailability(self, book):
+        response = self.member.CheckAvailabilityOfBook(book.__ISBN)
+        if isinstance(response, str):
+            if self.member._reservedBook == book.__ISBN:
+                pass
+            elif self.member._reservedBook != None:
+                pass
+            else:
+                pass
+        elif isinstance(response, tuple):
+            if self.member._reservedBook == book.__ISBN:
+                pass
+            else:
+                pass

@@ -4,10 +4,11 @@ from memberFrames import *
 
 class MemberHomeWindow(Frame):
     # pass member object
-    def __init__(self, master, mainWindow):
+    def __init__(self, master, mainWindow, member):
         super().__init__(master)
         self.master = master
         self.mainWindow = mainWindow
+        self.member = member
 
         self.currFrame = ""
 
@@ -18,7 +19,7 @@ class MemberHomeWindow(Frame):
 
         self.memberIDFrame = Frame(self.leftFrame)
         self.memberIDFrame.config(bg=lightorange)
-        self.memberIDLabel = Label(self.memberIDFrame, text="Member ID: 19CS30013")
+        self.memberIDLabel = Label(self.memberIDFrame, text="Member ID: " + self.member._memberID)
         self.memberIDLabel.config(font=(12), bg=orange, fg=white)
         self.memberIDLabel.grid(column=0, row=0, padx=80, pady=5)
         self.memberIDFrame.grid(column=0, row=0, padx=5, pady=5)
@@ -59,8 +60,8 @@ class MemberHomeWindow(Frame):
 
         # self.ShowReminder("Hello World")
         # self.RemoveReminder()
-        # self.ShowHome()
-        self.ShowSearchBook()
+        self.ShowHome()
+        # self.ShowSearchBook()
 
     def ShowHome(self):
         if self.currFrame:
@@ -78,7 +79,7 @@ class MemberHomeWindow(Frame):
         if self.currFrame:
             self.currFrame.grid_forget()
         if not hasattr(self, 'profileFrame'):
-            self.profileFrame = ProfileFrame(self.rightFrame)
+            self.profileFrame = ProfileFrame(self.rightFrame, self.member)
             
         self.currFrame = self.profileFrame
         self.profileFrame.grid(column=0, row=0, pady=10)
@@ -87,7 +88,7 @@ class MemberHomeWindow(Frame):
         if self.currFrame:
             self.currFrame.grid_forget()
         if not hasattr(self, 'searchFrame'):
-            self.searchFrame = SearchFrame(self.rightFrame)
+            self.searchFrame = SearchFrame(self.rightFrame, self.member)
             
         self.currFrame = self.searchFrame
         self.searchFrame.grid(column=0, row=0, pady=10)

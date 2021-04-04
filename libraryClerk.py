@@ -3,6 +3,7 @@ from libraryMember import LibraryMember
 from underGraduateStudent import UnderGraduateStudent
 from bookHandler import BookHandler, JoinTableEntry, SplitTableEntry, UpdateReminders
 from datetime import date, datetime, timedelta
+from activeReservation import ActiveReservation
 import mysql.connector as mysql
 import settings
 db = mysql.connect(
@@ -11,6 +12,7 @@ db = mysql.connect(
     passwd = "1234",
     database = "lis"
 )
+db.autocommit = True
 cursor = db.cursor(dictionary = True)
 
 class LibraryClerk:
@@ -37,22 +39,38 @@ class LibraryClerk:
             if(bookDetails[0] == row['ISBN']):
                 flag=1
                 break
-        
-        if (flag == 0):
-            cursor.execute("SELECT UniqueID FROM BOOKS WHERE ISBN = " + bookDetails[0])
-            row = cursor.fetchone()
+        if(flag == 1):
+            print("FLAG = 1")
+            bH = BookHandler.Create()
+            BookHandler.OpenBook(bookDetails[0])
+            cursor.execute("SELECT * FROM BOOKS")
+            for rows in cursor:
+                if(rows["ISBN"]==bookDetails[0]):
+                    if str(rows["UniqueID"]) not in bH.available and str(rows["UniqueID"]) not in bH.taken and str(rows["UniqueID"]) not in bH.readyToClaimUIDs:
+                        bH.available.append(str(rows["UniqueID"]))
+            print(bH.available)
+            bH.UpdateDatabase()
+        else:
+            book = {
+                'ISBN' :  bookDetails[0]
+            }
+            cursor.execute(("SELECT UniqueID FROM BOOKS WHERE ISBN = %(ISBN)s"),book)
+            row = {}
+            for rows in cursor:
+                row = rows
+            print(rows)
             addISBN = ("INSERT INTO RESERVATIONS "
             "VALUES (%(ISBN)s, %(AvailableUIDs)s, %(TakenUIDs)s, %(PendingReservations)s, %(ActiveReservations)s, %(ActiveReservedUIDs)s, %(NumberOfCopiesAvailable)s)")
             dataISBN = {
                 'ISBN' : bookDetails[0],
-                'AvailableUIDs' : row['UniqueID'] + ',',
+                'AvailableUIDs' : str(row['UniqueID']) + ',',
                 'TakenUIDs' : None,
                 'PendingReservations' : None,
                 'ActiveReservations' : None,
                 'ActiveReservedUIDs' : None,
                 'NumberOfCopiesAvailable' : 1
             }
-            cursor.execute(addISBN,dataISBN)
+            cursor.execute(addISBN, dataISBN)
             db.commit()
 
     def DeleteBook(self):

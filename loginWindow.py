@@ -20,8 +20,8 @@ class LoginWindow(Frame):
         self.opt.config(font=(12), bg=orange, fg=label_fg)
         self.opt.grid(column=0, row=0, padx=670, pady=130)
 
-        self.id = ""
-        self.password = ""
+        self.id = StringVar()
+        self.password = StringVar()
 
         self.loginFrame = Frame(self)
         self.loginFrame.config(bg=orange, padx=100, pady=50)
@@ -39,7 +39,7 @@ class LoginWindow(Frame):
         self.passLabel.config(font=(12), bg=orange, fg=white)
         self.passLabel.grid(column=0, row=0)
         
-        self.passEntry = Entry(self.passFrame, textvariable = self.password)
+        self.passEntry = Entry(self.passFrame, textvariable = self.password, show="*")
         self.passEntry.grid(column=1, row=0)
         self.passEntry.config(bg=lightorange, fg=white)
         
@@ -96,20 +96,28 @@ class LoginWindow(Frame):
 
     def Login(self):
         if self.variable.get() == "Member":
-            # try:
-            #     member = MemberLogin(self.id, self.password)
-            # except ValueError as e:
-            #     self.DisplayError(e)
-            #     # print(ValueError.message)
-            self.mainWindow.ShowMemberHome()
-            self.RemoveError()
+            # print("Login Called")
+            success = True
+            try:
+                member = MemberLogin(self.id.get(), self.password.get())
+            except ValueError as e:
+                success = False
+                self.DisplayError(e)
+                # print(ValueError.message)
+            if success:
+                self.mainWindow.ShowMemberHome(member)
+                self.RemoveError()
         else:
             self.DisplayError("OOPS!!!")
             print("HELLO")
 
-    def DisplayError(self, message):
+    def DisplayError(self, message): 
+        # self.loginFrame.config(pady=80)   
+        self.loginFrame.grid(column=0, row=1, pady=90)
+        self.errorLabel.grid_forget()
         self.errorLabel.config(text=message)
         self.errorLabel.grid(column=0, row=4, pady=10)
 
     def RemoveError(self):
+        self.loginFrame.grid(column=0, row=1, pady=110)
         self.errorLabel.grid_forget()

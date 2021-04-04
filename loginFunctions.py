@@ -13,12 +13,15 @@ from postGraduateStudent import PostGraduateStudent
 from researchScholar import ResearchScholar
 from facultyMember import FacultyMember
 from bookHandler import SplitTableEntry, JoinTableEntry
-from librarian import Librarian, encode_message
+from librarian import Librarian, encode_message, decode_message
 from libraryClerk import LibraryClerk
 
 def MemberLogin(memberID: str, password: str):
-    if not memberID or not password:
-        raise ValueError("Missing Arguments")
+    if memberID == "":
+        raise ValueError("MemberID missing.")
+
+    if not password:
+        raise ValueError("Password missing.")
     
     findMember = ("SELECT * FROM MEMBERS")
     cursor.execute(findMember)
@@ -33,18 +36,18 @@ def MemberLogin(memberID: str, password: str):
         raise ValueError("Invalid MemberID inputted.")
 
     # PassWord Auth
-    encodedPassword = encode_message(password)
-    if encodedPassword != correctRow["PassWD"]:
+    decodedPassword = decode_message(bytes((correctRow["PassWd"]),'utf-8'))
+    if decodedPassword != password:
         raise ValueError("Incorrect Password inputted.")
 
     if correctRow["MemberType"] == "UG":
-        return UnderGraduateStudent(correctRow['MemberID'], correctRow['MemberName'], SplitTableEntry(correctRow['ListOfBooksIssued']), correctRow['ReservedBook'])
+        return UnderGraduateStudent(correctRow['MemberName'], correctRow['MemberID'], SplitTableEntry(correctRow['ListOfBooksIssued']), correctRow['ReservedBook'])
     if correctRow["MemberType"] == "PG":
-        return PostGraduateStudent(correctRow['MemberID'], correctRow['MemberName'], SplitTableEntry(correctRow['ListOfBooksIssued']), correctRow['ReservedBook'])
+        return PostGraduateStudent(correctRow['MemberName'], correctRow['MemberID'], SplitTableEntry(correctRow['ListOfBooksIssued']), correctRow['ReservedBook'])
     if correctRow["MemberType"] == "RS":
-        return ResearchScholar(correctRow['MemberID'], correctRow['MemberName'], SplitTableEntry(correctRow['ListOfBooksIssued']), correctRow['ReservedBook'])
+        return ResearchScholar(correctRow['MemberName'], correctRow['MemberID'], SplitTableEntry(correctRow['ListOfBooksIssued']), correctRow['ReservedBook'])
     if correctRow["MemberType"] == "FM":
-        return FacultyMember(correctRow['MemberID'], correctRow['MemberName'], SplitTableEntry(correctRow['ListOfBooksIssued']), correctRow['ReservedBook'])
+        return FacultyMember(correctRow['MemberName'], correctRow['MemberID'], SplitTableEntry(correctRow['ListOfBooksIssued']), correctRow['ReservedBook'])
 
     
 def EmployeeLogin(employeeID: str, password: str):
@@ -63,9 +66,13 @@ def EmployeeLogin(employeeID: str, password: str):
     if not found:
         raise ValueError("Invalid EmployeeID inputted.")
 
-    if employeeID == "LIB001":
-        # PassCheck
-        # Librarian(, )
-        pass
+    decodedPassword = decode_message(bytes((correctRow["PassWd"]),'utf-8'))
+    if decodedPassword != password:
+        raise ValueError("Incorrect Password inputted.")
+
+    if correctRow['EmployeeID'] == "LIB0001":
+        return Librarian(correctRow['EmployeeID'], correctRow['EmployeeName'])
+    else:
+        return LibraryClerk(correctRow['EmployeeID'], correctRow['EmployeeName'])
 
     

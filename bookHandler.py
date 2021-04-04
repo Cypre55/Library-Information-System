@@ -3,6 +3,7 @@ from book import Book
 from activeReservation import ActiveReservation
 from datetime import date, datetime, timedelta
 import mysql.connector as mysql
+import copy
 import settings
 db = mysql.connect(
     host = "localhost",
@@ -116,6 +117,7 @@ class BookHandler:
         member = {
             'MemberID' : None
         }
+        print(BookHandler.readyToClaimUsers)
         for entry in BookHandler.readyToClaimUsers:
             member['MemberID'] = entry.memberID
             if entry.claimByDate < date.today():
@@ -129,12 +131,24 @@ class BookHandler:
                     BookHandler.available.append(reservationFree)
         BookHandler.readyToClaimUsers = [item for item in BookHandler.readyToClaimUsers if item.claimByDate >= date.today()]
         BookHandler.numberOfCopies = len(BookHandler.available)
+        
     
     @staticmethod
     def UpdateDatabase():
+        copyavail = copy.deepcopy(BookHandler.available)
+        for currUID in BookHandler.available:
+            if(len(BookHandler.waitList)==0):
+                break
+            if(len(copyavail)==0):
+                break
+            BookHandler.readyToClaimUIDs.append(currUID)
+            memberActivated = BookHandler.waitList.pop(0)
+            newActive = ActiveReservation(memberActivated, (datetime.now()+timedelta(days = 7)).date())
+            BookHandler.readyToClaimUsers.append(newActive)
+            copyavail.remove(currUID)
+        BookHandler.available = copyavail
         BookHandler.numberOfCopies = len(BookHandler.available)
         readyToClaimUsers = list(map(lambda x: str(x.claimByDate)+'*'+x.memberID, BookHandler.readyToClaimUsers))        
-        
         updateReservationTable = ("UPDATE RESERVATIONS SET AvailableUIDs = %(AvailableUIDs)s, TakenUIDs = %(TakenUIDs)s, PendingReservations = %(PendingReservations)s, ActiveReservations = %(ActiveReservations)s, ActiveReservedUIDs = %(ActiveReservedUIDs)s, NumberOfCopiesAvailable = %(NumberOfCopiesAvailable)s WHERE ISBN = %(ISBN)s")
         dataReservation = {
             'ISBN' : BookHandler.currISBN,
@@ -156,7 +170,6 @@ class BookHandler:
         if(BookHandler.currUID in BookHandler.available):
             BookHandler.available.remove(BookHandler.currUID)
         elif(BookHandler.currUID in BookHandler.readyToClaimUIDs):
-            
             BookHandler.readyToClaimUIDs.remove(BookHandler.currUID)
             BookHandler.readyToClaimUsers = [x for x in BookHandler.readyToClaimUsers if x.memberID != memberID]
             cursor.execute(str("UPDATE MEMBERS SET ReservedBook = NULL WHERE MemberId = \""+memberID+"\""))
@@ -171,9 +184,12 @@ class BookHandler:
     @staticmethod
     def ReturnSelected(memberID: str):
         BookHandler.taken.remove(str(BookHandler.currUID))
-        if len(BookHandler.waitList) ==0:
+        print(BookHandler.waitList)
+        if len(BookHandler.waitList)==0:
+            print('no')
             BookHandler.available.append(BookHandler.currUID)
         else:
+            print('yes')
             BookHandler.readyToClaimUIDs.append(BookHandler.currUID)
             memberActivated = BookHandler.waitList.pop(0)
             newActive = ActiveReservation(memberActivated, (datetime.now()+timedelta(days = 7)).date())
