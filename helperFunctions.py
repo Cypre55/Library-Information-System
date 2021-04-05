@@ -73,3 +73,14 @@ def IsReservationActive(ISBN, memberID):
         return " (Active)"
     else:
         return " (Pending)"
+
+def IsBookDisposed(uid):
+        uid_ = {
+            'UID' : int(uid)
+        }
+        cursor.execute(("SELECT IsDisposed FROM BOOKS WHERE UniqueID = %(UID)s"),uid_)
+        row = cursor.fetchone()
+        db.commit()
+        if (row['IsDisposed']==1):
+            return -1
+        return 1

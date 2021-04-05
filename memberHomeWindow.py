@@ -95,7 +95,8 @@ class MemberHomeWindow(Frame):
             self.currFrame.grid_forget()
         if not hasattr(self, 'profileFrame'):
             self.profileFrame = ProfileFrame(self.rightFrame, self.member)
-            
+        
+        self.profileFrame.Update()
         self.currFrame = self.profileFrame
         self.profileFrame.grid(column=0, row=0, pady=10)
 

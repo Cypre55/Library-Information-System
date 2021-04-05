@@ -7,6 +7,15 @@ from librarianHomeWindow import LibrarianHomeWindow
 from underGraduateStudent import UnderGraduateStudent
 from libraryClerk import LibraryClerk
 from librarian import Librarian
+import mysql.connector as mysql
+import settings
+db = mysql.connect(
+    host = "localhost",
+    user = settings.user,
+    passwd = "1234",
+    database = "lis"
+)
+cursor = db.cursor(dictionary = True)
 
 class MainWindow():
     def __init__(self, master):
@@ -60,6 +69,12 @@ class MainWindow():
         self.currWindow = self.librarianHome
         self.librarianHome.grid(column=0, row=1)
 
+
+# INSERT IGNORE INTO EMPLOYEES VALUES ('LIB0001', 'Neha', 'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==');
+cursor.execute("INSERT IGNORE INTO EMPLOYEES VALUES ('LIB0001', 'Neha', 'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==');")
+db.commit()
+cursor.execute("INSERT IGNORE INTO EMPLOYEES VALUES ('LIB0068', 'Rajat', 'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==');")
+db.commit()
 root = Tk()
 app = MainWindow(root)
 root.mainloop()

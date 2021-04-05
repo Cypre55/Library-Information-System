@@ -1,7 +1,7 @@
 from tkinter import *
 from colors import *
 from tkinter import ttk
-from helperFunctions import GetLibraryMember, GetBookInfoFromUID
+from helperFunctions import GetLibraryMember, GetBookInfoFromUID, IsBookDisposed
 from book import Book
 
 class AvailableFrame(Frame):
@@ -29,8 +29,8 @@ class AvailableFrame(Frame):
         self.listBox = ttk.Treeview(self, columns=cols, show='headings', selectmode="browse")
         for col in cols:
             self.listBox.heading(col, text=col)   
-        for i in range(len(response[0])):
-            self.listBox.insert("", "end", values=(response[0][i], response[1][i]))
+        for i in range(len(response[1][0])):
+            self.listBox.insert("", "end", values=(response[1][0][i], response[1][1][i]))
 
         self.listBox.grid(column=0, row=2, padx=10, pady=10)
 
@@ -46,7 +46,11 @@ class AvailableFrame(Frame):
         self.errorLabel.config(font=(12), bg=orange, fg=white)
 
     def UpdateList(self):
-        pass
+        response = self.member.CheckAvailabilityOfBook(self.response[0])
+        self.listBox.delete(*self.listBox.get_children())
+        if not isinstance(response, str):
+            for i in range(len(response[0])):
+                self.listBox.insert("", "end", values=(response[0][i], response[1][i]))
 
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()
@@ -67,9 +71,14 @@ class AvailableFrame(Frame):
             self.DisplayError(e)
             success = False
 
+        if IsBookDisposed(book.GetUID()) == -1:
+            self.DisplayError("Book is marked as Disposed")
+            return
+
         response = self.member.IssueBook(book)
         # print(type(response))
         # print(response)
+        
         if response == None:
             self.RemoveError()
             success = False
@@ -83,6 +92,7 @@ class AvailableFrame(Frame):
         if success:
             self.RemoveError()
             self.DisplayError("Book Issued Successfully.")
+            self.UpdateList()
 
         # self.member.IssueBook()
         # print(self.listBox.item(self.listBox.selection()[0], "value"))
@@ -113,8 +123,8 @@ class ClaimFrame(Frame):
         self.listBox = ttk.Treeview(self, columns=cols, show='headings')
         for col in cols:
             self.listBox.heading(col, text=col)   
-        for i in range(len(response[0])):
-            self.listBox.insert("", "end", values=(response[0][i], response[1][i]))
+        for i in range(len(response[1][0])):
+            self.listBox.insert("", "end", values=(response[1][0][i], response[1][1][i]))
 
         self.listBox.grid(column=0, row=2, padx=10, pady=10)
 
@@ -128,6 +138,14 @@ class ClaimFrame(Frame):
 
         self.errorLabel = Label(self, text="")
         self.errorLabel.config(font=(12), bg=orange, fg=white)
+
+    def UpdateList(self):
+        response = self.member.CheckAvailabilityOfBook(self.response[0])
+        self.listBox.delete(*self.listBox.get_children())
+        if not isinstance(response, str):
+            for i in range(len(response[0])):
+                self.listBox.insert("", "end", values=(response[0][i], response[1][i]))
+
 
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()
@@ -147,15 +165,24 @@ class ClaimFrame(Frame):
             self.DisplayError(e)
             success = False
         
+        if IsBookDisposed(book.GetUID()) == -1:
+            self.DisplayError("Book is marked as Disposed")
+            return
+
         response = self.member.IssueBook(book)
 
         if response == None:
             success = False
             self.DisplayError("Issue Limit Exceeded")
 
+        if response == 0:
+            self.RemoveError()
+            success = False
+            self.DisplayError("Book already claimed.")
 
         if success:
             self.DisplayError("Book Issued Successfully.")
+            self.UpdateList()
         
 
 class PendingFrame(Frame):
@@ -168,7 +195,7 @@ class PendingFrame(Frame):
         self.titleLabel.config(font=(40), bg=orange, fg=white)
         self.titleLabel.grid(column=0, row=0, pady=10)
 
-        self.messageLabel = Label(self, text=response)
+        self.messageLabel = Label(self, text=response[1])
         self.messageLabel.config(font=(40), bg=orange, fg=white)
         self.messageLabel.grid(column=0, row=1, pady=10)
 
@@ -235,7 +262,7 @@ class NoReserveFrame(Frame):
         self.titleLabel.config(font=(40), bg=orange, fg=white)
         self.titleLabel.grid(column=0, row=0, pady=10)
 
-        self.messageLabel = Label(self, text=response)
+        self.messageLabel = Label(self, text=response[1])
         self.messageLabel.config(font=(40), bg=orange, fg=white)
         self.messageLabel.grid(column=0, row=1, pady=10)
 

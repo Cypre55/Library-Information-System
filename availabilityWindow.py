@@ -21,7 +21,7 @@ class AvailabiltyWindow():
             ReserveFrame(self.availRoot, self.member, self.response),
             NoReserveFrame(self.availRoot, self.member, self.response)
         ]
-        print(type(self.frames[self.mode]))
+        # print(type(self.frames[self.mode]))
         self.frames[self.mode].grid(column=0, row=0)
 
         self.availRoot.mainloop()

@@ -80,13 +80,13 @@ class Librarian(LibraryClerk):
         isNone = False
         for row in cursor:
             cnt = cnt + 1
-            if(row['ListOfBooksIssued']!=None):
+            if(row['ListOfBooksIssued']!=None or row['ReservedBook']!=None):
                     isNone = True
         db.commit()
         if(cnt==0):
             raise ValueError("No member present with this member ID.")
         if(isNone==True):
-            raise ValueError("This member can not be deleted as they have overdue books or un-returned books.")
+            raise ValueError("This member can not be deleted as they\n have overdue books  or a reservation for a book. ")
         
         deleteMembers = ("DELETE FROM MEMBERS "
                          "WHERE MemberID = %(MemberID)s")

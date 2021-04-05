@@ -243,7 +243,7 @@ class CheckIssueStats(Frame):
 
         self.listBox.grid(column=0, row=0)
 
-        # self.UpdateList()
+        self.UpdateList()
 
         self.notIssuedFrame.grid(column=0, row=2, pady=10)
 
@@ -257,9 +257,9 @@ class CheckIssueStats(Frame):
         return self.librarian.CheckBookIssueStats()
 
     def UpdateList(self):
-        self.notIssuedListbox.delete(0,END)
+        self.listBox.delete(*self.listBox.get_children())
         for book in self.notIssued:
-            self.notIssuedListbox.insert(END, book)
+            self.listBox.insert("", "end", values=(book[0], book[1]))
 
     def DisposeBook(self):
         self.RemoveError()

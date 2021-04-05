@@ -10,6 +10,8 @@ class UnderGraduateStudent(LibraryMember):
         LibraryMember.__init__(self, *args)
 
     def CanIssue(self):
+        # print(self._numberOfBooksIssued)
+        # print(UnderGraduateStudent.__maxBooksAllowed)
         return (self._numberOfBooksIssued < UnderGraduateStudent.__maxBooksAllowed)
 
     def GetMaxBooksAllowed(self):

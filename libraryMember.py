@@ -124,10 +124,10 @@ class LibraryMember(ABC):
             else:
                 if (self._reservedBook == None):
                     bH.CloseBook()
-                    return 'Sorry this book is not available currently, Would you like to reserve this book?'
+                    return 'Sorry this book is not available currently,\n Would you like to reserve this book?'
                 else:
                     bH.CloseBook()
-                    return 'Sorry this book is not available currently, and you already have a reservation'
+                    return 'Sorry this book is not available currently,\n and you already have a reservation'
          
     def IssueBook(self, book: Book):
         if not self.CanIssue() :
@@ -147,10 +147,11 @@ class LibraryMember(ABC):
         joined_string = ",".join(self._listOfBooksIssued)
         joined_string = joined_string+','
         cursor.execute(str("UPDATE MEMBERS SET ListOfBooksIssued = \""+joined_string+"\" WHERE MemberID = \""+self._memberID+"\""))
-        
+        self._numberOfBooksIssued += 1
         db.commit()
         self.UpdateFromDatabase()
         bH.CloseBook()
+        
         # print("Hi")
         return 1
 

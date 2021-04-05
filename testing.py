@@ -44,7 +44,7 @@ def delete():
 #Employee not in members table
 #PASS\n\nword does not match
 
-a_file = open("sample.txt", "w")
+a_file = open("testReport.txt", "w")
 
 # 3. Library Member
 #Getter Function
@@ -118,7 +118,7 @@ student = UnderGraduateStudent("Harry", "19CS30014", [] , None)
 cursor.execute(("INSERT INTO RESERVATIONS VALUES ('988-0789032742',NULL,'1,',NULL,NULL,NULL,0)"))
 db.commit()
 result=student.CheckAvailabilityOfBook("988-0789032742")
-if(result=='Sorry this book is not available currently, Would you like to reserve this book?'):
+if(result=='Sorry this book is not available currently,\n Would you like to reserve this book?'):
     print("Check availability when member has no reservation in ISBN and no copies are available: PASS\n\n",  file = a_file)
 else:
     print("Check availability when member has no reservation in ISBN and no copies are available: FAIL\n\n",  file = a_file)
@@ -128,7 +128,7 @@ student = UnderGraduateStudent("Harry", "19CS30014",  [] , "999-6666689999")
 cursor.execute(("INSERT INTO RESERVATIONS VALUES ('988-0789032742',NULL,'1,',NULL,NULL,NULL,0)"))
 db.commit()
 result=student.CheckAvailabilityOfBook("988-0789032742")
-if(result=='Sorry this book is not available currently, and you already have a reservation'):
+if(result=='Sorry this book is not available currently,\n and you already have a reservation'):
     print("Check availability when member has a reservation in different ISBN and no copies are available: PASS\n\n",  file = a_file)
 else:
     print("Check availability when member has a reservation in different ISBN and no copies are available: FAIL\n\n",  file = a_file)

@@ -11,7 +11,7 @@ class ProfileFrame(Frame):
         super().__init__(master)
         self.master = master
         self.member = member
-        # self.member = GetLibraryMember(member.GetMemberID())
+        self.member = GetLibraryMember(member.GetMemberID())
 
         self.config(bg = lightorange, pady=210)
 
@@ -88,22 +88,26 @@ class ProfileFrame(Frame):
             self.listBox.insert("", "end", values=(book["BookName"], book["UniqueID"], book["LastIssued"]))
 
         self.listBox.grid(column=0, row=5)
-        self.UpdateList()
 
         self.reservedFrame = Frame(self)
         self.reservedFrame.config(bg=lightorange)
-        self.reservedLabel = Label(self.reservedFrame, text="Reserved Book: " + self.ReservedString())
+        self.reservedLabel = Label(self.reservedFrame, text="")
         self.reservedLabel.config(font=(12), bg=orange, fg=white)
         self.reservedLabel.grid(column=0, row=0, padx = 5, pady = 5)
         self.blankreservedLabel = Label(self.reservedFrame, bg=lightorange)
         self.blankreservedLabel.grid(column=1, row=0, padx=420)
         self.reservedFrame.grid(column=0, row=6)
+        self.Update()
+
 
     def ReservedString(self):
-        return str(self.member._reservedBook) + IsReservationActive(str(self.member._reservedBook), self.member._memberID)
+        self.reservedLabel.config(text="Reserved Book: " + str(self.member._reservedBook) + IsReservationActive(str(self.member._reservedBook), self.member._memberID))
+        # return str(self.member._reservedBook) + IsReservationActive(str(self.member._reservedBook), self.member._memberID)
 
-    def UpdateList(self):
+    def Update(self):
+        self.member = GetLibraryMember(self.member.GetMemberID())
         self.listBox.delete(*self.listBox.get_children())
+        self.ReservedString()
         books = []
         for uid in self.member._listOfBooksIssued:
             books.append(GetBookInfoFromUID(int(uid)))
@@ -188,15 +192,15 @@ class SearchFrame(Frame):
 
     def CheckAvailability(self, result):
         response = self.member.CheckAvailabilityOfBook(result[0])
-        if isinstance(response, str):
+        response = (result[0], response)
+        if isinstance(response[1], str):
             if self.member._reservedBook == result[0]:
                 self.availWindow = AvailabiltyWindow(2, self.member, response)
             elif self.member._reservedBook != None:
                 self.availWindow = AvailabiltyWindow(4, self.member, response)
             else:
-                response = (result[0], response)
                 self.availWindow = AvailabiltyWindow(3, self.member, response)
-        elif isinstance(response, tuple):
+        elif isinstance(response[1], tuple):
             if self.member._reservedBook == result[0]:
                 self.availWindow = AvailabiltyWindow(1, self.member, response)
             else:
