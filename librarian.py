@@ -99,7 +99,7 @@ class Librarian(LibraryClerk):
     def SendReminderToMember(self):
         cursor.execute("UPDATE MEMBERS SET GotReminder = 1")
         db.commit()
-        UpdateReminders()
+        # UpdateReminders()
     
     def CheckBookIssueStats(self):
         checkStats = ("SELECT * FROM BOOKS")

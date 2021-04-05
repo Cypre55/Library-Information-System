@@ -42,10 +42,11 @@ def UpdateReminders():
             }
             cursor2 = db.cursor(dictionary = True)
             cursor2.execute(("SELECT LastIssued FROM BOOKS WHERE UniqueID = %(bookUID)s"),book)
-            for row2 in cursor2:
-                if (date.today() - row2["LastIssued"]).days> 30*period:
-                    flag = True
+            row2 = cursor2.fetchone()
             db.commit()
+            if (date.today() - row2["LastIssued"]).days > 30*self.GetMaxMonthsAllowed():
+                flag = True
+            # db.commit()
         if flag == False:
             changedMembers.append(row["MemberID"])
     db.commit()
@@ -55,7 +56,7 @@ def UpdateReminders():
             }
         cursor.execute(("UPDATE MEMBERS SET GotReminder = 0 WHERE MemberID = %(memId)s"), mem)
         db.commit()
-    db.commit()
+    # db.commit()
 
 class BookHandler:
     instance = None
@@ -120,6 +121,7 @@ class BookHandler:
         for entry in BookHandler.readyToClaimUsers:
             member['MemberID'] = entry.memberID
             if entry.claimByDate < date.today():
+            # if True:
                 cursor.execute(deleteMemberReservation, member)
                 db.commit()
                 if len(BookHandler.waitList): # if pending reservations, then make them active

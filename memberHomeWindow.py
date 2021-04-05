@@ -11,6 +11,8 @@ class MemberHomeWindow(Frame):
         self.mainWindow = mainWindow
         self.member = member
 
+        self.member.UpdateFromDatabase()
+
         self.currFrame = ""
 
         self.config(bg=orange)

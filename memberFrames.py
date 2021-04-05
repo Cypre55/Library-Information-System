@@ -88,18 +88,22 @@ class ProfileFrame(Frame):
             self.listBox.insert("", "end", values=(book["BookName"], book["UniqueID"], book["LastIssued"]))
 
         self.listBox.grid(column=0, row=5)
+        self.UpdateList()
 
         self.reservedFrame = Frame(self)
         self.reservedFrame.config(bg=lightorange)
-        self.reservedLabel = Label(self.reservedFrame, text="Reserved Book: " + str(self.member._reservedBook) + IsReservationActive(str(self.member._reservedBook), self.member._memberID))
+        self.reservedLabel = Label(self.reservedFrame, text="Reserved Book: " + self.ReservedString())
         self.reservedLabel.config(font=(12), bg=orange, fg=white)
         self.reservedLabel.grid(column=0, row=0, padx = 5, pady = 5)
         self.blankreservedLabel = Label(self.reservedFrame, bg=lightorange)
         self.blankreservedLabel.grid(column=1, row=0, padx=420)
         self.reservedFrame.grid(column=0, row=6)
 
+    def ReservedString(self):
+        return str(self.member._reservedBook) + IsReservationActive(str(self.member._reservedBook), self.member._memberID)
+
     def UpdateList(self):
-        
+        self.listBox.delete(*self.listBox.get_children())
         books = []
         for uid in self.member._listOfBooksIssued:
             books.append(GetBookInfoFromUID(int(uid)))

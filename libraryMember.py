@@ -42,7 +42,7 @@ class LibraryMember(ABC):
         return self._reservedBook
 
     def CheckForReminder(self):
-        UpdateReminders()
+        # UpdateReminders()
         overdue = []
         stro = {
             'MemberID': self._memberID
@@ -61,6 +61,12 @@ class LibraryMember(ABC):
                 db.commit()
                 if (date.today() - row2["LastIssued"]).days > 30*self.GetMaxMonthsAllowed():
                     overdue.append(UID)
+        if not overdue:
+            mem = {
+                'memId' : self._memberID
+            }
+            cursor.execute(("UPDATE MEMBERS SET GotReminder = 0 WHERE MemberID = %(memId)s"), mem)
+            db.commit()
         return overdue
                     
     def SearchBook(self, searchString):

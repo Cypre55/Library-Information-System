@@ -136,7 +136,7 @@ class LibraryClerk:
         bH.OpenBook(book)
         bH.ReturnSelected(libraryMember._memberID)
         bH.CloseBook()
-        UpdateReminders()
+        # UpdateReminders()
     def CollectPenalty(self, libraryMember: LibraryMember,  book: Book):
         daysInPossession = (date.today()-book.GetDateOfIssue()).days
         daysOverdue = max(0,(daysInPossession - 30*libraryMember.GetMaxMonthsAllowed()))

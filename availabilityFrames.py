@@ -45,6 +45,9 @@ class AvailableFrame(Frame):
         self.errorLabel = Label(self, text="")
         self.errorLabel.config(font=(12), bg=orange, fg=white)
 
+    def UpdateList(self):
+        pass
+
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()
         self.errorLabel.config(text=message)

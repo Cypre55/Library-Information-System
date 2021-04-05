@@ -141,7 +141,7 @@ student = UnderGraduateStudent("Harry", "19CS30014",  ['1'] , None)
 cursor.execute(("INSERT INTO RESERVATIONS VALUES ('988-0789032742','7,','1,3,',NULL,NULL,NULL,1)"))
 db.commit()
 result = student.IssueBook(Book('1','988-0789032742',date.today()))
-if(result==None):
+if(result==0):
     print("Error when member tries to issue book they have already issued: PASS\n\n",  file = a_file)
 else:
     print("Error when member tries to issue book they have already issued: FAIL\n\n",  file = a_file)
@@ -962,7 +962,7 @@ lastdate = {
 cursor.execute("UPDATE BOOKS SET LastIssued = %(date)s WHERE UniqueID  = %(uid)s", lastdate)
 db.commit()
 obsolete = (librarian.CheckBookIssueStats())
-if(obsolete[0]=='2' and obsolete[1]=='3'):
+if(obsolete[0][0]=='2' and obsolete[1][0]=='3'):
     print("Showing valid Output when some books have not been issued in the last 5 years: PASS\n\n",  file = a_file)
 else:
     print("Showing valid Output when some books have not been issued in the last 5 years: FAIL\n\n",  file = a_file)
