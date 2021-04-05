@@ -51,8 +51,8 @@ class LibraryClerk:
         for row in cursor:
             if(bookDetails[0] == row['ISBN']):
                 flag=1
+        db.commit()
         if(flag == 1):
-            print("FLAG = 1")
             bH = BookHandler.Create()
             bH.CloseBook()
             bH.OpenBook(bookDetails[0])
@@ -61,7 +61,7 @@ class LibraryClerk:
                 if(rows["ISBN"]==bookDetails[0]):
                     if str(rows["UniqueID"]) not in bH.available and str(rows["UniqueID"]) not in bH.taken and str(rows["UniqueID"]) not in bH.readyToClaimUIDs:
                         bH.available.append(str(rows["UniqueID"]))
-            print(bH.available)
+            db.commit()
             bH.UpdateDatabase()
             bH.CloseBook()
         else:
@@ -72,7 +72,7 @@ class LibraryClerk:
             row = {}
             for rows in cursor:
                 row = rows
-            print(rows)
+            db.commit()
             addISBN = ("INSERT INTO RESERVATIONS "
             "VALUES (%(ISBN)s, %(AvailableUIDs)s, %(TakenUIDs)s, %(PendingReservations)s, %(ActiveReservations)s, %(ActiveReservedUIDs)s, %(NumberOfCopiesAvailable)s)")
             dataISBN = {
@@ -93,16 +93,12 @@ class LibraryClerk:
         listOfDisposed = []
         for row in cursor:
             listOfDisposed.append([row['ISBN'],row['UniqueID']])
+        db.commit()
         for book in listOfDisposed:
             bH = BookHandler.Create()
             bH.CloseBook()
             bH.OpenBook(book[0])
             bH.UpdateBook()
-            print(BookHandler.GetAvailableUIDs())
-            print(book)
-            print(BookHandler.GetActiveReservedUIDs())
-            print(BookHandler.GetActiveReservations())
-            print()
             deleteMemberReservation = ("UPDATE MEMBERS SET ReservedBook = NULL WHERE MemberID = %(MemberID)s")
             member = {
                 'MemberID' : None
@@ -126,7 +122,6 @@ class LibraryClerk:
             raise ValueError("Book has not been by the member.")
         libraryMember._listOfBooksIssued.remove(str(book.GetUID()))
         libraryMember._numberOfBooksIssued-=1
-        print(libraryMember._listOfBooksIssued)
         joined_string = JoinTableEntry(libraryMember._listOfBooksIssued)
         memberUpdate = ("UPDATE MEMBERS SET ListOfBooksIssued = %(ListOfBooks)s WHERE MemberID = %(MemberID)s")
         listOfBooks = {
@@ -145,11 +140,3 @@ class LibraryClerk:
         daysInPossession = (date.today()-book.GetDateOfIssue()).days
         daysOverdue = max(0,(daysInPossession - 30*libraryMember.GetMaxMonthsAllowed()))
         return daysOverdue*LibraryClerk._penaltyRate
-
-# lib=LibraryClerk(1,"fds")
-# print(lib._penaltyRate)
-# lib.DeleteBook()
-# mem = UnderGraduateStudent('19CS10073', 'Rajat', ['4'], '918-0789532743', 0)
-
-# b= Book(4, '988-0789032742', date.today(), None)
-# lib.ReturnBook(mem, b)

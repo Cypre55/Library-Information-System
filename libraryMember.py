@@ -49,6 +49,7 @@ class LibraryMember(ABC):
         }
         cursor.execute(("SELECT GotReminder from members WHERE MemberID = %(MemberID)s"), stro)
         row = cursor.fetchone()
+        db.commit()
         if(row['GotReminder']):
             for UID in self._listOfBooksIssued:
                 book = {
@@ -57,6 +58,7 @@ class LibraryMember(ABC):
                 cursor2 = db.cursor(dictionary = True)
                 cursor2.execute(("SELECT LastIssued FROM BOOKS WHERE UniqueID = %(bookUID)s"),book)
                 row2 = cursor2.fetchone()
+                db.commit()
                 if (date.today() - row2["LastIssued"]).days> 30*self.GetMaxMonthsAllowed():
                     overdue.append("You have an overdue book that needs to be returned : UID - "+UID)
         return overdue
@@ -66,72 +68,76 @@ class LibraryMember(ABC):
         searchKey = '\'%' + searchString + '%\''
         searchBooks = "SELECT DISTINCT ISBN, BookName FROM BOOKS WHERE BookName LIKE "
         cursor.execute(searchBooks + searchKey)
+        db.commit()
         searchResults = []
         for row in cursor:
             searchResults.append(("{ISBN}".format(ISBN=row['ISBN']),"{BookName}".format(BookName=row['BookName'])))
         # print(searchResults)
+        db.commit()
         return searchResults
 
     def CheckAvailabilityOfBook(self, ISBN: str):
         bH = BookHandler.Create()
-        bH.CloseBook()
         bH.OpenBook(ISBN)
         bH.UpdateBook()
-        bH.UpdateDatabase()
         if (self._reservedBook == ISBN):
             if(bH.IsActive(self._memberID)):
                 rackNos = []
                 for UID in bH.GetActiveReservedUIDs():
                     book = {
-                        'UniqueID' : UID
+                        'UniqueID' : int(UID)
                     }
                     cursor.execute("SELECT RackNumber FROM BOOKS WHERE UniqueID = %(UniqueID)s", book)
                     row = cursor.fetchone()
-                    print(UID)
-                    print(row)
+                    db.commit()
                     rackNos.append(str(row['RackNumber']))
-                
-                return (bH.GetActiveReservedUIDs(),rackNos)
+                aru = copy.deepcopy(bH.GetActiveReservedUIDs())
+                bH.CloseBook()
+                return (aru,rackNos)
 
             else:
-                return 'Your Reservation is still pending.\n Pls wait for a few more days'
+                bH.CloseBook()
+                return 'Your Reservation is still pending. Pls wait for a few more days'
         else:
             if (bH.GetAvailableUIDs()!=[]):
                 rackNos = []
                 for UID in bH.GetAvailableUIDs():
                     book = {
-                        'UniqueID' : UID
+                        'UniqueID' : int(UID)
                     }
                     cursor.execute("SELECT RackNumber FROM BOOKS WHERE UniqueID = %(UniqueID)s", book)
                     row = cursor.fetchone()
+                    db.commit()
                     rackNos.append(str(row['RackNumber']))
-                return (bH.GetAvailableUIDs(), rackNos)
+                au = copy.deepcopy(bH.GetAvailableUIDs())
+                bH.CloseBook()
+                return (au, rackNos)
             else:
                 if (self._reservedBook == None):
-                    return 'Sorry this book is not available currently,\n Would you like to reserve this book?'
+                    bH.CloseBook()
+                    return 'Sorry this book is not available currently, Would you like to reserve this book?'
                 else:
-                    return 'Sorry this book is not available currently,\n and you already have a reservation'
+                    bH.CloseBook()
+                    return 'Sorry this book is not available currently, and you already have a reservation'
          
     def IssueBook(self, book: Book):
         if not self.CanIssue() :
             raise ValueError("Issue Limit Exceeded.")
-        # print(book.GetUID())
-        # print(self._listOfBooksIssued)
         if (str(book.GetUID()) in self._listOfBooksIssued):
             raise ValueError("Book already issued.")
         bH = BookHandler.Create()
         bH.CloseBook()
         bH.OpenBook(book)
         bH.IssueSelected(self._memberID)
-        bH.CloseBook()
         self._listOfBooksIssued.append(str(book.GetUID()))
         joined_string = ",".join(self._listOfBooksIssued)
         joined_string = joined_string+','
         cursor.execute(str("UPDATE MEMBERS SET ListOfBooksIssued = \""+joined_string+"\" WHERE MemberID = \""+self._memberID+"\""))
         
         db.commit()
+        self.UpdateFromDatabase()
+        bH.CloseBook()
         return 1
-        #self.UpdateFromDatabase()
 
     def ReserveBook(self, ISBN: str):
         if(self.GetReservedBook()!=None):
@@ -140,6 +146,7 @@ class LibraryMember(ABC):
         bH.CloseBook()
         bH.OpenBook(ISBN)
         if(len(bH.available)!=0):
+            bH.CloseBook()
             raise ValueError("Member cannot reserve an ISBN with available UID.")
         bH.ReserveSelected(self._memberID)
         bH.CloseBook()
@@ -151,24 +158,26 @@ class LibraryMember(ABC):
         }
         cursor.execute(command,dici)
         db.commit()
-    #call this from the constructor everyime
+        
+    #call this on every login
     def UpdateFromDatabase(self):
-        bH = BookHandler.Create()
-        bH.CloseBook()
-        bH.OpenBook(self._reservedBook)
-        bH.UpdateBook()
-        bH.CloseBook()
+        if(self._reservedBook!=None):
+            bH = BookHandler.Create()
+            bH.OpenBook(self._reservedBook)
+            bH.UpdateBook()
+            bH.CloseBook()
         selectMember = ("SELECT * FROM MEMBERS WHERE MemberID = %(MemberID)s")
         member = {
             'MemberID' : self._memberID
         }
         cursor.execute(selectMember, member)
+        #db.commit()
         for row in cursor:
             self._memberID = row['MemberID']
             self._name = row['MemberName']
             self._listOfBooksIssued = SplitTableEntry(row['ListOfBooksIssued'])
             self._reservedBook = row['ReservedBook']
-    
+        db.commit()
     @abstractmethod
     def CanIssue(self):
         pass

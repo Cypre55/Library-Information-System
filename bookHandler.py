@@ -38,24 +38,25 @@ def UpdateReminders():
         flag = False
         for bookUID in ListBooksIssued:
             book = {
-                'bookUID' : bookUID
+                'bookUID' : int(bookUID)
             }
             cursor2 = db.cursor(dictionary = True)
             cursor2.execute(("SELECT LastIssued FROM BOOKS WHERE UniqueID = %(bookUID)s"),book)
             for row2 in cursor2:
                 if (date.today() - row2["LastIssued"]).days> 30*period:
                     flag = True
+            db.commit()
         if flag == False:
             changedMembers.append(row["MemberID"])
+    db.commit()
     for member in changedMembers:
         mem = {
                 'memId' : member
             }
         cursor.execute(("UPDATE MEMBERS SET GotReminder = 0 WHERE MemberID = %(memId)s"), mem)
+        db.commit()
     db.commit()
 
-
-    
 class BookHandler:
     instance = None
     currUID = None
@@ -88,7 +89,6 @@ class BookHandler:
         elif(isinstance(book,Book)):
             BookHandler.currISBN = book.GetISBN()
             BookHandler.currUID = str(book.GetUID())
-        # else handle exception
 
         selectISBN = ("SELECT * FROM RESERVATIONS WHERE ISBN = %(ISBN)s")
         isbn = {
@@ -96,7 +96,6 @@ class BookHandler:
         }
         cursor.execute(selectISBN, isbn)
         for row in cursor:
-            print(row)
             BookHandler.available = SplitTableEntry(row['AvailableUIDs'])
             BookHandler.taken = SplitTableEntry(row['TakenUIDs'])
             BookHandler.waitList = SplitTableEntry(row['PendingReservations'])
@@ -110,6 +109,7 @@ class BookHandler:
             
             BookHandler.readyToClaimUIDs = SplitTableEntry(row['ActiveReservedUIDs'])
             BookHandler.numberOfCopies = row['NumberOfCopiesAvailable']
+        db.commit()
 
     @staticmethod
     def UpdateBook():
@@ -117,7 +117,6 @@ class BookHandler:
         member = {
             'MemberID' : None
         }
-        print(BookHandler.readyToClaimUsers)
         for entry in BookHandler.readyToClaimUsers:
             member['MemberID'] = entry.memberID
             if entry.claimByDate < date.today():
@@ -151,7 +150,7 @@ class BookHandler:
         readyToClaimUsers = list(map(lambda x: str(x.claimByDate)+'*'+x.memberID, BookHandler.readyToClaimUsers))        
         updateReservationTable = ("UPDATE RESERVATIONS SET AvailableUIDs = %(AvailableUIDs)s, TakenUIDs = %(TakenUIDs)s, PendingReservations = %(PendingReservations)s, ActiveReservations = %(ActiveReservations)s, ActiveReservedUIDs = %(ActiveReservedUIDs)s, NumberOfCopiesAvailable = %(NumberOfCopiesAvailable)s WHERE ISBN = %(ISBN)s")
         dataReservation = {
-            'ISBN' : BookHandler.currISBN,
+            'ISBN' : str(BookHandler.currISBN),
             'AvailableUIDs' : JoinTableEntry(BookHandler.available),
             'TakenUIDs' : JoinTableEntry(BookHandler.taken),
             'PendingReservations' : JoinTableEntry(BookHandler.waitList),
@@ -159,8 +158,6 @@ class BookHandler:
             'ActiveReservedUIDs' : JoinTableEntry(BookHandler.readyToClaimUIDs),
             'NumberOfCopiesAvailable' : BookHandler.numberOfCopies
         }
-        print(BookHandler.taken)
-        # print(dataReservation)
         cursor.execute(updateReservationTable, dataReservation)
         db.commit()
     
@@ -173,9 +170,10 @@ class BookHandler:
             BookHandler.readyToClaimUIDs.remove(BookHandler.currUID)
             BookHandler.readyToClaimUsers = [x for x in BookHandler.readyToClaimUsers if x.memberID != memberID]
             cursor.execute(str("UPDATE MEMBERS SET ReservedBook = NULL WHERE MemberId = \""+memberID+"\""))
+            db.commit()
         lastdate = {
             'date' : date.today(),
-            'uid' : BookHandler.currUID
+            'uid' : int(BookHandler.currUID)
         }
         cursor.execute("UPDATE BOOKS SET LastIssued = %(date)s WHERE UniqueID  = %(uid)s", lastdate)
         db.commit()
@@ -184,12 +182,9 @@ class BookHandler:
     @staticmethod
     def ReturnSelected(memberID: str):
         BookHandler.taken.remove(str(BookHandler.currUID))
-        print(BookHandler.waitList)
         if len(BookHandler.waitList)==0:
-            print('no')
             BookHandler.available.append(BookHandler.currUID)
         else:
-            print('yes')
             BookHandler.readyToClaimUIDs.append(BookHandler.currUID)
             memberActivated = BookHandler.waitList.pop(0)
             newActive = ActiveReservation(memberActivated, (datetime.now()+timedelta(days = 7)).date())
@@ -200,6 +195,7 @@ class BookHandler:
     def ReserveSelected(memberID : str):
         BookHandler.waitList.append(memberID)
         BookHandler.UpdateDatabase()
+    
     def CloseBook(self):
         self.UpdateDatabase()
         BookHandler.currISBN = None
@@ -242,9 +238,3 @@ def JoinTableEntry(l):
     if(len(l) == 0):
         return None
     return ','.join(l) + ','
-
-# bk = BookHandler.Create()
-# bk.OpenBook('918-0789532743')
-# bk.UpdateBook()
-# bk.CloseBook()
-UpdateReminders()

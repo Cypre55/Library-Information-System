@@ -24,16 +24,14 @@ def decode_message(encMessage):
     decMessage = fernet.decrypt(encMessage)
     return decMessage.decode()
 
+
 cursor = db.cursor(dictionary = True)
-# cursor.execute('SELECT * FROM MEMBERS')
-# for row in cursor:
-#     print(decode_message(bytes((row["PassWd"]),'utf-8')))
 class Librarian(LibraryClerk):
     __reminder = False
     
     def __init__(self, employeeID, name):
         if(employeeID!="LIB0001"):
-            raise ValueError
+            raise ValueError("EmployeeID is not Librarian.")
         LibraryClerk.__init__(self, employeeID, name)
     
     def AddMember(self, libraryMember: LibraryMember, passwd):
@@ -42,10 +40,7 @@ class Librarian(LibraryClerk):
         
         if(libraryMember.GetName()==""):
             raise ValueError("Required field name is mssing")
-        
-        if(passwd == ""):
-            raise ValueError("Required field password is mssing")
-
+            
         mem = {
             'MemberID' : libraryMember.GetMemberID()
         }
@@ -58,7 +53,6 @@ class Librarian(LibraryClerk):
             raise ValueError("A member with the same member ID already exists")
         addMember = ("INSERT INTO MEMBERS "
                    "VALUES (%(MemberID)s, %(MemberName)s, %(MemberType)s, %(ListOfBooksIssued)s, %(ReservedBook)s, %(GotReminder)s, %(PassWd)s)")
-        print(str(type(libraryMember)))
         type_shortHand = {
             '<class \'underGraduateStudent.UnderGraduateStudent\'>':'UG',
             '<class \'postGraduateStudent.PostGraduateStudent\'>':'PG',
@@ -88,6 +82,7 @@ class Librarian(LibraryClerk):
             cnt = cnt + 1
             if(row['ListOfBooksIssued']!=None):
                     isNone = True
+        db.commit()
         if(cnt==0):
             raise ValueError("No member present with this member ID.")
         if(isNone==True):
@@ -104,22 +99,17 @@ class Librarian(LibraryClerk):
     def SendReminderToMember(self):
         cursor.execute("UPDATE MEMBERS SET GotReminder = 1")
         db.commit()
-        cursor.execute(("SELECT * FROM MEMBERS"))
-        row = cursor.fetchone()
-        print(row)
         UpdateReminders()
     
     def CheckBookIssueStats(self):
         checkStats = ("SELECT * FROM BOOKS")
         cursor.execute(checkStats)
         obsoleteBooks = []
-        # print("REACHED")
         for row in cursor:
-            print(row)
             dateissued = row["LastIssued"]
             if((date.today()-dateissued).days >= 1826):
-                obsoleteBooks.append(("{UniqueID}".format(UniqueID=row['UniqueID']), 
-                    "{LastIssued}".format(LastIssued=row['LastIssued'])))
+                obsoleteBooks.append("{UniqueID}".format(UniqueID=row['UniqueID']))
+        db.commit()
         return obsoleteBooks
     def DisposeBook(self, UID):
         f = False
@@ -131,6 +121,7 @@ class Librarian(LibraryClerk):
                 dateissued = rows["LastIssued"]
                 if((date.today()-dateissued).days < 1826):
                     f2 = False
+        db.commit()
         if f == False or f2 == False:
             raise ValueError("UID not in system")
         
@@ -142,4 +133,3 @@ class Librarian(LibraryClerk):
         }
         cursor.execute(disposeBook, dataBook)
         db.commit()
-# lib=Librarian(1,"fds")
