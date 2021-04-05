@@ -19,11 +19,11 @@ class MainWindow():
         self.title.config(width=10, font=(12), bg=orange, fg=white)
         self.title.grid(column=0, row=0)
         self.currWindow = ""
-        self.ShowLogin()
+        # self.ShowLogin()
         # self.currWindow.grid_forget()
         # self.ShowMemberHome(UnderGraduateStudent("Chappidi Yoga Satwik", "19CS30013", [], None))
         # self.ShowClerkHome(LibraryClerk("LIB0021", "Sam"))
-        # self.ShowLibrarianHome(Librarian("LIB0001", "Harry"))
+        self.ShowLibrarianHome(Librarian("LIB0001", "Harry"))
 
     def ShowLogin(self):
         if self.currWindow:

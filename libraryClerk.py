@@ -20,7 +20,20 @@ class LibraryClerk:
     def __init__(self, employeeID, name):
         self._employeeID = employeeID
         self._name = name
+    
     def AddBook(self, bookDetails):
+        if not bookDetails[0]:
+            raise ValueError("ISBN is missing")
+
+        if not bookDetails[1]:
+            raise ValueError("Name is missing")
+
+        if not bookDetails[2]:
+            raise ValueError("Author is missing")
+
+        if not bookDetails[3]:
+            raise ValueError("Rack No. is missing")
+
         addBook = ("INSERT INTO BOOKS "
             "VALUES (%(UniqueID)s, %(ISBN)s, %(BookName)s, %(RackNumber)s, %(IssueDate)s, %(IsDisposed)s)")
         dataBook = {
@@ -109,7 +122,8 @@ class LibraryClerk:
         db.commit()
 
     def ReturnBook(self, libraryMember : LibraryMember, book : Book):
-        # throw error if returning book not issued
+        if str(book.GetUID()) not in libraryMember._listOfBooksIssued:
+            raise ValueError("Book has not been by the member.")
         libraryMember._listOfBooksIssued.remove(str(book.GetUID()))
         libraryMember._numberOfBooksIssued-=1
         print(libraryMember._listOfBooksIssued)
@@ -132,9 +146,9 @@ class LibraryClerk:
         daysOverdue = max(0,(daysInPossession - 30*libraryMember.GetMaxMonthsAllowed()))
         return daysOverdue*LibraryClerk._penaltyRate
 
-lib=LibraryClerk(1,"fds")
-print(lib._penaltyRate)
-lib.DeleteBook()
+# lib=LibraryClerk(1,"fds")
+# print(lib._penaltyRate)
+# lib.DeleteBook()
 # mem = UnderGraduateStudent('19CS10073', 'Rajat', ['4'], '918-0789532743', 0)
 
 # b= Book(4, '988-0789032742', date.today(), None)

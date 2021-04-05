@@ -1,5 +1,19 @@
 from tkinter import *
 from colors import *
+from tkinter import ttk
+from librarianFrames import GetLibraryMember
+from helperFunctions import GetLibraryMember, GetBookInfoFromUID
+from book import Book
+import mysql.connector as mysql
+import settings
+db = mysql.connect(
+    host = "localhost",
+    user = settings.user,
+    passwd = "1234",
+    database = "lis"
+)
+cursor = db.cursor(dictionary = True)
+
 
 class AddBookFrame(Frame):
     def __init__(self, master, clerk):
@@ -23,7 +37,7 @@ class AddBookFrame(Frame):
         self.ISBNLabel = Label(self.ISBNFrame, text = " ISBN: ")
         self.ISBNLabel.config(font=(12), bg=orange, fg=white, width=10)
         self.ISBNLabel.grid(column=0, row=0, padx=10)
-        self.ISBNEntry = Entry(self.ISBNFrame, textvariable = self.ISBN, show="*")
+        self.ISBNEntry = Entry(self.ISBNFrame, textvariable = self.ISBN)
         self.ISBNEntry.grid(column=1, row=0)
         self.ISBNEntry.config(bg=lightorange, fg=white)
         self.ISBNFrame.grid(column=0, row=1, pady=10)
@@ -33,7 +47,7 @@ class AddBookFrame(Frame):
         self.nameLabel = Label(self.nameFrame, text = " Name: ")
         self.nameLabel.config(font=(12), bg=orange, fg=white, width=10)
         self.nameLabel.grid(column=0, row=0, padx=10)
-        self.nameEntry = Entry(self.nameFrame, textvariable = self.name, show="*")
+        self.nameEntry = Entry(self.nameFrame, textvariable = self.name)
         self.nameEntry.grid(column=1, row=0)
         self.nameEntry.config(bg=lightorange, fg=white)
         self.nameFrame.grid(column=0, row=2, pady=10)
@@ -43,7 +57,7 @@ class AddBookFrame(Frame):
         self.authorLabel = Label(self.authorFrame, text = " Author: ")
         self.authorLabel.config(font=(12), bg=orange, fg=white, width=10)
         self.authorLabel.grid(column=0, row=0, padx=10)
-        self.authorEntry = Entry(self.authorFrame, textvariable = self.author, show="*")
+        self.authorEntry = Entry(self.authorFrame, textvariable = self.author)
         self.authorEntry.grid(column=1, row=0)
         self.authorEntry.config(bg=lightorange, fg=white)
         self.authorFrame.grid(column=0, row=3, pady=10)
@@ -53,7 +67,7 @@ class AddBookFrame(Frame):
         self.rackLabel = Label(self.rackFrame, text = " Rack No.: ")
         self.rackLabel.config(font=(12), bg=orange, fg=white, width=10)
         self.rackLabel.grid(column=0, row=0, padx=10)
-        self.rackEntry = Entry(self.rackFrame, textvariable = self.rackNo, show="*")
+        self.rackEntry = Entry(self.rackFrame, textvariable = self.rackNo)
         self.rackEntry.grid(column=1, row=0)
         self.rackEntry.config(bg=lightorange, fg=white)
         self.rackFrame.grid(column=0, row=4, pady=10)
@@ -61,15 +75,22 @@ class AddBookFrame(Frame):
         self.errorLabel = Label(self, text="")
         self.errorLabel.config(font=(12), bg=orange, fg=white)
 
-        self.addBookButton = Button(self, bg=orange, fg=white, text="Add Book to the Library", command=self.addBook)
+        self.addBookButton = Button(self, bg=orange, fg=white, text="Add Book to the Library", command=self.AddBook)
         self.addBookButton.grid(column=0, row=5)
 
         # self.DisplayError("ERROR")
 
-    def addBook(self):
-        print("Adding Book")
+    def AddBook(self):
         self.RemoveError()
-        pass
+        success = True
+        try:
+            self.clerk.AddBook([self.ISBN.get(), self.name.get(), self.author.get(), self.rackNo.get()])
+        except ValueError as e:
+            self.DisplayError(e)
+            success = False
+
+        if success:
+            self.DisplayError("Book Added Successfully.")
 
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()
@@ -100,13 +121,24 @@ class DeleteBookFrame(Frame):
 
         self.disposedFrame = Frame(self)
         self.disposedFrame.config(bg=lightorange)
-        self.scroll = Scrollbar(self.disposedFrame)
-        self.scroll.pack(side = RIGHT, fill = Y)
+        # self.scroll = Scrollbar(self.disposedFrame)
+        # self.scroll.pack(side = RIGHT, fill = Y)
 
-        self.disposedListbox = Listbox(self.disposedFrame, yscrollcommand = self.scroll.set, font = ("Arial", 10), selectbackground=orange,
-                foreground=white, background=lightorange)
-        self.disposedListbox.pack(side = LEFT, fill = BOTH)
-        self.scroll.config(command = self.disposedListbox.yview)
+        # self.disposedListbox = Listbox(self.disposedFrame, yscrollcommand = self.scroll.set, font = ("Arial", 10), selectbackground=orange,
+        #         foreground=white, background=lightorange)
+        # self.disposedListbox.pack(side = LEFT, fill = BOTH)
+        # self.scroll.config(command = self.disposedListbox.yview)
+
+        cols = ('ISBN', 'UID')
+        ttk.Style().configure("Treeview", background=orange,
+                foreground=white, fieldbackground=lightorange)
+        self.listBox = ttk.Treeview(self.disposedFrame, columns=cols, show='headings')
+        for col in cols:
+            self.listBox.heading(col, text=col)   
+        for book in self.disposed:
+            self.listBox.insert("", "end", values=(book[0], book[1]))
+
+        self.listBox.grid(column=0, row=0)
 
         self.UpdateList()
 
@@ -122,7 +154,13 @@ class DeleteBookFrame(Frame):
 
     def DeleteBook(self):
         self.RemoveError()
-        print("Books Deleted.")
+        try:
+            self.clerk.DeleteBook()
+            self.disposed = self.GetDisposed()
+            self.UpdateList()
+            self.DisplayError("Books Deleted Successfully")
+        except ValueError as e:
+            self.DisplayError(e)
     
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()
@@ -131,15 +169,20 @@ class DeleteBookFrame(Frame):
 
     def RemoveError(self):
         self.errorLabel.grid_forget() 
-        
 
     def GetDisposed(self):
-        return []
+        searchBooks = "SELECT ISBN, UniqueID FROM BOOKS WHERE IsDisposed = 1"
+        cursor.execute(searchBooks)
+        disposed = []
+        for row in cursor:
+            disposed.append((row['ISBN'],row['UniqueID']))
+        db.commit()
+        return disposed
 
     def UpdateList(self):
-        self.disposedListbox.delete(0,END)
+        self.listBox.delete(*self.listBox.get_children())
         for book in self.disposed:
-            self.disposedListbox.insert(END, book)
+            self.listBox.insert("", "end", values=(book[0], book[1]))
 
 
 class ReturnBookFrame(Frame):
@@ -163,7 +206,7 @@ class ReturnBookFrame(Frame):
         self.memberIDLabel = Label(self.memberIDFrame, text = " Member ID: ")
         self.memberIDLabel.config(font=(12), bg=orange, fg=white, width=10)
         self.memberIDLabel.grid(column=0, row=0, padx=10)
-        self.memberIDEntry = Entry(self.memberIDFrame, textvariable = self.memberID, show="*")
+        self.memberIDEntry = Entry(self.memberIDFrame, textvariable = self.memberID)
         self.memberIDEntry.grid(column=1, row=0)
         self.memberIDEntry.config(bg=lightorange, fg=white)
         self.memberIDFrame.grid(column=0, row=1, pady=10)
@@ -177,15 +220,26 @@ class ReturnBookFrame(Frame):
 
         self.issuedFrame = Frame(self)
         self.issuedFrame.config(bg=lightorange)
-        self.scroll = Scrollbar(self.issuedFrame)
-        self.scroll.pack(side = RIGHT, fill = Y)
+        # self.scroll = Scrollbar(self.issuedFrame)
+        # self.scroll.pack(side = RIGHT, fill = Y)
 
-        self.issuedListbox = Listbox(self.issuedFrame, yscrollcommand = self.scroll.set, font = ("Arial", 10), selectbackground=orange,
-                foreground=white, background=lightorange)
-        self.issuedListbox.pack(side = LEFT, fill = BOTH)
-        self.scroll.config(command = self.issuedListbox.yview)
+        # self.issuedListbox = Listbox(self.issuedFrame, yscrollcommand = self.scroll.set, font = ("Arial", 10), selectbackground=orange,
+        #         foreground=white, background=lightorange)
+        # self.issuedListbox.pack(side = LEFT, fill = BOTH)
+        # self.scroll.config(command = self.issuedListbox.yview)
+
+        cols = ('UniqueID', 'LastIssued')
+        ttk.Style().configure("Treeview", background=orange,
+                foreground=white, fieldbackground=lightorange)
+        self.listBox = ttk.Treeview(self.issuedFrame, columns=cols, show='headings')
+        for col in cols:
+            self.listBox.heading(col, text=col)   
+        for book in self.issued:
+            self.listBox.insert("", "end", values=(book['UniqueID'], book['LastIssued']))
 
         self.UpdateList()
+        self.listBox.grid(column=0, row=0)
+
 
         self.issuedFrame.grid(column=0, row=4, pady=10)
 
@@ -206,16 +260,54 @@ class ReturnBookFrame(Frame):
         self.errorLabel.grid_forget() 
     
     def SelectMember(self):
-        pass
-        # Get Issued is included here
+        self.RemoveError()
+        # success = True
+        if self.issued:
+            self.previssued = self.issued
+        del self.issued
+        self.issued = []
+        try:
+            member = GetLibraryMember(self.memberID.get())
+            for issuedUID in member._listOfBooksIssued:
+                self.issued.append(GetBookInfoFromUID(int(issuedUID))) 
+            if not self.issued:
+                raise ValueError("No Books Issued.")
+        except ValueError as e:
+            self.DisplayError(e)
+
+        self.UpdateList()
+        
 
     def UpdateList(self):
-        self.issuedListbox.delete(0,END)
+        if hasattr(self, "previssued"):
+            self.listBox.delete(*self.listBox.get_children())
+            del self.previssued
+
         for book in self.issued:
-            self.issuedListbox.insert(END, book)
+            self.listBox.insert("", "end", values=(book['UniqueID'], book['LastIssued']))
 
     def ReturnBook(self):
-        print("Book Returned")
+        if not self.listBox.selection():
+            self.DisplayError("No book selected.")
+            return
+        self.RemoveError()
+        success = True
+        try:
+            member = GetLibraryMember(self.memberID.get())
+            bookInfo = GetBookInfoFromUID(int(self.listBox.item(self.listBox.selection()[0], "value")[0]))
+            book = Book(bookInfo['UniqueID'], bookInfo['ISBN'], bookInfo['LastIssued'])
+            self.amount = self.clerk.CollectPenalty(member, book)
+            self.clerk.ReturnBook(member, book)
+            if self.amount:
+                self.ShowFine()
+        except ValueError as e:
+            self.DisplayError(e)
+            success = False
+        
+        if success:
+            self.DisplayError("Book Returned Successfully.")
+            self.SelectMember()
+            self.UpdateList()
 
     def ShowFine(self):
         self.fineRoot = Tk()
@@ -233,4 +325,6 @@ class ReturnBookFrame(Frame):
 
     def CollectFine(self):
         self.fineRoot.destroy()
-        self.DisplayError("Book Returned Successfully.")
+        self.amount = 0
+        # self.DisplayError("Book Returned Successfully.")
+

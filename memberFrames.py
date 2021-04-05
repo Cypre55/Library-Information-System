@@ -4,12 +4,14 @@ from colors import *
 from availabilityWindow import *
 from helperFrames import ScrollableFrame
 from bookHandler import SplitTableEntry, JoinTableEntry
+from helperFunctions import GetBookInfoFromUID, GetLibraryMember
 
 class ProfileFrame(Frame):
     def __init__(self, master, member):
         super().__init__(master)
         self.master = master
         self.member = member
+        # self.member = GetLibraryMember(member.GetMemberID())
 
         self.config(bg = lightorange, pady=210)
 
@@ -69,17 +71,21 @@ class ProfileFrame(Frame):
         self.blankissuedLabel.grid(column=1, row=0, padx=470)
         self.issuedFrame.grid(column=0, row=4)
         # Show List of Issued books
-        books = [{"Title": "Curry Patter", "UID": "1", "DueDate": "01/07/2021"},
-                 {"Title": "Harry Potter", "UID": "2", "DueDate": "01/08/2021"}
-                ]
-        cols = ('Title', 'UID', 'Due Date')
+        # books = [{"Title": "Curry Patter", "UID": "1", "DueDate": "01/07/2021"},
+        #          {"Title": "Harry Potter", "UID": "2", "DueDate": "01/08/2021"}
+        #         ]
+        books = []
+        for uid in self.member._listOfBooksIssued:
+            books.append(GetBookInfoFromUID(int(uid)))
+        
+        cols = ('Title', 'UID', 'Issue Date')
         ttk.Style().configure("Treeview", background=orange,
                 foreground=white, fieldbackground=lightorange)
         self.listBox = ttk.Treeview(self, columns=cols, show='headings')
         for col in cols:
             self.listBox.heading(col, text=col)   
         for book in books:
-            self.listBox.insert("", "end", values=(book["Title"], book["UID"], book["DueDate"]))
+            self.listBox.insert("", "end", values=(book["BookName"], book["UniqueID"], book["LastIssued"]))
 
         self.listBox.grid(column=0, row=5)
 
@@ -137,27 +143,32 @@ class SearchFrame(Frame):
             del self.results
             self.results = []
         
+        self.results = self.member.SearchBook(searchString.get())
+
         if not self.results:
             self.DisplayError("No results found.")
 
         if not searchString.get():
             self.RemoveError()
         
-        
-        
-        # self.results = self.member.SearchBook(searchString)
+        # print(self.results)
         self.UpdateResults()
         pass
 
     def UpdateResults(self):
         if self.resultFrames:
+            for frame in self.resultFrames:
+                frame.grid_forget()
             del self.resultFrames
             self.resultFrames = []
 
         for i in range(len(self.results)):
             frame = Frame(self.resultsScrollable.scrollable_frame)
             frame.config(bg=lightorange)
-            label = Label(frame, text=self.results[i])
+            bookName = self.results[i][1].split('-')
+            bookName = " ".join(bookName)
+            # print(bookName)
+            label = Label(frame, text=bookName)
             label.config(font=(12), bg=orange, fg=white, width=23)
             label.grid(column=0, row=0)
 
@@ -167,20 +178,21 @@ class SearchFrame(Frame):
             self.resultFrames.append(frame)
             del frame
 
-    def CheckAvailability(self, book):
-        response = self.member.CheckAvailabilityOfBook(book.__ISBN)
+    def CheckAvailability(self, result):
+        response = self.member.CheckAvailabilityOfBook(result[0])
         if isinstance(response, str):
-            if self.member._reservedBook == book.__ISBN:
+            if self.member._reservedBook == result[0]:
                 self.availWindow = AvailabiltyWindow(2, self.member, response)
             elif self.member._reservedBook != None:
-                self.availWindow = AvailabiltyWindow(3, self.member, response)
-            else:
                 self.availWindow = AvailabiltyWindow(4, self.member, response)
-        elif isinstance(response, tuple):
-            if self.member._reservedBook == book.__ISBN:
-                self.availWindow = AvailabiltyWindow(0, self.member, response)
             else:
+                response = (result[0], response)
+                self.availWindow = AvailabiltyWindow(3, self.member, response)
+        elif isinstance(response, tuple):
+            if self.member._reservedBook == result[0]:
                 self.availWindow = AvailabiltyWindow(1, self.member, response)
+            else:
+                self.availWindow = AvailabiltyWindow(0, self.member, response)
 
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()

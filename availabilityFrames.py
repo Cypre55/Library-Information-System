@@ -1,10 +1,16 @@
 from tkinter import *
 from colors import *
 from tkinter import ttk
+from helperFunctions import GetLibraryMember, GetBookInfoFromUID
+from book import Book
 
 class AvailableFrame(Frame):
     def __init__(self, master, member, response):
         super().__init__(master)
+
+        self.master = master
+        self.member = member
+        self.response = response
 
         self.config(bg = lightorange, pady=0)
 
@@ -16,7 +22,7 @@ class AvailableFrame(Frame):
         self.messageLabel.config(font=(40), bg=orange, fg=white)
         self.messageLabel.grid(column=0, row=1, pady=10)
 
-        response = ([1, 2], [1, 2])
+
         cols = ('UID', 'Rack No.')
         ttk.Style().configure("Treeview", background=orange,
                 foreground=white, fieldbackground=lightorange)
@@ -27,8 +33,7 @@ class AvailableFrame(Frame):
             self.listBox.insert("", "end", values=(response[0][i], response[1][i]))
 
         self.listBox.grid(column=0, row=2, padx=10, pady=10)
-        
-        # self.listBox.bind("<<TreeviewSelect>>", self.onTreeSelect)
+
         self.buttonFrame = Frame(self)
         self.buttonFrame.config(bg=lightorange)
         self.issueButton = Button(self.buttonFrame, bg=orange, fg=white, text="Issue Book", command=self.IssueBook)
@@ -37,13 +42,42 @@ class AvailableFrame(Frame):
         self.cancelButton.grid(column=1, row=0)
         self.buttonFrame.grid(column=0,row=3, padx=10, pady=10)
 
+        self.errorLabel = Label(self, text="")
+        self.errorLabel.config(font=(12), bg=orange, fg=white)
+
+    def DisplayError(self, message): 
+        self.errorLabel.grid_forget()
+        self.errorLabel.config(text=message)
+        self.errorLabel.grid(column=0, row=4, pady=10)
+
+    def RemoveError(self):
+        self.errorLabel.grid_forget()
+    
     def IssueBook(self):
-        print(self.listBox.item(self.listBox.selection()[0], "value"))
+        self.RemoveError()
+        success = True
+        try:
+            bookInfo = GetBookInfoFromUID(int(self.listBox.item(self.listBox.selection()[0], "value")[0]))
+            book = Book(bookInfo['UniqueID'], bookInfo['ISBN'], bookInfo['LastIssued'])
+            self.member.IssueBook(book)
+        except ValueError as e:
+            self.DisplayError(e)
+            success = False
+        
+        if success:
+            self.DisplayError("Book Issued Successfully.")
+
+        # self.member.IssueBook()
+        # print(self.listBox.item(self.listBox.selection()[0], "value"))
         
 
 class ClaimFrame(Frame):
     def __init__(self, master, member, response):
         super().__init__(master)
+
+        self.master = master
+        self.member = member
+        self.response = response
 
         self.config(bg = lightorange, pady=0)
 
@@ -55,7 +89,7 @@ class ClaimFrame(Frame):
         self.messageLabel.config(font=(40), bg=orange, fg=white)
         self.messageLabel.grid(column=0, row=1, pady=10)
 
-        response = ([1, 2], [1, 2])
+        # response = ([1, 2], [1, 2])
         cols = ('UID', 'Rack No.')
         ttk.Style().configure("Treeview", background=orange,
                 foreground=white, fieldbackground=lightorange)
@@ -75,8 +109,30 @@ class ClaimFrame(Frame):
         self.cancelButton.grid(column=1, row=0)
         self.buttonFrame.grid(column=0,row=3, padx=10, pady=10)
 
+        self.errorLabel = Label(self, text="")
+        self.errorLabel.config(font=(12), bg=orange, fg=white)
+
+    def DisplayError(self, message): 
+        self.errorLabel.grid_forget()
+        self.errorLabel.config(text=message)
+        self.errorLabel.grid(column=0, row=4, pady=10)
+
+    def RemoveError(self):
+        self.errorLabel.grid_forget()
+    
     def ClaimBook(self):
-        print(self.listBox.item(self.listBox.selection()[0], "value"))
+        self.RemoveError()
+        success = True
+        try:
+            bookInfo = GetBookInfoFromUID(int(self.listBox.item(self.listBox.selection()[0], "value")[0]))
+            book = Book(bookInfo['UniqueID'], bookInfo['ISBN'], bookInfo['LastIssued'])
+            self.member.IssueBook(book)
+        except ValueError as e:
+            self.DisplayError(e)
+            success = False
+        
+        if success:
+            self.DisplayError("Book Issued Successfully.")
         
 
 class PendingFrame(Frame):
@@ -105,13 +161,17 @@ class ReserveFrame(Frame):
     def __init__(self, master, member, response):
         super().__init__(master)
 
+        self.master = master
+        self.member = member
+        self.response = response
+
         self.config(bg = lightorange, pady=0)
 
         self.titleLabel = Label(self, text="Reserve Book")
         self.titleLabel.config(font=(40), bg=orange, fg=white)
         self.titleLabel.grid(column=0, row=0, pady=10)
 
-        self.messageLabel = Label(self, text=response)
+        self.messageLabel = Label(self, text=response[1])
         self.messageLabel.config(font=(40), bg=orange, fg=white)
         self.messageLabel.grid(column=0, row=1, pady=10)
 
@@ -123,8 +183,24 @@ class ReserveFrame(Frame):
         self.cancelButton.grid(column=1, row=0)
         self.buttonFrame.grid(column=0,row=2, padx=10, pady=10)
 
+        self.errorLabel = Label(self, text="")
+        self.errorLabel.config(font=(12), bg=orange, fg=white)
+
+    def DisplayError(self, message): 
+        self.errorLabel.grid_forget()
+        self.errorLabel.config(text=message)
+        self.errorLabel.grid(column=0, row=3, pady=10)
+
+    def RemoveError(self):
+        self.errorLabel.grid_forget()
+
     def ReserveBook(self):
-        pass
+        self.RemoveError()
+        try:
+            self.member.ReserveBook(self.response[0])
+            self.DisplayError("Book Reserved Successfully")
+        except ValueError as e:
+            self.DisplayError(e)
 
 class NoReserveFrame(Frame):
     def __init__(self, master, member, response):
@@ -146,4 +222,4 @@ class NoReserveFrame(Frame):
         # self.claimButton.grid(column=0, row=0, padx=10, pady=10)
         self.cancelButton = Button(self.buttonFrame, bg=orange, fg=white, text="Go Back", command=self.master.destroy)
         self.cancelButton.grid(column=0, row=0)
-        self.buttonFrame.grid(column=0,row=1, padx=10, pady=10)
+        self.buttonFrame.grid(column=0,row=2, padx=10, pady=10)

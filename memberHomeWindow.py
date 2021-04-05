@@ -1,6 +1,7 @@
 from tkinter import *
 from colors import *
 from memberFrames import *
+from helperFrames import ScrollableFrame
 
 class MemberHomeWindow(Frame):
     # pass member object

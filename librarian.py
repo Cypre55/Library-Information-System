@@ -42,7 +42,10 @@ class Librarian(LibraryClerk):
         
         if(libraryMember.GetName()==""):
             raise ValueError("Required field name is mssing")
-            
+        
+        if(passwd == ""):
+            raise ValueError("Required field password is mssing")
+
         mem = {
             'MemberID' : libraryMember.GetMemberID()
         }
@@ -52,7 +55,7 @@ class Librarian(LibraryClerk):
             if(row['MemberID']==libraryMember.GetMemberID()):
                 flag=True        
         if(flag==True):
-            raise ValueError("A member with the saame member ID already exists")
+            raise ValueError("A member with the same member ID already exists")
         addMember = ("INSERT INTO MEMBERS "
                    "VALUES (%(MemberID)s, %(MemberName)s, %(MemberType)s, %(ListOfBooksIssued)s, %(ReservedBook)s, %(GotReminder)s, %(PassWd)s)")
         print(str(type(libraryMember)))
@@ -110,12 +113,13 @@ class Librarian(LibraryClerk):
         checkStats = ("SELECT * FROM BOOKS")
         cursor.execute(checkStats)
         obsoleteBooks = []
-        print("REACHED")
+        # print("REACHED")
         for row in cursor:
             print(row)
             dateissued = row["LastIssued"]
             if((date.today()-dateissued).days >= 1826):
-                obsoleteBooks.append("{UniqueID}".format(UniqueID=row['UniqueID']))
+                obsoleteBooks.append(("{UniqueID}".format(UniqueID=row['UniqueID']), 
+                    "{LastIssued}".format(LastIssued=row['LastIssued'])))
         return obsoleteBooks
     def DisposeBook(self, UID):
         f = False

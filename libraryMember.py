@@ -61,15 +61,17 @@ class LibraryMember(ABC):
                     overdue.append("You have an overdue book that needs to be returned : UID - "+UID)
         return overdue
                     
-    def SearchBook(self):
-        searchKey = input("Enter your search string: ")
-        searchKey = '\'%' + searchKey + '%\''
+    def SearchBook(self, searchString):
+        # searchKey = input("Enter your search string: ")
+        searchKey = '\'%' + searchString + '%\''
         searchBooks = "SELECT DISTINCT ISBN, BookName FROM BOOKS WHERE BookName LIKE "
         cursor.execute(searchBooks + searchKey)
         searchResults = []
         for row in cursor:
             searchResults.append(("{ISBN}".format(ISBN=row['ISBN']),"{BookName}".format(BookName=row['BookName'])))
-        print(searchResults)
+        # print(searchResults)
+        return searchResults
+
     def CheckAvailabilityOfBook(self, ISBN: str):
         bH = BookHandler.Create()
         bH.CloseBook()
@@ -92,7 +94,7 @@ class LibraryMember(ABC):
                 return (bH.GetActiveReservedUIDs(),rackNos)
 
             else:
-                return 'Your Reservation is still pending. Pls wait for a few more days'
+                return 'Your Reservation is still pending.\n Pls wait for a few more days'
         else:
             if (bH.GetAvailableUIDs()!=[]):
                 rackNos = []
@@ -106,15 +108,17 @@ class LibraryMember(ABC):
                 return (bH.GetAvailableUIDs(), rackNos)
             else:
                 if (self._reservedBook == None):
-                    return 'Sorry this book is not available currently, Would you like to reserve this book?'
+                    return 'Sorry this book is not available currently,\n Would you like to reserve this book?'
                 else:
-                    return 'Sorry this book is not available currently, and you already have a reservation'
+                    return 'Sorry this book is not available currently,\n and you already have a reservation'
          
     def IssueBook(self, book: Book):
         if not self.CanIssue() :
-            return None
-        if (book.GetUID in self._listOfBooksIssued):
-            return None
+            raise ValueError("Issue Limit Exceeded.")
+        # print(book.GetUID())
+        # print(self._listOfBooksIssued)
+        if (str(book.GetUID()) in self._listOfBooksIssued):
+            raise ValueError("Book already issued.")
         bH = BookHandler.Create()
         bH.CloseBook()
         bH.OpenBook(book)

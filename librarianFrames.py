@@ -1,5 +1,22 @@
 from tkinter import *
 from colors import *
+from underGraduateStudent import UnderGraduateStudent
+from postGraduateStudent import PostGraduateStudent
+from researchScholar import ResearchScholar
+from facultyMember import FacultyMember
+from bookHandler import JoinTableEntry, SplitTableEntry
+from helperFunctions import GetLibraryMember, GetBookInfoFromUID
+from tkinter import ttk
+
+import mysql.connector as mysql
+import settings
+db = mysql.connect(
+    host = "localhost",
+    user = settings.user,
+    passwd = "1234",
+    database = "lis"
+)
+cursor = db.cursor(dictionary = True)
 
 class AddMemberFrame(Frame):
     def __init__(self, master, librarian):
@@ -25,7 +42,7 @@ class AddMemberFrame(Frame):
         self.memberIDLabel = Label(self.memberIDFrame, text = " Member ID: ")
         self.memberIDLabel.config(font=(12), bg=orange, fg=white, width=10)
         self.memberIDLabel.grid(column=0, row=0, padx=10)
-        self.memberIDEntry = Entry(self.memberIDFrame, textvariable = self.memberID, show="*")
+        self.memberIDEntry = Entry(self.memberIDFrame, textvariable = self.memberID)
         self.memberIDEntry.grid(column=1, row=0)
         self.memberIDEntry.config(bg=lightorange, fg=white)
         self.memberIDFrame.grid(column=0, row=1, pady=10)
@@ -35,7 +52,7 @@ class AddMemberFrame(Frame):
         self.nameLabel = Label(self.nameFrame, text = " Name: ")
         self.nameLabel.config(font=(12), bg=orange, fg=white, width=10)
         self.nameLabel.grid(column=0, row=0, padx=10)
-        self.nameEntry = Entry(self.nameFrame, textvariable = self.name, show="*")
+        self.nameEntry = Entry(self.nameFrame, textvariable = self.name)
         self.nameEntry.grid(column=1, row=0)
         self.nameEntry.config(bg=lightorange, fg=white)
         self.nameFrame.grid(column=0, row=2, pady=10)
@@ -68,8 +85,25 @@ class AddMemberFrame(Frame):
 
     def AddMember(self):
         self.RemoveError()
-        print("Adding Member")
-        print(self.type.get())
+        if self.type.get() == "UG":
+            self.member = UnderGraduateStudent(self.name.get(), self.memberID.get(), [], None)
+        if self.type.get() == "PG":
+            self.member = PostGraduateStudent(self.name.get(), self.memberID.get(), [], None)
+        if self.type.get() == "RS":
+            self.member = ResearchScholar(self.name.get(), self.memberID.get(), [], None)
+        if self.type.get() == "FM":
+            self.member = FacultyMember(self.name.get(), self.memberID.get(), [], None)
+        # print("Adding Member")
+        success = True
+
+        try:
+            self.librarian.AddMember(self.member, self.password.get())
+        except ValueError as e:
+            self.DisplayError(e)
+            success = False
+        
+        if success:
+            self.DisplayError("Member Successfully Added.")
 
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()
@@ -98,20 +132,30 @@ class DeleteMemberFrame(Frame):
         self.memberIDLabel = Label(self.memberIDFrame, text = " Member ID: ")
         self.memberIDLabel.config(font=(12), bg=orange, fg=white, width=10)
         self.memberIDLabel.grid(column=0, row=0, padx=10)
-        self.memberIDEntry = Entry(self.memberIDFrame, textvariable = self.memberID, show="*")
+        self.memberIDEntry = Entry(self.memberIDFrame, textvariable = self.memberID)
         self.memberIDEntry.grid(column=1, row=0)
         self.memberIDEntry.config(bg=lightorange, fg=white)
         self.memberIDFrame.grid(column=0, row=1, pady=10)
 
-        self.addMemberButton = Button(self, bg=orange, fg=white, text="Delete Member from the System", command=self.DeleteMember)
-        self.addMemberButton.grid(column=0, row=5)
+        self.deleteMemberButton = Button(self, bg=orange, fg=white, text="Delete Member from the System", command=self.DeleteMember)
+        self.deleteMemberButton.grid(column=0, row=5)
 
         self.errorLabel = Label(self, text="")
         self.errorLabel.config(font=(12), bg=orange, fg=white) 
 
     def DeleteMember(self):
         self.RemoveError()
-        print("Deleting Member")
+        success = True
+        try:
+            member = GetLibraryMember(self.memberID.get())
+            self.librarian.RemoveMember(member)
+        except ValueError as e:
+            self.DisplayError(e)
+            success = False
+        
+        if success:
+            self.DisplayError("Member Successfully deleted.")
+        # print("Deleting Member")
 
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()
@@ -146,7 +190,11 @@ class SendReminderFrame(Frame):
 
     def SendReminder(self):
         self.RemoveError()
-        print("Sent Reminders")
+        try:
+            self.librarian.SendReminderToMember()
+            self.DisplayError("Reminders Sent Successfully")
+        except ValueError as e:
+            self.DisplayError(e)
     
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()
@@ -176,35 +224,56 @@ class CheckIssueStats(Frame):
 
         self.notIssuedFrame = Frame(self)
         self.notIssuedFrame.config(bg=lightorange)
-        self.scroll = Scrollbar(self.notIssuedFrame)
-        self.scroll.pack(side = RIGHT, fill = Y)
+        # self.scroll = Scrollbar(self.notIssuedFrame)
+        # self.scroll.pack(side = RIGHT, fill = Y)
 
-        self.notIssuedListbox = Listbox(self.notIssuedFrame, yscrollcommand = self.scroll.set, font = ("Arial", 10), selectbackground=orange,
-                foreground=white, background=lightorange)
-        self.notIssuedListbox.pack(side = LEFT, fill = BOTH)
-        self.scroll.config(command = self.notIssuedListbox.yview)
+        # self.notIssuedListbox = Listbox(self.notIssuedFrame, yscrollcommand = self.scroll.set, font = ("Arial", 10), selectbackground=orange,
+        #         foreground=white, background=lightorange)
+        # self.notIssuedListbox.pack(side = LEFT, fill = BOTH)
+        # self.scroll.config(command = self.notIssuedListbox.yview)
 
-        self.UpdateList()
+        cols = ('UniqueID', 'LastIssued')
+        ttk.Style().configure("Treeview", background=orange,
+                foreground=white, fieldbackground=lightorange)
+        self.listBox = ttk.Treeview(self.notIssuedFrame, columns=cols, show='headings')
+        for col in cols:
+            self.listBox.heading(col, text=col)   
+        for book in self.notIssued:
+            self.listBox.insert("", "end", values=(book[0], book[1]))
+
+        self.listBox.grid(column=0, row=0)
+
+        # self.UpdateList()
 
         self.notIssuedFrame.grid(column=0, row=2, pady=10)
 
-        self.disposeButton = Button(self, bg=orange, fg=white, text="Dispose Book", command=self.SendReminder)
+        self.disposeButton = Button(self, bg=orange, fg=white, text="Dispose Book", command=self.DisposeBook)
         self.disposeButton.grid(column=0, row=3)
 
         self.errorLabel = Label(self, text="")
         self.errorLabel.config(font=(12), bg=orange, fg=white) 
 
     def GetNotIssued(self):
-        return []
+        return self.librarian.CheckBookIssueStats()
 
-    def UpdateList(self):
-        self.notIssuedListbox.delete(0,END)
-        for book in self.notIssued:
-            self.notIssuedListbox.insert(END, book)
+    # def UpdateList(self):
+    #     self.notIssuedListbox.delete(0,END)
+    #     for book in self.notIssued:
+    #         self.notIssuedListbox.insert(END, book)
 
-    def SendReminder(self):
+    def DisposeBook(self):
         self.RemoveError()
-        print("Book Disposed")
+        success = True
+
+        try:
+            self.librarian.DisposeBook(self.listBox.item(self.listBox.selection()[0], "values")[0])
+        except ValueError as e:
+            self.DisplayError(e)
+            success = False
+        
+        if success:
+            self.DisplayError("Book successfully disposed")
+        # print("Book Disposed")
     
     def DisplayError(self, message): 
         self.errorLabel.grid_forget()
@@ -213,4 +282,5 @@ class CheckIssueStats(Frame):
 
     def RemoveError(self):
         self.errorLabel.grid_forget()         
+
 
