@@ -16,3 +16,6 @@ from underGraduateStudent import UnderGraduateStudent
 from postGraduateStudent import PostGraduateStudent
 from researchScholar import ResearchScholar
 from facultyMember import FacultyMember
+
+INSERT INTO EMPLOYEES VALUES ('LIB0001', 'Neha', 'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==');
+INSERT INTO EMPLOYEES VALUES ('LIB0068', 'Rajat', 'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==');

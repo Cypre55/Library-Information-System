@@ -44,11 +44,23 @@ class MemberHomeWindow(Frame):
         self.reminderLabel = Label(self.reminderFrame, text="Reminders")
         self.reminderLabel.config(font=(12), bg=orange, fg=white, width=20)
         self.reminderLabel.grid(column=0, row=0, padx=75, pady=5)
-        self.messageLabel = Label(self.reminderFrame)
-        self.messageLabel.config(font=(12), bg=lightorange, fg=white)
-        self.messageLabel.grid(column=0, row=1, padx=10, pady=5)
-        self.blankLabel2 = Label(self.reminderFrame, bg=lightorange)
-        self.blankLabel2.grid(column=0, row=2, pady=85)
+        # self.messageLabel = Label(self.reminderFrame)
+        # self.messageLabel.config(font=(12), bg=lightorange, fg=white)
+        # self.messageLabel.grid(column=0, row=1, padx=10, pady=5)
+        # self.blankLabel2 = Label(self.reminderFrame, bg=lightorange)
+        # self.blankLabel2.grid(column=0, row=2, pady=85)
+        overdue = self.member.CheckForReminder()
+        # overdue = ['5', '7']
+        cols = ('Reminders')
+        ttk.Style().configure("Treeview", background=orange,
+                foreground=white, fieldbackground=lightorange)
+        self.listBox = ttk.Treeview(self.reminderFrame, columns=cols, show='tree')
+        # for col in cols:
+        #     self.listBox.heading(col, text=col)   
+        for uid in overdue:
+            self.listBox.insert("", "end", text=uid + ": Book is overdue")
+
+        self.listBox.grid(column=0, row=1)
         self.reminderFrame.grid(column=0, row=2, padx=5, pady=5)
 
         self.leftFrame.grid(column=0, row=0)
@@ -97,15 +109,15 @@ class MemberHomeWindow(Frame):
     def Logout(self):
         self.mainWindow.ShowLogin()
 
-    def ShowReminder(self, message):
-        self.messageLabel.config(text=message, bg=orange, fg=white)
-        self.messageLabel.grid(column=0, row=1, padx=10, pady = 5)
-        self.blankLabel2.grid(column=0, row=2, pady=85)
+    # def ShowReminder(self, message):
+    #     self.messageLabel.config(text=message, bg=orange, fg=white)
+    #     self.messageLabel.grid(column=0, row=1, padx=10, pady = 5)
+    #     self.blankLabel2.grid(column=0, row=2, pady=85)
 
-    def RemoveReminder(self):
-        self.messageLabel.config(text="", bg=lightorange)
-        self.messageLabel.grid(column=0, row=1, pady = 5)
-        self.blankLabel2.grid(column=0, row=2, pady=85)
+    # def RemoveReminder(self):
+    #     self.messageLabel.config(text="", bg=lightorange)
+    #     self.messageLabel.grid(column=0, row=1, pady = 5)
+    #     self.blankLabel2.grid(column=0, row=2, pady=85)
 
 
 

@@ -10,7 +10,7 @@ class FacultyMember(LibraryMember):
 
 
     def CanIssue(self):
-        return (self._numberOfBooksIssued < self.__maxBooksAllowed)
+        return (self._numberOfBooksIssued < FacultyMember.__maxBooksAllowed)
     
     def GetMaxBooksAllowed(self):
         return FacultyMember.__maxBooksAllowed

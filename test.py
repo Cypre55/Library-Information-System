@@ -1,7 +1,13 @@
 from datetime import date, datetime, timedelta
 from cryptography.fernet import Fernet
 import mysql.connector as mysql
+from librarian import encode_message, decode_message
 print()
+t = encode_message("1234")
+print(t)
+print(type(t))
+print(decode_message(t))
+
 # db = mysql.connect(
 #     host = "localhost",
 #     user = "root",

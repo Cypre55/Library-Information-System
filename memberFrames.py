@@ -4,7 +4,7 @@ from colors import *
 from availabilityWindow import *
 from helperFrames import ScrollableFrame
 from bookHandler import SplitTableEntry, JoinTableEntry
-from helperFunctions import GetBookInfoFromUID, GetLibraryMember
+from helperFunctions import GetBookInfoFromUID, GetLibraryMember, IsReservationActive
 
 class ProfileFrame(Frame):
     def __init__(self, master, member):
@@ -91,15 +91,20 @@ class ProfileFrame(Frame):
 
         self.reservedFrame = Frame(self)
         self.reservedFrame.config(bg=lightorange)
-        self.reservedLabel = Label(self.reservedFrame, text="Reserved Book: " + str(self.member._reservedBook))
+        self.reservedLabel = Label(self.reservedFrame, text="Reserved Book: " + str(self.member._reservedBook) + IsReservationActive(str(self.member._reservedBook), self.member._memberID))
         self.reservedLabel.config(font=(12), bg=orange, fg=white)
         self.reservedLabel.grid(column=0, row=0, padx = 5, pady = 5)
         self.blankreservedLabel = Label(self.reservedFrame, bg=lightorange)
-        self.blankreservedLabel.grid(column=1, row=0, padx=440)
+        self.blankreservedLabel.grid(column=1, row=0, padx=420)
         self.reservedFrame.grid(column=0, row=6)
 
-
-
+    def UpdateList(self):
+        
+        books = []
+        for uid in self.member._listOfBooksIssued:
+            books.append(GetBookInfoFromUID(int(uid)))
+        for book in books:
+            self.listBox.insert("", "end", values=(book["BookName"], book["UniqueID"], book["LastIssued"]))
 
 class SearchFrame(Frame):
     def __init__(self, master, member):
@@ -153,7 +158,6 @@ class SearchFrame(Frame):
         
         # print(self.results)
         self.UpdateResults()
-        pass
 
     def UpdateResults(self):
         if self.resultFrames:

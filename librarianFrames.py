@@ -256,10 +256,10 @@ class CheckIssueStats(Frame):
     def GetNotIssued(self):
         return self.librarian.CheckBookIssueStats()
 
-    # def UpdateList(self):
-    #     self.notIssuedListbox.delete(0,END)
-    #     for book in self.notIssued:
-    #         self.notIssuedListbox.insert(END, book)
+    def UpdateList(self):
+        self.notIssuedListbox.delete(0,END)
+        for book in self.notIssued:
+            self.notIssuedListbox.insert(END, book)
 
     def DisposeBook(self):
         self.RemoveError()

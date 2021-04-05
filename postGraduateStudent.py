@@ -9,7 +9,7 @@ class PostGraduateStudent(LibraryMember):
         LibraryMember.__init__(self, *args)
 
     def CanIssue(self):
-        return (self._numberOfBooksIssued < self.__maxBooksAllowed)
+        return (self._numberOfBooksIssued < PostGraduateStudent.__maxBooksAllowed)
     def GetMaxBooksAllowed(self):
         return PostGraduateStudent.__maxBooksAllowed
     def GetMaxMonthsAllowed(self):

@@ -11,10 +11,12 @@ from libraryMember import LibraryMember
 from libraryClerk import LibraryClerk
 from datetime import date, datetime, timedelta
 from librarian import Librarian
+from loginFunctions import MemberLogin, EmployeeLogin
 import mysql.connector as mysql
+import settings
 db = mysql.connect(
     host = "localhost",
-    user = "root",
+    user = settings.user,
     passwd = "1234",
     database = "lis"
 )
@@ -27,6 +29,7 @@ def delete():
     db.commit()
     cursor.execute("TRUNCATE TABLE BOOKS")
     db.commit()
+    cursor.execute("DELETE FROM EMPLOYEES")
 
 
 #1. MemberLogin()
@@ -40,6 +43,7 @@ def delete():
 #Employee logs in successfully
 #Employee not in members table
 #PASS\n\nword does not match
+
 a_file = open("sample.txt", "w")
 
 # 3. Library Member
@@ -365,10 +369,34 @@ if(student.GetName()=="Harry" and student.GetMemberID()=="19CS30014" and student
     print("create object when existing member is logged in: PASS\n\n",  file = a_file)
 else:
     print("create object when existing member is logged in: FAIL\n\n",  file = a_file)
-##
-#print("throw error when invalid member is trying to log in: PASS\n\n",  file = a_file)
-#print("throw error when invalid member is trying to log in: FAIL\n\n",  file = a_file)
-##
+
+delete()
+cursor.execute(("INSERT INTO MEMBERS VALUES ('19CS30014', 'Harry', 'UG', NULL, NULL, 0, \
+'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==')"))
+# The password is encrypted form of "1234"
+db.commit()
+student = MemberLogin("19CS30014", "1234")
+if(student.GetName()=="Harry" and student.GetMemberID()=="19CS30014" and isinstance(student, UnderGraduateStudent)):
+    print("create object when existing member is logged in: PASS\n\n",  file = a_file)
+else:
+    print("create object when existing member is logged in: FAIL\n\n",  file = a_file)
+
+try:
+    student = MemberLogin("19CS", "1234")
+except ValueError as e:
+    if str(e) == "Invalid MemberID inputted.":
+        print("throw error when invalid member is trying to log in: PASS\n\n", file = a_file)
+    else:
+        print("throw error when invalid member is trying to log in: FAIL\n\n", file = a_file)
+
+try:
+    student = MemberLogin("19CS30014", "124")
+except ValueError as e:
+    if str(e) == "Incorrect Password inputted.":
+        print("throw error when incorrect password is entered: PASS\n\n", file = a_file)
+    else:
+        print("throw error when incorrect password is entered: FAIL\n\n", file = a_file)
+delete()
 
 #Test Can issue
 student = UnderGraduateStudent("Harry", "19CS30014",  ['3'] , "988-0789032742")
@@ -400,8 +428,33 @@ if(student.GetName()=="Harry" and student.GetMemberID()=="19CS30014" and student
 else:
     print("create object when existing member is logged in: FAIL\n\n",  file = a_file)
 
-#print("throw error when invalid member is trying to log in: PASS\n\n",  file = a_file)
-#print("throw error when invalid member is trying to log in: FAIL\n\n",  file = a_file)
+delete()
+cursor.execute(("INSERT INTO MEMBERS VALUES ('19CS30014', 'Harry', 'PG', NULL, NULL, 0, \
+'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==')"))
+# The password is encrypted form of "1234"
+db.commit()
+student = MemberLogin("19CS30014", "1234")
+if(student.GetName()=="Harry" and student.GetMemberID()=="19CS30014" and isinstance(student, PostGraduateStudent)):
+    print("create object when existing member is logged in: PASS\n\n",  file = a_file)
+else:
+    print("create object when existing member is logged in: FAIL\n\n",  file = a_file)
+
+try:
+    student = MemberLogin("19CS", "1234")
+except ValueError as e:
+    if str(e) == "Invalid MemberID inputted.":
+        print("throw error when invalid member is trying to log in: PASS\n\n", file = a_file)
+    else:
+        print("throw error when invalid member is trying to log in: FAIL\n\n", file = a_file)
+
+try:
+    student = MemberLogin("19CS30014", "124")
+except ValueError as e:
+    if str(e) == "Incorrect Password inputted.":
+        print("throw error when incorrect password is entered: PASS\n\n", file = a_file)
+    else:
+        print("throw error when incorrect password is entered: FAIL\n\n", file = a_file)
+delete()
 
 #Test Can issue
 student = PostGraduateStudent("Harry", "19CS30014",  ['3'] , "988-0789032742")
@@ -434,8 +487,33 @@ if(student.GetName()=="Harry" and student.GetMemberID()=="19CS30014" and student
 else:
     print("create object when existing member is logged in: FAIL\n\n",  file = a_file)
 
-#print("throw error when invalid member is trying to log in: PASS\n\n",  file = a_file)
-#print("throw error when invalid member is trying to log in: FAIL\n\n",  file = a_file)
+delete()
+cursor.execute(("INSERT INTO MEMBERS VALUES ('19CS30014', 'Harry', 'RS', NULL, NULL, 0, \
+'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==')"))
+# The password is encrypted form of "1234"
+db.commit()
+student = MemberLogin("19CS30014", "1234")
+if(student.GetName()=="Harry" and student.GetMemberID()=="19CS30014" and isinstance(student, ResearchScholar)):
+    print("create object when existing member is logged in: PASS\n\n",  file = a_file)
+else:
+    print("create object when existing member is logged in: FAIL\n\n",  file = a_file)
+
+try:
+    student = MemberLogin("19CS", "1234")
+except ValueError as e:
+    if str(e) == "Invalid MemberID inputted.":
+        print("throw error when invalid member is trying to log in: PASS\n\n", file = a_file)
+    else:
+        print("throw error when invalid member is trying to log in: FAIL\n\n", file = a_file)
+
+try:
+    student = MemberLogin("19CS30014", "124")
+except ValueError as e:
+    if str(e) == "Incorrect Password inputted.":
+        print("throw error when incorrect password is entered: PASS\n\n", file = a_file)
+    else:
+        print("throw error when incorrect password is entered: FAIL\n\n", file = a_file)
+delete()
 
 #Test Can issue
 student = ResearchScholar("Harry", "19CS30014",  [] , None)
@@ -466,8 +544,33 @@ if(student.GetName()=="Harry" and student.GetMemberID() == "19CS30014"):
 else:
     print("create object when existing member is logged in: FAIL\n\n",  file = a_file)
 
-#print("throw error when invalid member is trying to log in: PASS\n\n",  file = a_file)
-#print("throw error when invalid member is trying to log in: FAIL\n\n",  file = a_file)
+delete()
+cursor.execute(("INSERT INTO MEMBERS VALUES ('19CS30014', 'Harry', 'FM', NULL, NULL, 0, \
+'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==')"))
+# The password is encrypted form of "1234"
+db.commit()
+student = MemberLogin("19CS30014", "1234")
+if(student.GetName()=="Harry" and student.GetMemberID()=="19CS30014" and isinstance(student, FacultyMember)):
+    print("create object when existing member is logged in: PASS\n\n",  file = a_file)
+else:
+    print("create object when existing member is logged in: FAIL\n\n",  file = a_file)
+
+try:
+    student = MemberLogin("19CS", "1234")
+except ValueError as e:
+    if str(e) == "Invalid MemberID inputted.":
+        print("throw error when invalid member is trying to log in: PASS\n\n", file = a_file)
+    else:
+        print("throw error when invalid member is trying to log in: FAIL\n\n", file = a_file)
+
+try:
+    student = MemberLogin("19CS30014", "124")
+except ValueError as e:
+    if str(e) == "Incorrect Password inputted.":
+        print("throw error when incorrect password is entered: PASS\n\n", file = a_file)
+    else:
+        print("throw error when incorrect password is entered: FAIL\n\n", file = a_file)
+delete()
 
 #Test Can issue
 student = FacultyMember("Harry", "19CS30014",  ['3'] , "988-0789032742")
@@ -487,11 +590,39 @@ else:
 #8. Library Clerk
 #Test Constructor
 
-# print("Correct Object Constructed when valid login: PASS\n\n",  file = a_file)
-# print("Correct Object Constructed when valid login: FAIL\n\n",  file = a_file)
+employee = LibraryClerk("LIB0068", "Sam")
+if(employee._name =="Sam" and employee._employeeID == "LIB0068" and isinstance(employee, LibraryClerk)):
+    print("Correct Employee Object Constructed when valid login: PASS\n\n",  file = a_file)
+else:
+    print("Correct Employee Object Constructed when valid login: FAIL\n\n",  file = a_file)
 
-# print("Error thrown when invalid login: PASS\n\n",  file = a_file)
-# print("Error thrown when invalid login: FAIL\n\n",  file = a_file)
+delete()
+cursor.execute(("INSERT INTO EMPLOYEES VALUES ('LIB0068', 'Sam', \
+'gAAAAABgau-GvJ9w1sHYJd167g-SWhhhBmgx-UwSMhpkQScrbObcuCgj2PfxjHhv_URtOo4phukn9JAFFzs288xSR4zny5M2UQ==')"))
+# The password is encrypted form of "1234"
+db.commit()
+employee = EmployeeLogin("LIB0068", "1234")
+if(employee._name =="Sam" and employee._employeeID == "LIB0068" and isinstance(employee, LibraryClerk)):
+    print("create object when employee is logged in: PASS\n\n",  file = a_file)
+else:
+    print("create object when employee is logged in: FAIL\n\n",  file = a_file)
+
+try:
+    employee = EmployeeLogin("LIB0", "1234")
+except ValueError as e:
+    if str(e) == "Invalid EmployeeID inputted.":
+        print("throw error when invalid employee is trying to log in: PASS\n\n", file = a_file)
+    else:
+        print("throw error when invalid employee is trying to log in: FAIL\n\n", file = a_file)
+
+try:
+    employee = EmployeeLogin("LIB0068", "124")
+except ValueError as e:
+    if str(e) == "Incorrect Password inputted.":
+        print("throw error when incorrect password is entered: PASS\n\n", file = a_file)
+    else:
+        print("throw error when incorrect password is entered: FAIL\n\n", file = a_file)
+delete()
 
 delete()
 

@@ -59,16 +59,19 @@ class LibraryMember(ABC):
                 cursor2.execute(("SELECT LastIssued FROM BOOKS WHERE UniqueID = %(bookUID)s"),book)
                 row2 = cursor2.fetchone()
                 db.commit()
-                if (date.today() - row2["LastIssued"]).days> 30*self.GetMaxMonthsAllowed():
-                    overdue.append("You have an overdue book that needs to be returned : UID - "+UID)
+                if (date.today() - row2["LastIssued"]).days > 30*self.GetMaxMonthsAllowed():
+                    overdue.append(UID)
         return overdue
                     
     def SearchBook(self, searchString):
         # searchKey = input("Enter your search string: ")
-        searchKey = '\'%' + searchString + '%\''
-        searchBooks = "SELECT DISTINCT ISBN, BookName FROM BOOKS WHERE BookName LIKE "
-        cursor.execute(searchBooks + searchKey)
-        db.commit()
+        searchKey = '%' + searchString + '%'
+        searchBooks = "SELECT DISTINCT ISBN, BookName FROM BOOKS WHERE BookName LIKE %(search)s"
+        searchParam = {
+            "search" : searchKey
+        }
+        cursor.execute(searchBooks, searchParam)
+        # db.commit()
         searchResults = []
         for row in cursor:
             searchResults.append(("{ISBN}".format(ISBN=row['ISBN']),"{BookName}".format(BookName=row['BookName'])))
@@ -122,9 +125,14 @@ class LibraryMember(ABC):
          
     def IssueBook(self, book: Book):
         if not self.CanIssue() :
-            raise ValueError("Issue Limit Exceeded.")
+            # raise ValueError("Issue Limit Exceeded.")
+            # print("Hello")
+            return None
         if (str(book.GetUID()) in self._listOfBooksIssued):
-            raise ValueError("Book already issued.")
+            # raise ValueError("Book already issued.")
+            # print("Yo")
+            return 0
+
         bH = BookHandler.Create()
         bH.CloseBook()
         bH.OpenBook(book)
@@ -137,6 +145,7 @@ class LibraryMember(ABC):
         db.commit()
         self.UpdateFromDatabase()
         bH.CloseBook()
+        # print("Hi")
         return 1
 
     def ReserveBook(self, ISBN: str):
@@ -158,7 +167,7 @@ class LibraryMember(ABC):
         }
         cursor.execute(command,dici)
         db.commit()
-        
+
     #call this on every login
     def UpdateFromDatabase(self):
         if(self._reservedBook!=None):

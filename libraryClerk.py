@@ -117,6 +117,7 @@ class LibraryClerk:
         cursor.execute(deleteBook)
         db.commit()
 
+
     def ReturnBook(self, libraryMember : LibraryMember, book : Book):
         if str(book.GetUID()) not in libraryMember._listOfBooksIssued:
             raise ValueError("Book has not been by the member.")

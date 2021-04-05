@@ -307,7 +307,7 @@ class ReturnBookFrame(Frame):
         if success:
             self.DisplayError("Book Returned Successfully.")
             self.SelectMember()
-            self.UpdateList()
+            # self.UpdateList()
 
     def ShowFine(self):
         self.fineRoot = Tk()

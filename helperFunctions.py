@@ -52,8 +52,24 @@ def GetLibraryMember(memberID):
     if correctRow["MemberType"] == "FM":
         return FacultyMember(correctRow['MemberName'], correctRow['MemberID'], SplitTableEntry(correctRow['ListOfBooksIssued']), correctRow['ReservedBook'])
 
-def GetTreeSize(tree, item=""):
-    children = tree.get_children()
-    # for child in children:
-    #     children += GetTreeSize(tree, child)
-    return len(children)
+def IsReservationActive(ISBN, memberID):
+    if ISBN == "None":
+        return ""
+    # print(ISBN)
+    getISBN = ("SELECT * FROM RESERVATIONS WHERE ISBN = %(ISBN)s")
+    isbn = {
+        'ISBN' : ISBN
+    }
+    cursor.execute(getISBN, isbn)
+    row = cursor.fetchone()
+    db.commit()
+    
+    active = False
+    for res in SplitTableEntry(row['ActiveReservations']):
+        if memberID in res:
+            active = True
+    
+    if active:
+        return " (Active)"
+    else:
+        return " (Pending)"

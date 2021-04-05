@@ -31,6 +31,7 @@ def MemberLogin(memberID: str, password: str):
         if row["MemberID"] == memberID:
             correctRow = row
             found = True
+    db.commit()
     
     if not found:
         raise ValueError("Invalid MemberID inputted.")
@@ -51,8 +52,11 @@ def MemberLogin(memberID: str, password: str):
 
     
 def EmployeeLogin(employeeID: str, password: str):
-    if not employeeID or not password:
-        raise ValueError("Missing Arguments")
+    if employeeID == "":
+        raise ValueError("EmployeeID missing.")
+
+    if not password:
+        raise ValueError("Password missing.")
     
     findEmployee = ("SELECT * FROM EMPLOYEES")
     cursor.execute(findEmployee)
@@ -62,7 +66,8 @@ def EmployeeLogin(employeeID: str, password: str):
         if row["EmployeeID"] == employeeID:
             correctRow = row
             found = True
-    
+    db.commit()
+
     if not found:
         raise ValueError("Invalid EmployeeID inputted.")
 

@@ -59,12 +59,26 @@ class AvailableFrame(Frame):
         try:
             bookInfo = GetBookInfoFromUID(int(self.listBox.item(self.listBox.selection()[0], "value")[0]))
             book = Book(bookInfo['UniqueID'], bookInfo['ISBN'], bookInfo['LastIssued'])
-            self.member.IssueBook(book)
+            # self.member.IssueBook(book)
         except ValueError as e:
             self.DisplayError(e)
             success = False
+
+        response = self.member.IssueBook(book)
+        # print(type(response))
+        # print(response)
+        if response == None:
+            self.RemoveError()
+            success = False
+            self.DisplayError("Issue Limit Exceeded")
+
+        if response == 0:
+            self.RemoveError()
+            success = False
+            self.DisplayError("Book already issued.")
         
         if success:
+            self.RemoveError()
             self.DisplayError("Book Issued Successfully.")
 
         # self.member.IssueBook()
@@ -126,11 +140,17 @@ class ClaimFrame(Frame):
         try:
             bookInfo = GetBookInfoFromUID(int(self.listBox.item(self.listBox.selection()[0], "value")[0]))
             book = Book(bookInfo['UniqueID'], bookInfo['ISBN'], bookInfo['LastIssued'])
-            self.member.IssueBook(book)
         except ValueError as e:
             self.DisplayError(e)
             success = False
         
+        response = self.member.IssueBook(book)
+
+        if response == None:
+            success = False
+            self.DisplayError("Issue Limit Exceeded")
+
+
         if success:
             self.DisplayError("Book Issued Successfully.")
         

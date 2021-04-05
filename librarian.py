@@ -108,7 +108,7 @@ class Librarian(LibraryClerk):
         for row in cursor:
             dateissued = row["LastIssued"]
             if((date.today()-dateissued).days >= 1826):
-                obsoleteBooks.append("{UniqueID}".format(UniqueID=row['UniqueID']))
+                obsoleteBooks.append(("{UniqueID}".format(UniqueID=row['UniqueID']), row['LastIssued']))
         db.commit()
         return obsoleteBooks
     def DisposeBook(self, UID):

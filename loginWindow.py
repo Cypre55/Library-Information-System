@@ -1,6 +1,8 @@
 from tkinter import *
 from colors import *
 from loginFunctions import *
+from librarian import Librarian
+from libraryClerk import LibraryClerk
 
 class LoginWindow(Frame):
     def __init__(self, master, mainWindow):
@@ -108,8 +110,19 @@ class LoginWindow(Frame):
                 self.mainWindow.ShowMemberHome(member)
                 self.RemoveError()
         else:
-            self.DisplayError("OOPS!!!")
-            print("HELLO")
+            success = True
+            try:
+                employee = EmployeeLogin(self.id.get(), self.password.get())
+            except ValueError as e:
+                success = False
+                self.DisplayError(e)
+                # print(ValueError.message)
+            if success:
+                if isinstance(employee, Librarian):
+                    self.mainWindow.ShowLibrarianHome(employee)
+                elif isinstance(employee, LibraryClerk):
+                    self.mainWindow.ShowClerkHome(employee)
+                self.RemoveError()
 
     def DisplayError(self, message): 
         # self.loginFrame.config(pady=80)   
