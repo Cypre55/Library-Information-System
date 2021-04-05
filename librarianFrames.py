@@ -96,6 +96,10 @@ class AddMemberFrame(Frame):
         # print("Adding Member")
         success = True
 
+        if self.password.get() == "":
+            self.DisplayError("Required field password is missing.")
+            return
+
         try:
             self.librarian.AddMember(self.member, self.password.get())
         except ValueError as e:
