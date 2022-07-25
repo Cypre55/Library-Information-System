@@ -1,5 +1,0 @@
-# delete copy ctor if not needed
-# readyToClaimUsers or readyToClaimMembers
-# testing of calc penalty
-# har jagah bas value error raise karna is not right, alag alag error throw karna chaiye
-# error messages to match with what is given in the test suite
