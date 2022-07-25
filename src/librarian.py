@@ -8,10 +8,10 @@ import mysql.connector as mysql
 import base64
 import settings
 db = mysql.connect(
-    host = "localhost",
+    host = settings.host,
     user = settings.user,
-    passwd = "1234",
-    database = "lis"
+    passwd = settings.passwd,
+    database = settings.database
 )
 def encode_message(message):
     key2 = open("secret.key", "rb").read()

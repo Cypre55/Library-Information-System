@@ -4,8 +4,27 @@
 - Python 3 or above
 - MySQL with Connector/Python
 - Tkinter
-## Connecting to the Database
-- download the SQL schema
+
+## Creating the Database
+- Set Up MySQL on your local machine, with all the necessary permissions. [Helpful Link](https://stackoverflow.com/questions/21714869/error-1044-42000-access-denied-for-root-with-all-privileges)
+- Enter host, user, passwd in src/settings.py
+- Log into the MySQL CLI and run:
+
+```mysql
+CREATE DATABASE lis;
+exit;
+```
+
+* Now to load the schema in the terminal:
+
+```bash
+mysql -u <user> -p lis < LIS.sql # Present at the root of this repository
+
+# You will be prompted for the password
+```
+
+* You can now populate the database and begin using the software.
+
 ## Running the Tests
 - Run `python testing.py` on the terminal  in the `src` directory to run the Unit Tests given in the Test Plan
 - All the tables except `EMPLOYEES` are emptied completely before starting the tests

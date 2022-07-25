@@ -7,10 +7,10 @@ from book import Book
 import mysql.connector as mysql
 import settings
 db = mysql.connect(
-    host = "localhost",
+    host = settings.host,
     user = settings.user,
-    passwd = "1234",
-    database = "lis"
+    passwd = settings.passwd,
+    database = settings.database
 )
 cursor = db.cursor(dictionary = True)
 
